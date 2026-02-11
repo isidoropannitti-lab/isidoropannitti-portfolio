@@ -20,9 +20,9 @@ body {
 	padding: 0;
 	background: var(--bg);
 	color: var(--fg);
-	font-family: "Inter", sans-serif;
+	font-family: "Work Sans", sans-serif;
 	font-size: var(--type-size);
-	font-weight: 400;
+	font-weight: 300;
 	line-height: 1.4;
 	letter-spacing: 0.005em;
 }
@@ -67,7 +67,7 @@ a:focus-visible {
 
 .site-title {
 	text-transform: lowercase;
-	font-weight: 500;
+	font-weight: 300;
 	white-space: nowrap;
 }
 
@@ -87,11 +87,11 @@ a:focus-visible {
 }
 
 .primary-nav a {
-	font-weight: 400;
+	font-weight: 300;
 }
 
 .primary-nav a.is-active {
-	font-weight: 700;
+	font-weight: 300;
 }
 
 .lang-switch {
@@ -102,11 +102,11 @@ a:focus-visible {
 }
 
 .lang-switch a {
-	font-weight: 400;
+	font-weight: 300;
 }
 
 .lang-switch a.is-active {
-	font-weight: 700;
+	font-weight: 300;
 }
 
 .page-shell {
@@ -155,7 +155,7 @@ a:focus-visible {
 }
 
 .snap-card h2 {
-	font-weight: 600;
+	font-weight: 300;
 }
 
 .snap-meta {
@@ -203,7 +203,7 @@ a:focus-visible {
 }
 
 .project-detail h1 {
-	font-weight: 700;
+	font-weight: 300;
 }
 
 .project-detail .back-link {
