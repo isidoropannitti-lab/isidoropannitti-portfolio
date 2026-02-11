@@ -1,7 +1,8 @@
 ---
-const EMAIL = "you@example.com";
-const INSTAGRAM_HANDLE = "yourhandle";
-const INSTAGRAM_URL = `https://instagram.com/${INSTAGRAM_HANDLE}`;
+const EMAIL = "isidoro.pannitti@gmail.com";
+const INSTAGRAM_HANDLE = "@_isoradio";
+const INSTAGRAM_URL = "https://www.instagram.com/_isoradio/";
+const TITLE = "isidoro pannitti architetto";
 
 ---
 
@@ -10,7 +11,7 @@ const INSTAGRAM_URL = `https://instagram.com/${INSTAGRAM_HANDLE}`;
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Portfolio Architetto</title>
+		<title>{TITLE}</title>
 		<style>
 			:root {
 				color-scheme: light;
@@ -25,7 +26,7 @@ const INSTAGRAM_URL = `https://instagram.com/${INSTAGRAM_HANDLE}`;
 				margin: 0;
 				padding: 0;
 				background: #fff;
-				color: #111;
+				color: #000;
 				font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial,
 					sans-serif;
 				-webkit-font-smoothing: antialiased;
@@ -33,57 +34,52 @@ const INSTAGRAM_URL = `https://instagram.com/${INSTAGRAM_HANDLE}`;
 			}
 
 			main {
-				min-height: 100dvh;
-				display: grid;
-				place-items: center;
-				padding: 4rem 1.5rem;
+				min-height: 100vh;
+				display: flex;
+				align-items: flex-start;
+				justify-content: flex-start;
+				padding: clamp(1.25rem, 3vw, 2.5rem);
 			}
 
-			.content {
-				text-align: center;
+			.stack {
 				display: grid;
-				gap: 1rem;
-			}
-
-			h1 {
-				margin: 0;
-				font-size: clamp(2rem, 7vw, 4rem);
+				gap: 0.2rem;
+				font-size: clamp(1rem, 1.4vw, 1.1rem);
+				line-height: 1.45;
 				font-weight: 400;
-				letter-spacing: 0.08em;
-				text-transform: uppercase;
+				letter-spacing: 0.005em;
+				text-transform: lowercase;
 			}
 
-			.links {
-				display: inline-flex;
-				gap: 1.25rem;
-				justify-content: center;
-				font-size: 0.95rem;
-				letter-spacing: 0.05em;
+			p {
+				margin: 0;
 			}
 
 			a {
 				color: inherit;
 				text-decoration: none;
-				border-bottom: 1px solid rgba(17, 17, 17, 0.25);
+				border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 				transition: border-color 140ms ease, opacity 140ms ease;
 			}
 
 			a:hover {
-				opacity: 0.7;
-				border-bottom-color: rgba(17, 17, 17, 0.5);
+				opacity: 0.65;
+				border-bottom-color: rgba(0, 0, 0, 0.45);
 			}
 		</style>
 	</head>
 	<body>
 		<main>
-			<section class="content">
-				<h1>Isidoro Pannitti</h1>
-				<nav class="links" aria-label="Contatti">
+			<section class="stack" aria-label="contatti">
+				<p>{TITLE}</p>
+				<p>
 					<a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+				</p>
+				<p>
 					<a href={INSTAGRAM_URL} target="_blank" rel="noreferrer noopener">
-						Instagram
+						{INSTAGRAM_HANDLE}
 					</a>
-				</nav>
+				</p>
 			</section>
 		</main>
 	</body>
