@@ -57,6 +57,19 @@ const IMAGE_25_4_URL = "/images/25.4.jpeg";
 				opacity: 0.68;
 			}
 
+			.actions {
+				margin-top: 0.35rem;
+			}
+
+			.info-button {
+				display: inline-flex;
+				align-items: center;
+				padding: 0.08rem 0.55rem;
+				border: 1px solid rgba(0, 0, 0, 0.45);
+				border-radius: 999px;
+				line-height: 1.2;
+			}
+
 			.gallery {
 				margin: 0.85rem 0 0;
 				display: flex;
@@ -86,6 +99,9 @@ const IMAGE_25_4_URL = "/images/25.4.jpeg";
 			</p>
 			<p>
 				<a href={INSTAGRAM_URL} target="_blank" rel="noreferrer noopener">{INSTAGRAM_HANDLE}</a>
+			</p>
+			<p class="actions">
+				<a class="info-button" href="/info">info</a>
 			</p>
 			<div class="gallery">
 				<figure class="preview">
