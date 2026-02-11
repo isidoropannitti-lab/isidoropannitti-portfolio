@@ -1,0 +1,37 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+	const projects = await getCollection("projects");
+
+	return projects.map((project) => ({
+		params: { slug: project.slug },
+		props: { project },
+	}));
+}
+
+interface Props {
+	project: CollectionEntry<"projects">;
+}
+
+const { project } = Astro.props as Props;
+const { Content } = await project.render();
+---
+
+<BaseLayout
+	lang="en"
+	section="architecture"
+	title={`isidoro pannitti architetto | ${project.data.title}`}
+	description={project.data.summary}
+>
+	<article class="project-detail">
+		<p class="snap-meta">{project.data.year} · {project.data.location}</p>
+		<h1>{project.data.title}</h1>
+		<p>{project.data.summary}</p>
+		<Content />
+		<p class="back-link">
+			<a href="/en/architecture">back to architecture</a>
+		</p>
+	</article>
+</BaseLayout>

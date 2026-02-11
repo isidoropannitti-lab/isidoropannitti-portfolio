@@ -1,0 +1,33 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const projects = (await getCollection("projects")).sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout
+	lang="en"
+	section="architecture"
+	title="isidoro pannitti architetto | architecture"
+	description="Architecture projects by Isidoro Pannitti."
+>
+	<section class="page-stack">
+		<p class="page-intro">
+			Selected projects and ongoing research in architecture. Horizontal scroll is native on desktop
+			and mobile.
+		</p>
+		<ul class="snap-row" aria-label="Architecture projects">
+			{
+				projects.map((project) => (
+					<li>
+						<a class="snap-card" href={`/en/projects/${project.slug}`}>
+							<p class="snap-meta">{project.data.year} · {project.data.location}</p>
+							<h2>{project.data.title}</h2>
+							<p>{project.data.summary}</p>
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</section>
+</BaseLayout>

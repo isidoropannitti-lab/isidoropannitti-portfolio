@@ -1,0 +1,29 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const photos = (await getCollection("photography")).sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout
+	lang="en"
+	section="photography"
+	title="isidoro pannitti architetto | photography"
+	description="Photography studies and visual notes by Isidoro Pannitti."
+>
+	<section class="page-stack">
+		<p class="page-intro">A horizontal archive of studies, textures, and spatial fragments.</p>
+		<ul class="snap-row" aria-label="Photography archive">
+			{
+				photos.map((photo) => (
+					<li>
+						<article class="photo-card">
+							<img src={photo.data.image} alt={photo.data.alt} loading="lazy" />
+							<p>{photo.data.title}</p>
+						</article>
+					</li>
+				))
+			}
+		</ul>
+	</section>
+</BaseLayout>

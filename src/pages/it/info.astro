@@ -1,0 +1,29 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const EMAIL = "isidoro.pannitti@gmail.com";
+const INSTAGRAM_HANDLE = "@_isoradio";
+const INSTAGRAM_URL = "https://www.instagram.com/_isoradio/";
+---
+
+<BaseLayout
+	lang="it"
+	section="info"
+	title="isidoro pannitti architetto | info"
+	description="Contatti e bio breve di Isidoro Pannitti."
+>
+	<section class="page-stack">
+		<div class="info-block">
+			<p>
+				<a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+			</p>
+			<p>
+				<a href={INSTAGRAM_URL} target="_blank" rel="noreferrer noopener">{INSTAGRAM_HANDLE}</a>
+			</p>
+			<div class="bio">
+				<p>Architetto con focus su spazi domestici, luce e ricerca sui materiali.</p>
+				<p>Base in Italia, disponibile per incarichi, collaborazioni e progetti editoriali.</p>
+			</div>
+		</div>
+	</section>
+</BaseLayout>
