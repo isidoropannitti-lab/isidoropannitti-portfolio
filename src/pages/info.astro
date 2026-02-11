@@ -37,6 +37,17 @@
 				margin: 0;
 			}
 
+			a {
+				color: inherit;
+				text-decoration: none;
+				transition: opacity 140ms ease;
+			}
+
+			a:hover,
+			a:focus-visible {
+				opacity: 0.68;
+			}
+
 			.site-title {
 				text-transform: lowercase;
 			}
@@ -48,7 +59,9 @@
 	</head>
 	<body>
 		<main>
-			<p class="site-title">isidoro pannitti architetto</p>
+			<p class="site-title">
+				<a href="/">isidoro pannitti architetto</a>
+			</p>
 			<p class="bio">
 				Architect with 6 years of experience across architecture, residential interior, and
 				exhibition design. Skilled in residential, and cultural projects, including museum and art
