@@ -2,7 +2,8 @@
 const EMAIL = "isidoro.pannitti@gmail.com";
 const INSTAGRAM_HANDLE = "@_isoradio";
 const INSTAGRAM_URL = "https://www.instagram.com/_isoradio/";
-const IMAGE_URL = "/images/24_2.jpeg";
+const IMAGE_24_2_URL = "/images/24_2.jpeg";
+const IMAGE_25_4_URL = "/images/25.4.jpeg";
 ---
 
 <html lang="it">
@@ -56,15 +57,23 @@ const IMAGE_URL = "/images/24_2.jpeg";
 				opacity: 0.68;
 			}
 
-			.preview {
+			.gallery {
 				margin: 0.85rem 0 0;
+				display: flex;
+				align-items: flex-start;
+				flex-wrap: wrap;
+				gap: clamp(0.75rem, 1.8vw, 1.2rem);
+			}
+
+			.preview {
+				margin: 0;
 				display: grid;
 				gap: 0.45rem;
 			}
 
 			.preview img {
 				display: block;
-				width: min(100%, 34rem);
+				width: min(100%, 17rem);
 				height: auto;
 			}
 		</style>
@@ -78,10 +87,16 @@ const IMAGE_URL = "/images/24_2.jpeg";
 			<p>
 				<a href={INSTAGRAM_URL} target="_blank" rel="noreferrer noopener">{INSTAGRAM_HANDLE}</a>
 			</p>
-			<figure class="preview">
-				<img src={IMAGE_URL} alt="24.2" loading="eager" />
-				<figcaption>24.2</figcaption>
-			</figure>
+			<div class="gallery">
+				<figure class="preview">
+					<img src={IMAGE_24_2_URL} alt="24.2" loading="eager" />
+					<figcaption>24.2</figcaption>
+				</figure>
+				<figure class="preview">
+					<img src={IMAGE_25_4_URL} alt="25.4" loading="eager" />
+					<figcaption>25.4</figcaption>
+				</figure>
+			</div>
 		</main>
 	</body>
 </html>
