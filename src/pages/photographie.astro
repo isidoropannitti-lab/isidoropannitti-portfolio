@@ -2,14 +2,14 @@
 import SectionsLayout from "../layouts/SectionsLayout.astro";
 
 const PHOTOGRAPHIE_IMAGES = [
-	"/images/Algarve, photo 01, from 2025.jpeg",
-	"/images/Amedhabad, photo 01, from 2024.jpeg",
-	"/images/Amedhabad, photo 02, from 2024.jpeg",
-	"/images/Amedhabad, photo 03, from 2024.jpeg",
-	"/images/Amedhabad, photo 04, from 2024.jpeg",
-	"/images/Andalusia, photo 01, from 2025.jpeg",
-	"/images/Andalusia, photo 02, from 2025.jpeg",
-	"/images/New York, photo 01, from 2025.jpeg",
+	"/images/photographie/algarve-2025-01.jpeg",
+	"/images/photographie/ahmedabad-2024-01.jpeg",
+	"/images/photographie/ahmedabad-2024-02.jpeg",
+	"/images/photographie/ahmedabad-2024-03.jpeg",
+	"/images/photographie/ahmedabad-2024-04.jpeg",
+	"/images/photographie/andalusia-2025-01.jpeg",
+	"/images/photographie/andalusia-2025-02.jpeg",
+	"/images/photographie/new-york-2025-01.jpeg",
 ];
 
 const SIZE_VARIANTS = [
@@ -59,6 +59,14 @@ const photos = PHOTOGRAPHIE_IMAGES.map((src, index) => {
 		scroll-snap-type: x mandatory;
 		-webkit-overflow-scrolling: touch;
 		padding-bottom: 0.45rem;
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+
+	.gallery::-webkit-scrollbar {
+		width: 0;
+		height: 0;
+		display: none;
 	}
 
 	.preview {

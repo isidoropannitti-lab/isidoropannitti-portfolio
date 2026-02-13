@@ -21,7 +21,27 @@ const photography = defineCollection({
 	}),
 });
 
+const featuredProjects = defineCollection({
+	type: "content",
+	schema: z.object({
+		title: z.string(),
+		teaser: z.string(),
+		cover: z.string(),
+		coverCaption: z.string(),
+		coverAlt: z.string(),
+		images: z.array(
+			z.object({
+				src: z.string(),
+				alt: z.string(),
+				caption: z.string(),
+				span: z.enum(["sm", "md", "lg"]).default("md"),
+			}),
+		),
+	}),
+});
+
 export const collections = {
 	projects,
 	photography,
+	featuredProjects,
 };
