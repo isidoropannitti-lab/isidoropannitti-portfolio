@@ -46,7 +46,13 @@ const ARCHITECTURE_IMAGES = [
 
 	.preview img {
 		display: block;
-		width: clamp(9rem, 17vw, 17rem);
+		width: 17rem;
 		height: auto;
+	}
+
+	@media (max-width: 760px) {
+		.preview img {
+			width: 22rem;
+		}
 	}
 </style>

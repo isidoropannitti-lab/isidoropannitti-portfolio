@@ -2,14 +2,14 @@
 import SectionsLayout from "../layouts/SectionsLayout.astro";
 
 const PHOTOGRAPHIE_IMAGES = [
-	"/images/Algarve, 01 photo from 2025.jpeg",
-	"/images/Amedhabad, 01 photo 2024.jpeg",
-	"/images/Amedhabad, 02 photo 2024.jpeg",
-	"/images/Amedhabad, 03 photo 2024.jpeg",
-	"/images/Amedhabad, 04 photo 2024.jpeg",
-	"/images/Andalusia, 01 photo from 2025.jpeg",
-	"/images/Andalusia, 02 photo from 2025.jpeg",
-	"/images/New York, 01 photo from 2025.jpeg",
+	"/images/Algarve, photo 01, from 2025.jpeg",
+	"/images/Amedhabad, photo 01, from 2024.jpeg",
+	"/images/Amedhabad, photo 02, from 2024.jpeg",
+	"/images/Amedhabad, photo 03, from 2024.jpeg",
+	"/images/Amedhabad, photo 04, from 2024.jpeg",
+	"/images/Andalusia, photo 01, from 2025.jpeg",
+	"/images/Andalusia, photo 02, from 2025.jpeg",
+	"/images/New York, photo 01, from 2025.jpeg",
 ];
 
 const SIZE_VARIANTS = [
@@ -71,15 +71,34 @@ const photos = PHOTOGRAPHIE_IMAGES.map((src, index) => {
 
 	.preview img {
 		display: block;
-		width: clamp(9rem, 17vw, 17rem);
+		width: 17rem;
 		height: auto;
 	}
 
 	.preview.is-compact img {
-		width: clamp(8.35rem, 15.5vw, 15.4rem);
+		width: 15.4rem;
 	}
 
 	.preview.is-wide img {
-		width: clamp(9.8rem, 18.2vw, 18rem);
+		width: 18rem;
+	}
+
+	.preview figcaption {
+		max-width: 100%;
+		overflow-wrap: anywhere;
+	}
+
+	@media (max-width: 760px) {
+		.preview img {
+			width: 22rem;
+		}
+
+		.preview.is-compact img {
+			width: 20rem;
+		}
+
+		.preview.is-wide img {
+			width: 23.4rem;
+		}
 	}
 </style>
