@@ -27,6 +27,7 @@ const INSTAGRAM_URL = "https://www.instagram.com/_isoradio/";
 		<style>
 			:root {
 				color-scheme: light;
+				--edge: clamp(1.25rem, 3vw, 2.5rem);
 			}
 
 			* {
@@ -59,12 +60,12 @@ const INSTAGRAM_URL = "https://www.instagram.com/_isoradio/";
 			.left-fixed,
 			.right-fixed {
 				position: fixed;
-				top: clamp(1.25rem, 3vw, 2.5rem);
+				top: var(--edge);
 				z-index: 10;
 			}
 
 			.left-fixed {
-				left: clamp(1.25rem, 3vw, 2.5rem);
+				left: var(--edge);
 				display: grid;
 				gap: 0.12rem;
 				text-transform: lowercase;
@@ -75,7 +76,7 @@ const INSTAGRAM_URL = "https://www.instagram.com/_isoradio/";
 			}
 
 			.right-fixed {
-				right: clamp(1.25rem, 3vw, 2.5rem);
+				right: var(--edge);
 				text-transform: lowercase;
 			}
 
@@ -91,7 +92,33 @@ const INSTAGRAM_URL = "https://www.instagram.com/_isoradio/";
 
 			main {
 				min-height: 100vh;
-				padding: clamp(6.9rem, 17vh, 9.5rem) clamp(1.25rem, 3vw, 2.5rem) 2rem;
+				padding: clamp(6.9rem, 17vh, 9.5rem) var(--edge) 2rem;
+			}
+
+			@media (max-width: 760px) {
+				html,
+				body {
+					font-size: clamp(0.88rem, 3.5vw, 0.95rem);
+				}
+
+				.left-fixed,
+				.right-fixed {
+					left: var(--edge);
+					right: var(--edge);
+				}
+
+				.right-fixed {
+					top: calc(var(--edge) + 4.8rem);
+				}
+
+				.right-fixed nav {
+					justify-content: flex-end;
+					flex-wrap: wrap;
+				}
+
+				main {
+					padding-top: clamp(9.6rem, 26vh, 12rem);
+				}
 			}
 		</style>
 	</head>

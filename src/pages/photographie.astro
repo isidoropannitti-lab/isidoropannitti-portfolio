@@ -11,14 +11,37 @@ const PHOTOGRAPHIE_IMAGES = [
 	"/images/Andalusia, 02 photo from 2025.jpeg",
 	"/images/New York, 01 photo from 2025.jpeg",
 ];
+
+const SIZE_VARIANTS = [
+	"is-base",
+	"is-compact",
+	"is-base",
+	"is-wide",
+	"is-compact",
+	"is-base",
+	"is-wide",
+	"is-base",
+];
+
+const photos = PHOTOGRAPHIE_IMAGES.map((src, index) => {
+	const filename = decodeURIComponent(src.split("/").pop() ?? "");
+	const label = filename.replace(/\.(jpe?g|png|webp|heic)$/i, "");
+
+	return {
+		src,
+		label,
+		variant: SIZE_VARIANTS[index] ?? "is-base",
+	};
+});
 ---
 
 <SectionsLayout title="photographie | isidoro pannitti architetto" section="photographie">
 	<div class="gallery" aria-label="Photographie sequence">
 		{
-			PHOTOGRAPHIE_IMAGES.map((imageSrc, index) => (
-				<figure class="preview">
-					<img src={encodeURI(imageSrc)} alt={`photographie ${index + 1}`} loading="eager" />
+			photos.map((photo) => (
+				<figure class:list={["preview", photo.variant]}>
+					<img src={encodeURI(photo.src)} alt={photo.label} loading="eager" />
+					<figcaption>{photo.label}</figcaption>
 				</figure>
 			))
 		}
@@ -41,6 +64,8 @@ const PHOTOGRAPHIE_IMAGES = [
 	.preview {
 		flex: 0 0 auto;
 		margin: 0;
+		display: grid;
+		gap: 0.45rem;
 		scroll-snap-align: start;
 	}
 
@@ -48,5 +73,13 @@ const PHOTOGRAPHIE_IMAGES = [
 		display: block;
 		width: clamp(9rem, 17vw, 17rem);
 		height: auto;
+	}
+
+	.preview.is-compact img {
+		width: clamp(8.35rem, 15.5vw, 15.4rem);
+	}
+
+	.preview.is-wide img {
+		width: clamp(9.8rem, 18.2vw, 18rem);
 	}
 </style>
