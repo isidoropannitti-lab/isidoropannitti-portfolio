@@ -87,6 +87,7 @@ const INSTAGRAM_URL = "https://www.instagram.com/_isoradio/";
 				text-transform: lowercase;
 				display: flex;
 				align-items: center;
+				justify-content: flex-end;
 				gap: 0.5rem;
 			}
 
@@ -125,28 +126,28 @@ const INSTAGRAM_URL = "https://www.instagram.com/_isoradio/";
 				}
 
 				.sections-nav {
-					transform: translateX(0.9rem);
+					max-width: 0;
+					overflow: hidden;
+					transform: translateX(0.45rem);
 					opacity: 0;
 					pointer-events: none;
-					transition: transform 280ms ease, opacity 240ms ease;
+					transition: transform 280ms ease, opacity 240ms ease, max-width 280ms ease,
+						margin-right 280ms ease;
+					margin-right: 0;
 					white-space: nowrap;
 				}
 
 				.menu-toggle:checked ~ .left-fixed {
-					transform: translateX(calc(-100% - var(--edge)));
-					opacity: 0;
-				}
-
-				.menu-toggle:checked ~ .right-fixed .menu-trigger {
-					opacity: 0;
-					transform: translateX(0.45rem);
-					pointer-events: none;
+					transform: translateX(-1.9rem);
+					opacity: 0.4;
 				}
 
 				.menu-toggle:checked ~ .right-fixed .sections-nav {
 					transform: translateX(0);
 					opacity: 1;
 					pointer-events: auto;
+					max-width: 92vw;
+					margin-right: 0.5rem;
 				}
 			}
 		</style>
@@ -165,7 +166,6 @@ const INSTAGRAM_URL = "https://www.instagram.com/_isoradio/";
 		</div>
 
 		<div class="right-fixed">
-			<label class="menu-trigger" for="sections-toggle">+</label>
 			<nav class="sections-nav" aria-label="Sections">
 				<a class:list={{ active: section === "architecture" }} href="/">architecture</a>
 				<span>,&nbsp;</span>
@@ -173,6 +173,7 @@ const INSTAGRAM_URL = "https://www.instagram.com/_isoradio/";
 				<span>,&nbsp;</span>
 				<a class:list={{ active: section === "info" }} href="/info">info</a>
 			</nav>
+			<label class="menu-trigger" for="sections-toggle">+</label>
 		</div>
 
 		<main>
