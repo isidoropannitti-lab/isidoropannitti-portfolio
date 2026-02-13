@@ -82,6 +82,10 @@ const INSTAGRAM_URL = "https://www.instagram.com/_isoradio/";
 				margin: 0;
 			}
 
+			.site-home {
+				display: inline-block;
+			}
+
 			.right-fixed {
 				right: var(--edge);
 				text-transform: lowercase;
@@ -156,7 +160,9 @@ const INSTAGRAM_URL = "https://www.instagram.com/_isoradio/";
 		<input class="menu-toggle" type="checkbox" id="sections-toggle" />
 
 		<div class="left-fixed">
-			<p>isidoro pannitti architetto</p>
+			<p>
+				<a class="site-home" href="/">isidoro pannitti architetto</a>
+			</p>
 			<p>
 				<a href={`mailto:${EMAIL}`}>{EMAIL}</a>
 			</p>

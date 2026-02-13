@@ -109,7 +109,7 @@ const heroFallbackSrc = projectImages[0]?.src ?? project.data.cover;
 				projectImages.map((image) => (
 					<li class:list={["grid-item", `span-${image.span}`]}>
 						<figure>
-							<img src={image.src} alt={image.alt} loading="eager" />
+							<img src={image.src} alt={image.alt} loading="lazy" decoding="async" />
 							<figcaption>{image.caption}</figcaption>
 						</figure>
 					</li>
