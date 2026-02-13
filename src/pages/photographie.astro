@@ -1,19 +1,16 @@
 ---
 import SectionsLayout from "../layouts/SectionsLayout.astro";
 
-const ARCHITECTURE_IMAGES = [
-	{ src: "/images/25.2.png", label: "25.2" },
-	{ src: "/images/25.4.jpeg", label: "25.4" },
-	{ src: "/images/25.6.jpeg", label: "25.6" },
+const PHOTOGRAPHIE_IMAGES = [
 	{ src: "/images/26.1.jpeg", label: "26.1" },
 	{ src: "/images/26.2.jpeg", label: "26.2" },
 ];
 ---
 
-<SectionsLayout title="isidoro pannitti architetto" section="architecture">
-	<div class="gallery" aria-label="Architecture sequence">
+<SectionsLayout title="photographie | isidoro pannitti architetto" section="photographie">
+	<div class="gallery" aria-label="Photographie sequence">
 		{
-			ARCHITECTURE_IMAGES.map((image) => (
+			PHOTOGRAPHIE_IMAGES.map((image) => (
 				<figure class="preview">
 					<img src={image.src} alt={image.label} loading="eager" />
 					<figcaption>{image.label}</figcaption>

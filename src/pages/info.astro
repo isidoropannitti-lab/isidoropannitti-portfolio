@@ -1,79 +1,19 @@
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link
-			href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300&display=swap"
-			rel="stylesheet"
-		/>
-		<title>info | isidoro pannitti architetto</title>
-		<style>
-			:root {
-				color-scheme: light;
-			}
+---
+import SectionsLayout from "../layouts/SectionsLayout.astro";
+---
 
-			* {
-				box-sizing: border-box;
-			}
+<SectionsLayout title="info | isidoro pannitti architetto" section="info">
+	<p class="bio">
+		Architect working across residential interior and exhibition design. Develops private residential
+		interiors in direct collaboration with clients, from concept to completion. Involved in cultural
+		and museum projects, including art exhibition production and coordination with contractors and
+		institutions.
+	</p>
+</SectionsLayout>
 
-			html,
-			body {
-				margin: 0;
-				padding: 0;
-				background: #fff;
-				color: #000;
-				font-family: "Work Sans", sans-serif;
-				font-weight: 300;
-				font-size: clamp(0.98rem, 1.05vw, 1rem);
-				line-height: 1.45;
-			}
-
-			main {
-				min-height: 100vh;
-				padding: clamp(1.25rem, 3vw, 2.5rem);
-				display: grid;
-				align-content: start;
-				justify-items: start;
-				gap: 0.75rem;
-			}
-
-			p {
-				margin: 0;
-			}
-
-			a {
-				color: inherit;
-				text-decoration: none;
-				transition: opacity 140ms ease;
-			}
-
-			a:hover,
-			a:focus-visible {
-				opacity: 0.68;
-			}
-
-			.site-title {
-				text-transform: lowercase;
-			}
-
-			.bio {
-				max-width: 42rem;
-			}
-		</style>
-	</head>
-	<body>
-		<main>
-			<p class="site-title">
-				<a href="/">isidoro pannitti architetto</a>
-			</p>
-			<p class="bio">
-				Architect working across residential interior and exhibition design. Develops private
-				residential interiors in direct collaboration with clients, from concept to completion.
-				Involved in cultural and museum projects, including art exhibition production and
-				coordination with contractors and institutions.
-			</p>
-		</main>
-	</body>
-</html>
+<style>
+	.bio {
+		max-width: 44rem;
+		margin: 0;
+	}
+</style>

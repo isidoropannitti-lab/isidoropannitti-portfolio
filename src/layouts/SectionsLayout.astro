@@ -1,0 +1,123 @@
+---
+type Section = "architecture" | "photographie" | "info";
+
+export interface Props {
+	title: string;
+	section: Section;
+}
+
+const { title, section } = Astro.props;
+
+const EMAIL = "isidoro.pannitti@gmail.com";
+const INSTAGRAM_HANDLE = "@_isoradio";
+const INSTAGRAM_URL = "https://www.instagram.com/_isoradio/";
+---
+
+<html lang="it">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,300;1,300&display=swap"
+			rel="stylesheet"
+		/>
+		<title>{title}</title>
+		<style>
+			:root {
+				color-scheme: light;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			html,
+			body {
+				margin: 0;
+				padding: 0;
+				background: #fff;
+				color: #000;
+				font-family: "Work Sans", sans-serif;
+				font-weight: 300;
+				font-size: clamp(0.98rem, 1.05vw, 1rem);
+				line-height: 1.45;
+			}
+
+			a {
+				color: inherit;
+				text-decoration: none;
+				transition: opacity 140ms ease;
+			}
+
+			a:hover,
+			a:focus-visible {
+				opacity: 0.68;
+			}
+
+			.left-fixed,
+			.right-fixed {
+				position: fixed;
+				top: clamp(1.25rem, 3vw, 2.5rem);
+				z-index: 10;
+			}
+
+			.left-fixed {
+				left: clamp(1.25rem, 3vw, 2.5rem);
+				display: grid;
+				gap: 0.12rem;
+				text-transform: lowercase;
+			}
+
+			.left-fixed p {
+				margin: 0;
+			}
+
+			.right-fixed {
+				right: clamp(1.25rem, 3vw, 2.5rem);
+				text-transform: lowercase;
+			}
+
+			.right-fixed nav {
+				display: flex;
+				align-items: center;
+				gap: 0;
+			}
+
+			.right-fixed .active {
+				font-style: italic;
+			}
+
+			main {
+				min-height: 100vh;
+				padding: clamp(6.9rem, 17vh, 9.5rem) clamp(1.25rem, 3vw, 2.5rem) 2rem;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="left-fixed">
+			<p>isidoro pannitti architetto</p>
+			<p>
+				<a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+			</p>
+			<p>
+				<a href={INSTAGRAM_URL} target="_blank" rel="noreferrer noopener">{INSTAGRAM_HANDLE}</a>
+			</p>
+		</div>
+
+		<div class="right-fixed">
+			<nav aria-label="Sections">
+				<a class:list={{ active: section === "architecture" }} href="/">architecture</a>
+				<span>,&nbsp;</span>
+				<a class:list={{ active: section === "photographie" }} href="/photographie">photographie</a>
+				<span>,&nbsp;</span>
+				<a class:list={{ active: section === "info" }} href="/info">info</a>
+			</nav>
+		</div>
+
+		<main>
+			<slot />
+		</main>
+	</body>
+</html>
