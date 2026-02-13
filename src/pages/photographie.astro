@@ -2,18 +2,23 @@
 import SectionsLayout from "../layouts/SectionsLayout.astro";
 
 const PHOTOGRAPHIE_IMAGES = [
-	{ src: "/images/26.1.jpeg", label: "26.1" },
-	{ src: "/images/26.2.jpeg", label: "26.2" },
+	"/images/Algarve, 01 photo from 2025.jpeg",
+	"/images/Amedhabad, 01 photo 2024.jpeg",
+	"/images/Amedhabad, 02 photo 2024.jpeg",
+	"/images/Amedhabad, 03 photo 2024.jpeg",
+	"/images/Amedhabad, 04 photo 2024.jpeg",
+	"/images/Andalusia, 01 photo from 2025.jpeg",
+	"/images/Andalusia, 02 photo from 2025.jpeg",
+	"/images/New York, 01 photo from 2025.jpeg",
 ];
 ---
 
 <SectionsLayout title="photographie | isidoro pannitti architetto" section="photographie">
 	<div class="gallery" aria-label="Photographie sequence">
 		{
-			PHOTOGRAPHIE_IMAGES.map((image) => (
+			PHOTOGRAPHIE_IMAGES.map((imageSrc, index) => (
 				<figure class="preview">
-					<img src={image.src} alt={image.label} loading="eager" />
-					<figcaption>{image.label}</figcaption>
+					<img src={encodeURI(imageSrc)} alt={`photographie ${index + 1}`} loading="eager" />
 				</figure>
 			))
 		}
@@ -36,8 +41,6 @@ const PHOTOGRAPHIE_IMAGES = [
 	.preview {
 		flex: 0 0 auto;
 		margin: 0;
-		display: grid;
-		gap: 0.45rem;
 		scroll-snap-align: start;
 	}
 
