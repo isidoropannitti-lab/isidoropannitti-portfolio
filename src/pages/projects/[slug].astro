@@ -85,12 +85,20 @@ const readProjectTeaser = async () => {
 
 const teaser = await readProjectTeaser();
 const projectImages = await buildProjectImages();
+const heroFallbackSrc = projectImages[0]?.src ?? project.data.cover;
 ---
 
 <SectionsLayout title={`${project.data.title} | isidoro pannitti architetto`} section="architecture">
 	<article class="project-page">
 		<figure class="hero">
-			<img src={project.data.cover} alt={project.data.coverAlt} loading="eager" />
+			<img
+				src={project.data.cover}
+				alt={project.data.coverAlt}
+				loading="eager"
+				fetchpriority="high"
+				decoding="sync"
+				onerror={`this.onerror=null;this.src='${heroFallbackSrc}'`}
+			/>
 			<figcaption>{project.data.coverCaption}</figcaption>
 		</figure>
 
