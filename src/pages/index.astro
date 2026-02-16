@@ -3,7 +3,7 @@ import SectionsLayout from "../layouts/SectionsLayout.astro";
 
 const ARCHITECTURE_IMAGES = [
 	{ src: "/images/architecture/25-2-cover.png", label: "25.2" },
-	{ src: "/images/projects/25-03/25-03-01.jpeg", label: "25.03", slug: "25-03" },
+	{ src: "/images/projects/25-03/25-03-01.jpeg", label: "25.03", onGoing: true },
 	{ src: "/images/architecture/25-4-cover.jpeg", label: "25.4", slug: "25-4" },
 	{ src: "/images/architecture/25-6-cover.jpeg", label: "25.6", slug: "25-6" },
 	{ src: "/images/architecture/26-1-cover.jpeg", label: "26.1" },
@@ -17,7 +17,18 @@ const ARCHITECTURE_IMAGES = [
 			ARCHITECTURE_IMAGES.map((image) => (
 				<figure class="preview">
 					{
-						image.slug ? (
+						image.onGoing ? (
+							<>
+								<input
+									class="ongoing-toggle"
+									type="checkbox"
+									id={`ongoing-${image.label.replace(".", "-")}`}
+								/>
+								<label class="project-link ongoing-trigger" for={`ongoing-${image.label.replace(".", "-")}`}>
+									<img src={image.src} alt={image.label} loading="eager" />
+								</label>
+							</>
+						) : image.slug ? (
 							<a href={`/projects/${image.slug}`} class="project-link">
 								<img src={image.src} alt={image.label} loading="eager" />
 							</a>
@@ -25,7 +36,16 @@ const ARCHITECTURE_IMAGES = [
 							<img src={image.src} alt={image.label} loading="eager" />
 						)
 					}
-					<figcaption>{image.label}</figcaption>
+					<figcaption>
+						<span>{image.label}</span>
+						{
+							image.onGoing && (
+								<span class="ongoing-label" aria-live="polite">
+									on going
+								</span>
+							)
+						}
+					</figcaption>
 				</figure>
 			))
 		}
@@ -69,6 +89,33 @@ const ARCHITECTURE_IMAGES = [
 
 	.project-link {
 		display: block;
+	}
+
+	.ongoing-toggle {
+		position: absolute;
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	.ongoing-trigger {
+		cursor: pointer;
+	}
+
+	.preview figcaption {
+		display: flex;
+		align-items: baseline;
+		gap: 0.5rem;
+	}
+
+	.ongoing-label {
+		opacity: 0;
+		transform: translateY(0.08rem);
+		transition: opacity 220ms ease, transform 220ms ease;
+	}
+
+	.ongoing-toggle:checked ~ figcaption .ongoing-label {
+		opacity: 1;
+		transform: translateY(0);
 	}
 
 	@media (max-width: 760px) {
