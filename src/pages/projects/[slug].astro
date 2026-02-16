@@ -87,28 +87,50 @@ const teaser = await readProjectTeaser();
 const projectImages = await buildProjectImages();
 const heroFallbackSrc = projectImages[0]?.src ?? project.data.cover;
 
-const GRID_PATTERN: Array<{ column: "left" | "right"; skipBefore: number }> = [
-	{ column: "left", skipBefore: 0 },
-	{ column: "right", skipBefore: 0 },
-	{ column: "left", skipBefore: 1 },
-	{ column: "right", skipBefore: 0 },
-	{ column: "right", skipBefore: 1 },
-	{ column: "left", skipBefore: 0 },
-];
+const arrangedProjectImages: Array<
+	(typeof projectImages)[number] & { column: "left" | "right"; row: number }
+> = [];
 
 let rowCursor = 1;
-const arrangedProjectImages = projectImages.map((image, index) => {
-	const pattern = GRID_PATTERN[index % GRID_PATTERN.length];
-	rowCursor += pattern.skipBefore;
-	const row = rowCursor;
-	rowCursor += 1;
+const totalPairs = Math.ceil(projectImages.length / 2);
 
-	return {
-		...image,
-		column: pattern.column,
-		row,
-	};
-});
+for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
+	const leftImage = projectImages[pairIndex * 2];
+	const rightImage = projectImages[pairIndex * 2 + 1];
+
+	let leftRow = rowCursor;
+	let rightRow = rowCursor;
+
+	// Occasional unilateral skip to keep rhythm while preserving order.
+	if (pairIndex % 4 === 1) {
+		rightRow += 1;
+	}
+	if (pairIndex % 4 === 3) {
+		leftRow += 1;
+	}
+
+	if (leftImage) {
+		arrangedProjectImages.push({
+			...leftImage,
+			column: "left",
+			row: leftRow,
+		});
+	}
+	if (rightImage) {
+		arrangedProjectImages.push({
+			...rightImage,
+			column: "right",
+			row: rightRow,
+		});
+	}
+
+	rowCursor = Math.max(leftRow, rightRow) + 1;
+
+	// Add an extra empty row every 3 pairs for breathing space.
+	if ((pairIndex + 1) % 3 === 0) {
+		rowCursor += 1;
+	}
+}
 ---
 
 <SectionsLayout title={`${project.data.title} | isidoro pannitti architetto`} section="architecture">
@@ -186,10 +208,11 @@ const arrangedProjectImages = projectImages.map((image, index) => {
 		padding: 0;
 		margin: clamp(2rem, 7vh, 3.5rem) 0 0;
 		display: grid;
-		--project-col: clamp(14rem, 24vw, 23rem);
-		grid-template-columns: var(--project-col) var(--project-col) var(--project-col);
-		justify-content: center;
-		column-gap: clamp(1rem, 2.4vw, 2rem);
+		--project-col: clamp(14rem, 22vw, 21rem);
+		--project-gap-col: clamp(14rem, 22vw, 21rem);
+		grid-template-columns: var(--project-col) var(--project-gap-col) var(--project-col);
+		justify-content: start;
+		column-gap: clamp(1.4rem, 3.5vw, 2.8rem);
 		row-gap: clamp(3rem, 10vh, 7rem);
 	}
 
