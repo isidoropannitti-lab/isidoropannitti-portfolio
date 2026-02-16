@@ -136,22 +136,24 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 
 <SectionsLayout title={`${project.data.title} | isidoro pannitti architetto`} section="architecture">
 	<article class="project-page">
-		<figure class="hero">
-			<img
-				src={project.data.cover}
-				alt={project.data.coverAlt}
-				loading="eager"
-				fetchpriority="high"
-				decoding="sync"
-				onerror={`this.onerror=null;this.src='${heroFallbackSrc}'`}
-			/>
-			<figcaption>
-				{project.data.coverCaption}
-				{project.data.status && <span class="status-tag">{project.data.status}</span>}
-			</figcaption>
-		</figure>
+		<div class="hero-head">
+			<figure class="hero">
+				<img
+					src={project.data.cover}
+					alt={project.data.coverAlt}
+					loading="eager"
+					fetchpriority="high"
+					decoding="sync"
+					onerror={`this.onerror=null;this.src='${heroFallbackSrc}'`}
+				/>
+				<figcaption>
+					{project.data.coverCaption}
+					{project.data.status && <span class="status-tag">{project.data.status}</span>}
+				</figcaption>
+			</figure>
 
-		{teaser && <p class="teaser">{teaser}</p>}
+			{teaser && <p class="teaser teaser-inline">{teaser}</p>}
+		</div>
 
 		<ul class="project-grid" aria-label={`${project.data.title} gallery`}>
 			{
@@ -182,6 +184,13 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 		gap: 0.45rem;
 	}
 
+	.hero-head {
+		display: grid;
+		grid-template-columns: 17rem minmax(16rem, 32rem);
+		align-items: start;
+		column-gap: clamp(1.8rem, 4.5vw, 5rem);
+	}
+
 	.hero img {
 		width: 17rem;
 		height: auto;
@@ -202,6 +211,11 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 		max-width: 26rem;
 		margin: 0.65rem 0 0;
 		white-space: pre-line;
+	}
+
+	.teaser-inline {
+		margin: 0;
+		max-width: clamp(16rem, 30vw, 32rem);
 	}
 
 	.project-grid {
@@ -242,6 +256,11 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 	}
 
 	@media (max-width: 980px) {
+		.hero-head {
+			grid-template-columns: 1fr;
+			row-gap: 0.65rem;
+		}
+
 		.hero img {
 			width: 22rem;
 		}
