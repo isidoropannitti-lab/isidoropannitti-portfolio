@@ -1,19 +1,29 @@
 ---
 import SectionsLayout from "../layouts/SectionsLayout.astro";
+import { readFile } from "node:fs/promises";
+
+const DEFAULT_BIO =
+	"Architect working across residential interior and exhibition design.\nDevelops private residential interiors in direct collaboration with clients, from concept to completion.\nInvolved in cultural and museum projects, including art exhibition production and coordination with contractors and institutions.";
+
+let bioText = DEFAULT_BIO;
+
+try {
+	const fileText = await readFile(new URL("../../public/content/info-bio.txt", import.meta.url), "utf-8");
+	const clean = fileText.trim();
+	if (clean) bioText = clean;
+} catch {
+	// Use default text if file is missing.
+}
 ---
 
 <SectionsLayout title="info | isidoro pannitti architetto" section="info">
-	<p class="bio">
-		Architect working across residential interior and exhibition design. Develops private residential
-		interiors in direct collaboration with clients, from concept to completion. Involved in cultural
-		and museum projects, including art exhibition production and coordination with contractors and
-		institutions.
-	</p>
+	<p class="bio">{bioText}</p>
 </SectionsLayout>
 
 <style>
 	.bio {
 		max-width: 44rem;
 		margin: 0;
+		white-space: pre-line;
 	}
 </style>
