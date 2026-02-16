@@ -29,6 +29,7 @@ const featuredProjects = defineCollection({
 		cover: z.string(),
 		coverCaption: z.string(),
 		coverAlt: z.string(),
+		status: z.string().optional(),
 		images: z.array(
 			z.object({
 				src: z.string(),
