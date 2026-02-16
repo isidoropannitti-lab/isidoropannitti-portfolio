@@ -1,29 +1,35 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
+import SectionsLayout from "../../layouts/SectionsLayout.astro";
+import { readFile } from "node:fs/promises";
 
-const EMAIL = "isidoro.pannitti@gmail.com";
-const INSTAGRAM_HANDLE = "@_isoradio";
-const INSTAGRAM_URL = "https://www.instagram.com/_isoradio/";
+const DEFAULT_BIO =
+	"Architect working across residential interior and exhibition design.\nDevelops private residential interiors in direct collaboration with clients, from concept to completion.\nInvolved in cultural and museum projects, including art exhibition production and coordination with contractors and institutions.";
+
+let bioText = DEFAULT_BIO;
+
+try {
+	const fileText = await readFile(new URL("../../../public/content/info-bio-en.txt", import.meta.url), "utf-8");
+	const clean = fileText.trim();
+	if (clean) bioText = clean;
+} catch {
+	try {
+		const fallbackText = await readFile(new URL("../../../public/content/info-bio.txt", import.meta.url), "utf-8");
+		const fallbackClean = fallbackText.trim();
+		if (fallbackClean) bioText = fallbackClean;
+	} catch {
+		// Use default text if files are missing.
+	}
+}
 ---
 
-<BaseLayout
-	lang="en"
-	section="info"
-	title="isidoro pannitti architetto | info"
-	description="Contact and short biography for Isidoro Pannitti."
->
-	<section class="page-stack">
-		<div class="info-block">
-			<p>
-				<a href={`mailto:${EMAIL}`}>{EMAIL}</a>
-			</p>
-			<p>
-				<a href={INSTAGRAM_URL} target="_blank" rel="noreferrer noopener">{INSTAGRAM_HANDLE}</a>
-			</p>
-			<div class="bio">
-				<p>Architect focused on domestic spatial studies and long-term material research.</p>
-				<p>Based in Italy, available for commissions, collaborations, and editorial projects.</p>
-			</div>
-		</div>
-	</section>
-</BaseLayout>
+<SectionsLayout title="info | isidoro pannitti architetto" section="info" lang="en">
+	<p class="bio">{bioText}</p>
+</SectionsLayout>
+
+<style>
+	.bio {
+		max-width: 44rem;
+		margin: 0;
+		white-space: pre-line;
+	}
+</style>

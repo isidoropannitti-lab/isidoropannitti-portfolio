@@ -11,7 +11,7 @@ const ARCHITECTURE_IMAGES = [
 ];
 ---
 
-<SectionsLayout title="isidoro pannitti architetto" section="architecture">
+<SectionsLayout title="isidoro pannitti architetto" section="architecture" lang="it">
 	<div class="gallery" aria-label="Architecture sequence">
 		{
 			ARCHITECTURE_IMAGES.map((image) => (
@@ -40,9 +40,7 @@ const ARCHITECTURE_IMAGES = [
 						<span>{image.label}</span>
 						{
 							image.onGoing && (
-								<span class="ongoing-label" aria-live="polite">
-									on going
-								</span>
+								<span class="ongoing-label" aria-live="polite">in corso</span>
 							)
 						}
 					</figcaption>

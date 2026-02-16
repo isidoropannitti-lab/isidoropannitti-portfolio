@@ -1,3 +1,144 @@
 ---
-return Astro.redirect('/en/architecture');
+import SectionsLayout from "../../layouts/SectionsLayout.astro";
+
+const ARCHITECTURE_IMAGES = [
+	{ src: "/images/architecture/25-2-cover.png", label: "25.2", onGoing: true, variant: "is-base" },
+	{ src: "/images/projects/25-3/25-3-01.jpeg", label: "25.3", onGoing: true, variant: "is-wide" },
+	{ src: "/images/architecture/25-4-cover.jpeg", label: "25.4", slug: "25-4", variant: "is-compact" },
+	{ src: "/images/architecture/25-6-cover.jpeg", label: "25.6", slug: "25-6", variant: "is-base" },
+	{ src: "/images/architecture/26-1-cover.jpeg", label: "26.1", onGoing: true, variant: "is-compact" },
+	{ src: "/images/architecture/26-2-cover.jpeg", label: "26.2", slug: "26-2", variant: "is-wide" },
+];
 ---
+
+<SectionsLayout title="isidoro pannitti architetto" section="architecture" lang="en">
+	<div class="gallery" aria-label="Architecture sequence">
+		{
+			ARCHITECTURE_IMAGES.map((image) => (
+				<figure class:list={["preview", image.variant]}>
+					{
+						image.onGoing ? (
+							<>
+								<input
+									class="ongoing-toggle"
+									type="checkbox"
+									id={`ongoing-${image.label.replace(".", "-")}`}
+								/>
+								<label class="project-link ongoing-trigger" for={`ongoing-${image.label.replace(".", "-")}`}>
+									<img src={image.src} alt={image.label} loading="eager" />
+								</label>
+							</>
+						) : image.slug ? (
+							<a href={`/en/projects/${image.slug}`} class="project-link">
+								<img src={image.src} alt={image.label} loading="eager" />
+							</a>
+						) : (
+							<img src={image.src} alt={image.label} loading="eager" />
+						)
+					}
+					<figcaption>
+						<span>{image.label}</span>
+						{
+							image.onGoing && (
+								<span class="ongoing-label" aria-live="polite">on going</span>
+							)
+						}
+					</figcaption>
+				</figure>
+			))
+		}
+	</div>
+</SectionsLayout>
+
+<style>
+	.gallery {
+		display: flex;
+		align-items: flex-start;
+		flex-wrap: nowrap;
+		gap: clamp(0.75rem, 1.8vw, 1.2rem);
+		overflow-x: auto;
+		overscroll-behavior-x: contain;
+		scroll-snap-type: x mandatory;
+		-webkit-overflow-scrolling: touch;
+		padding-bottom: 0.45rem;
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+
+	.gallery::-webkit-scrollbar {
+		width: 0;
+		height: 0;
+		display: none;
+	}
+
+	.preview {
+		flex: 0 0 auto;
+		margin: 0;
+		display: grid;
+		gap: 0.45rem;
+		scroll-snap-align: start;
+	}
+
+	.preview img {
+		display: block;
+		width: 17rem;
+		height: auto;
+	}
+
+	.preview.is-compact img {
+		width: 16.1rem;
+	}
+
+	.preview.is-wide img {
+		width: 18.2rem;
+	}
+
+	.project-link {
+		display: block;
+	}
+
+	.ongoing-toggle {
+		position: absolute;
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	.ongoing-trigger {
+		cursor: pointer;
+	}
+
+	.preview figcaption {
+		display: flex;
+		align-items: baseline;
+		gap: 0.5rem;
+	}
+
+	.ongoing-label {
+		opacity: 0;
+		transform: translateY(0.08rem);
+		transition: opacity 220ms ease, transform 220ms ease;
+	}
+
+	.ongoing-toggle:checked ~ figcaption .ongoing-label {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	.ongoing-trigger img {
+		pointer-events: none;
+	}
+
+	@media (max-width: 760px) {
+		.preview img {
+			width: 22rem;
+		}
+
+		.preview.is-compact img {
+			width: 20.8rem;
+		}
+
+		.preview.is-wide img {
+			width: 23.2rem;
+		}
+	}
+</style>

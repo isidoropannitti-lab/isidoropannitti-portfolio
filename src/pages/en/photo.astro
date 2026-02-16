@@ -1,5 +1,5 @@
 ---
-import SectionsLayout from "../layouts/SectionsLayout.astro";
+import SectionsLayout from "../../layouts/SectionsLayout.astro";
 
 const PHOTO_IMAGES = [
 	"/images/photo/algarve-2025-01.jpeg",
@@ -35,7 +35,7 @@ const photos = PHOTO_IMAGES.map((src, index) => {
 });
 ---
 
-<SectionsLayout title="foto | isidoro pannitti architetto" section="photo" lang="it">
+<SectionsLayout title="photo | isidoro pannitti architetto" section="photo" lang="en">
 	<div class="gallery" aria-label="Photo sequence">
 		{
 			photos.map((photo) => (

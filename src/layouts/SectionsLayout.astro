@@ -1,19 +1,48 @@
 ---
 type Section = "architecture" | "photo" | "info";
+type Lang = "it" | "en";
 
 export interface Props {
 	title: string;
 	section: Section;
+	lang?: Lang;
 }
 
-const { title, section } = Astro.props;
+const { title, section, lang = "it" } = Astro.props;
 
 const EMAIL = "isidoro.pannitti@gmail.com";
 const INSTAGRAM_HANDLE = "@_isoradio";
 const INSTAGRAM_URL = "https://www.instagram.com/_isoradio/";
+
+const navLabels: Record<Lang, Record<Section, string>> = {
+	it: {
+		architecture: "architettura",
+		photo: "foto",
+		info: "info",
+	},
+	en: {
+		architecture: "architecture",
+		photo: "photo",
+		info: "info",
+	},
+};
+
+const prefix = lang === "en" ? "/en" : "";
+const getSectionHref = (target: Section) => {
+	if (target === "architecture") {
+		return prefix || "/";
+	}
+
+	return `${prefix}/${target}`;
+};
+
+const pathname = Astro.url.pathname;
+const englishPath = pathname.startsWith("/en") ? pathname : `/en${pathname === "/" ? "" : pathname}`;
+const italianPath = pathname.startsWith("/en") ? pathname.slice(3) || "/" : pathname;
+const switchHref = lang === "it" ? englishPath : italianPath;
 ---
 
-<html lang="it">
+<html lang={lang}>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -121,6 +150,29 @@ const INSTAGRAM_URL = "https://www.instagram.com/_isoradio/";
 				padding: clamp(6.9rem, 17vh, 9.5rem) var(--edge) 2rem;
 			}
 
+			.lang-switch-fixed {
+				position: fixed;
+				right: var(--edge);
+				bottom: var(--edge);
+				z-index: 20;
+				color: #b9b9b9;
+				transition: opacity 180ms ease;
+			}
+
+			.lang-switch-fixed.is-hidden {
+				opacity: 0;
+				pointer-events: none;
+			}
+
+			.lang-switch-fixed a {
+				color: inherit;
+				text-transform: lowercase;
+			}
+
+			.lang-switch-fixed .active {
+				color: #9b9b9b;
+			}
+
 			@media (max-width: 980px) {
 				html,
 				body {
@@ -163,7 +215,7 @@ const INSTAGRAM_URL = "https://www.instagram.com/_isoradio/";
 
 		<div class="left-fixed">
 			<p>
-				<a class="site-home" href="/">isidoro pannitti architetto</a>
+				<a class="site-home" href={prefix || "/"}>isidoro pannitti architetto</a>
 			</p>
 			<p>
 				<a href={`mailto:${EMAIL}`}>{EMAIL}</a>
@@ -175,17 +227,56 @@ const INSTAGRAM_URL = "https://www.instagram.com/_isoradio/";
 
 		<div class="right-fixed">
 			<nav class="sections-nav" aria-label="Sections">
-				<a class:list={{ active: section === "architecture" }} href="/">architecture</a>
+				<a class:list={{ active: section === "architecture" }} href={getSectionHref("architecture")}
+					>{navLabels[lang].architecture}</a
+				>
 				<span>,&nbsp;</span>
-				<a class:list={{ active: section === "photo" }} href="/photo">photo</a>
+				<a class:list={{ active: section === "photo" }} href={getSectionHref("photo")}
+					>{navLabels[lang].photo}</a
+				>
 				<span>,&nbsp;</span>
-				<a class:list={{ active: section === "info" }} href="/info">info</a>
+				<a class:list={{ active: section === "info" }} href={getSectionHref("info")}
+					>{navLabels[lang].info}</a
+				>
 			</nav>
 			<label class="menu-trigger" for="sections-toggle">+</label>
+		</div>
+
+		<div class="lang-switch-fixed" data-lang-switch>
+			<a href={switchHref}>
+				<span class:list={{ active: lang === "it" }}>it</span>/<span class:list={{ active: lang === "en" }}
+					>en</span
+				>
+			</a>
 		</div>
 
 		<main>
 			<slot />
 		</main>
+
+		<script is:inline>
+			(() => {
+				const langSwitch = document.querySelector("[data-lang-switch]");
+				if (!langSwitch) return;
+
+				let revealTimer;
+				const hide = () => langSwitch.classList.add("is-hidden");
+				const showLater = () => {
+					clearTimeout(revealTimer);
+					revealTimer = window.setTimeout(() => {
+						langSwitch.classList.remove("is-hidden");
+					}, 700);
+				};
+
+				const onScrollIntent = () => {
+					hide();
+					showLater();
+				};
+
+				window.addEventListener("wheel", onScrollIntent, { passive: true });
+				window.addEventListener("touchmove", onScrollIntent, { passive: true });
+				document.addEventListener("scroll", onScrollIntent, { passive: true, capture: true });
+			})();
+		</script>
 	</body>
 </html>

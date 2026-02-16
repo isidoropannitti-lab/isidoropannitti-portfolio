@@ -8,15 +8,21 @@ const DEFAULT_BIO =
 let bioText = DEFAULT_BIO;
 
 try {
-	const fileText = await readFile(new URL("../../public/content/info-bio.txt", import.meta.url), "utf-8");
+	const fileText = await readFile(new URL("../../public/content/info-bio-it.txt", import.meta.url), "utf-8");
 	const clean = fileText.trim();
 	if (clean) bioText = clean;
 } catch {
-	// Use default text if file is missing.
+	try {
+		const fallbackText = await readFile(new URL("../../public/content/info-bio.txt", import.meta.url), "utf-8");
+		const fallbackClean = fallbackText.trim();
+		if (fallbackClean) bioText = fallbackClean;
+	} catch {
+		// Use default text if files are missing.
+	}
 }
 ---
 
-<SectionsLayout title="info | isidoro pannitti architetto" section="info">
+<SectionsLayout title="info | isidoro pannitti architetto" section="info" lang="it">
 	<p class="bio">{bioText}</p>
 </SectionsLayout>
 

@@ -58,6 +58,14 @@ const buildProjectImages = async () => {
 
 const readProjectTeaser = async () => {
 	try {
+		const localized = await readFile(new URL("teaser-it.txt", projectFolderUrl), "utf-8");
+		const localizedClean = localized.trim();
+		if (localizedClean) return localizedClean;
+	} catch {
+		// Fallback to default teaser file.
+	}
+
+	try {
 		const plain = await readFile(new URL("teaser.txt", projectFolderUrl), "utf-8");
 		const clean = plain.trim();
 		if (clean) return clean;
@@ -134,7 +142,7 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 }
 ---
 
-<SectionsLayout title={`${project.data.title} | isidoro pannitti architetto`} section="architecture">
+<SectionsLayout title={`${project.data.title} | isidoro pannitti architetto`} section="architecture" lang="it">
 	<article class="project-page">
 		<div class="hero-head">
 			<figure class="hero">
