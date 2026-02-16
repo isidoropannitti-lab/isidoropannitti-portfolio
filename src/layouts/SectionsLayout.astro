@@ -1,5 +1,5 @@
 ---
-type Section = "architecture" | "photographie" | "info";
+type Section = "architecture" | "photo" | "info";
 
 export interface Props {
 	title: string;
@@ -175,7 +175,7 @@ const INSTAGRAM_URL = "https://www.instagram.com/_isoradio/";
 			<nav class="sections-nav" aria-label="Sections">
 				<a class:list={{ active: section === "architecture" }} href="/">architecture</a>
 				<span>,&nbsp;</span>
-				<a class:list={{ active: section === "photographie" }} href="/photographie">photographie</a>
+				<a class:list={{ active: section === "photo" }} href="/photo">photo</a>
 				<span>,&nbsp;</span>
 				<a class:list={{ active: section === "info" }} href="/info">info</a>
 			</nav>
