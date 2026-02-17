@@ -81,16 +81,10 @@ const ARCHITECTURE_IMAGES = [
 
 	.preview img {
 		display: block;
-		width: 17rem;
-		height: auto;
-	}
-
-	.preview.is-compact img {
-		width: 16.1rem;
-	}
-
-	.preview.is-wide img {
-		width: 18.2rem;
+		width: auto;
+		height: clamp(20rem, 33vw, 24rem);
+		object-fit: cover;
+		object-position: center;
 	}
 
 	.project-link {
@@ -130,15 +124,7 @@ const ARCHITECTURE_IMAGES = [
 
 	@media (max-width: 760px) {
 		.preview img {
-			width: 22rem;
-		}
-
-		.preview.is-compact img {
-			width: 20.8rem;
-		}
-
-		.preview.is-wide img {
-			width: 23.2rem;
+			height: clamp(17rem, 58vw, 21rem);
 		}
 	}
 </style>
