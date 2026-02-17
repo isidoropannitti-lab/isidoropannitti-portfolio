@@ -1,5 +1,9 @@
 # build output
 dist/
+# local toolchain/cache
+.local/
+# vercel output/config
+.vercel/
 # generated types
 .astro/
 
