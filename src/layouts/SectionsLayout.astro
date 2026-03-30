@@ -1,4 +1,6 @@
 ---
+import Analytics from "@vercel/analytics/astro";
+
 type Section = "architecture" | "photo" | "info";
 type Lang = "it" | "en";
 
@@ -278,5 +280,6 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				document.addEventListener("scroll", onScrollIntent, { passive: true, capture: true });
 			})();
 		</script>
+		<Analytics />
 	</body>
 </html>
