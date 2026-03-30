@@ -33,6 +33,9 @@ const formatCaption = (filename: string) =>
 const sortByFileName = (a: string, b: string) =>
 	a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
 
+const isEmphasizedProjectImage = (slug: string, filename: string) =>
+	slug === "25-1" && ["25-1-02.webp", "25-1-03.webp"].includes(filename);
+
 const buildProjectImages = async () => {
 	try {
 		const entries = await readdir(projectFolderUrl, { withFileTypes: true });
@@ -50,6 +53,7 @@ const buildProjectImages = async () => {
 			alt: `${project.data.title} photo ${index + 1}`,
 			caption: formatCaption(filename),
 			span: SPAN_PATTERN[index % SPAN_PATTERN.length],
+			emphasized: isEmphasizedProjectImage(project.slug, filename),
 		}));
 	} catch {
 		return project.data.images;
@@ -167,7 +171,11 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 			{
 				arrangedProjectImages.map((image) => (
 					<li
-						class:list={["grid-item", image.column === "right" && "is-right"]}
+						class:list={[
+							"grid-item",
+							image.column === "right" && "is-right",
+							image.emphasized && "is-emphasized",
+						]}
 						style={`--grid-col:${image.column === "left" ? 1 : 3}; --grid-row:${image.row};`}
 					>
 						<figure>
@@ -260,6 +268,10 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 		justify-self: end;
 	}
 
+	.grid-item.is-emphasized {
+		width: min(calc(100% + clamp(2.5rem, 5vw, 4.5rem)), clamp(18rem, 29vw, 26rem));
+	}
+
 	@media (max-width: 980px) {
 		.hero-head {
 			grid-template-columns: 1fr;
@@ -279,6 +291,10 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 			grid-column: 1;
 			grid-row: auto;
 			justify-self: start;
+			width: min(100%, clamp(16rem, 72vw, 24rem));
+		}
+
+		.grid-item.is-emphasized {
 			width: min(100%, clamp(16rem, 72vw, 24rem));
 		}
 	}
