@@ -91,6 +91,11 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				opacity: 0.68;
 			}
 
+			main img {
+				opacity: 0;
+				animation: image-fade-in 0.5s ease-out forwards;
+			}
+
 			.left-fixed,
 			.right-fixed {
 				position: fixed;
@@ -310,6 +315,16 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 				.swipe-info__content {
 					max-height: min(52vh, 24rem);
+				}
+			}
+
+			@keyframes image-fade-in {
+				from {
+					opacity: 0;
+				}
+
+				to {
+					opacity: 1;
 				}
 			}
 		</style>
