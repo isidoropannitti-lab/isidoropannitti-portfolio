@@ -151,6 +151,8 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			main {
 				min-height: 100vh;
 				padding: clamp(6.9rem, 17vh, 9.5rem) var(--edge) 2rem;
+				overflow-x: clip;
+				touch-action: pan-y;
 			}
 
 			.lang-switch-fixed {
