@@ -67,6 +67,33 @@ const photos = PHOTO_IMAGES.map((src, index) => {
 			))
 		}
 	</div>
+	<aside class="swipe-info" data-swipe-info aria-label="Informazioni foto">
+		<div class="swipe-info__panel" data-swipe-info-panel>
+			<button
+				class="swipe-info__handle"
+				type="button"
+				data-swipe-info-handle
+				aria-expanded="false"
+				aria-label="Apri informazioni foto"
+			>
+				<span class="swipe-info__bar"></span>
+				<span class="swipe-info__hint">foto</span>
+			</button>
+			<div class="swipe-info__content">
+				<p class="swipe-info__title">luoghi</p>
+				<ul class="swipe-info__list">
+					{
+						photos.map((photo) => (
+							<li class="swipe-info__item">
+								<span>{photo.code}</span>
+								<span class="swipe-info__meta">{photo.location}</span>
+							</li>
+						))
+					}
+				</ul>
+			</div>
+		</div>
+	</aside>
 </SectionsLayout>
 
 <style>
