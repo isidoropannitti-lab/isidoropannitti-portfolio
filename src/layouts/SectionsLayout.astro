@@ -181,7 +181,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			}
 
 			.swipe-info {
-				--peek: 3.5rem;
+				--peek: 1.35rem;
 				position: fixed;
 				left: var(--edge);
 				right: var(--edge);
@@ -215,9 +215,9 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			.swipe-info__handle {
 				display: grid;
 				justify-items: center;
-				gap: 0.45rem;
+				gap: 0;
 				width: 100%;
-				padding: 0.75rem 1rem 0.9rem;
+				padding: 0.7rem 1rem 0.45rem;
 				border: 0;
 				background: transparent;
 				color: inherit;
@@ -228,20 +228,16 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			}
 
 			.swipe-info__bar {
-				width: 3rem;
+				width: 2.6rem;
 				height: 0.22rem;
 				border-radius: 999px;
 				background: rgba(0, 0, 0, 0.22);
 			}
 
-			.swipe-info__hint {
-				letter-spacing: 0.02em;
-			}
-
 			.swipe-info__content {
 				display: grid;
 				gap: 0.5rem;
-				padding: 0 1rem 1rem;
+				padding: 0.45rem 1rem 1rem;
 				max-height: min(46vh, 26rem);
 				overflow: auto;
 			}
