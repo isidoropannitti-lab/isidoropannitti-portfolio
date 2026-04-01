@@ -49,38 +49,6 @@ const ARCHITECTURE_IMAGES = [
 			))
 		}
 	</div>
-	<aside class="swipe-info" data-swipe-info aria-label="Architecture information">
-		<div class="swipe-info__panel" data-swipe-info-panel>
-			<button
-				class="swipe-info__handle"
-				type="button"
-				data-swipe-info-handle
-				aria-expanded="false"
-				aria-label="Open architecture information"
-			>
-				<span class="swipe-info__bar"></span>
-			</button>
-			<div class="swipe-info__content">
-				<p class="swipe-info__title">projects</p>
-				<ul class="swipe-info__list">
-					{
-						ARCHITECTURE_IMAGES.map((image) => (
-							<li class="swipe-info__item">
-								{
-									image.slug ? (
-										<a href={`/en/projects/${image.slug}`}>{image.label}</a>
-									) : (
-										<span>{image.label}</span>
-									)
-								}
-								<span class="swipe-info__meta">{image.onGoing ? "on going" : "open project"}</span>
-							</li>
-						))
-					}
-				</ul>
-			</div>
-		</div>
-	</aside>
 </SectionsLayout>
 
 <style>
