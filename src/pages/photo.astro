@@ -2,28 +2,18 @@
 import SectionsLayout from "../layouts/SectionsLayout.astro";
 
 const PHOTO_IMAGES = [
-	"/images/photo/algarve-2025-01.jpeg",
-	"/images/photo/ahmedabad-2024-01.jpeg",
-	"/images/photo/ahmedabad-2024-02.jpeg",
-	"/images/photo/ahmedabad-2024-03.jpeg",
-	"/images/photo/ahmedabad-2024-04.jpeg",
-	"/images/photo/andalusia-2025-01.jpeg",
-	"/images/photo/andalusia-2025-02.jpeg",
-	"/images/photo/new-york-2025-01.jpeg",
-	"/images/photo/barcellona-2025-03.jpeg",
+	"/images/photo/algarve-2025-01.webp",
+	"/images/photo/ahmedabad-2024-01.webp",
+	"/images/photo/ahmedabad-2024-02.webp",
+	"/images/photo/ahmedabad-2024-03.webp",
+	"/images/photo/ahmedabad-2024-04.webp",
+	"/images/photo/andalusia-2025-01.webp",
+	"/images/photo/andalusia-2025-02.webp",
+	"/images/photo/new-york-2025-01.webp",
+	"/images/photo/barcellona-2025-03.webp",
 ];
 
-const SIZE_VARIANTS = [
-	"is-base",
-	"is-compact",
-	"is-base",
-	"is-wide",
-	"is-compact",
-	"is-base",
-	"is-wide",
-	"is-base",
-	"is-base",
-];
+const SIZE_VARIANTS = ["is-base", "is-compact", "is-base", "is-wide"] as const;
 
 const LOCATION_LABELS: Record<string, string> = {
 	algarve: "Algarve",
@@ -45,7 +35,7 @@ const photos = PHOTO_IMAGES.map((src, index) => {
 		src,
 		code: year && sequence ? `${year}.${sequence}` : slug,
 		location: LOCATION_LABELS[locationKey] ?? locationKey,
-		variant: SIZE_VARIANTS[index] ?? "is-base",
+		variant: SIZE_VARIANTS[index % SIZE_VARIANTS.length],
 	};
 });
 ---
@@ -123,11 +113,11 @@ const photos = PHOTO_IMAGES.map((src, index) => {
 	}
 
 	.preview.is-compact img {
-		width: 15.4rem;
+		width: 14.8rem;
 	}
 
 	.preview.is-wide img {
-		width: 18rem;
+		width: 19.4rem;
 	}
 
 	.preview figcaption {
@@ -151,15 +141,16 @@ const photos = PHOTO_IMAGES.map((src, index) => {
 
 	@media (max-width: 760px) {
 		.preview img {
-			width: 22rem;
+			width: auto;
+			height: clamp(18.75rem, 55vh, 22rem);
 		}
 
 		.preview.is-compact img {
-			width: 20rem;
+			height: clamp(17rem, 49vh, 20rem);
 		}
 
 		.preview.is-wide img {
-			width: 23.4rem;
+			height: clamp(20rem, 60vh, 23.5rem);
 		}
 	}
 </style>
