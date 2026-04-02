@@ -8,9 +8,10 @@ export interface Props {
 	title: string;
 	section: Section;
 	lang?: Lang;
+	lockMobileScrollY?: boolean;
 }
 
-const { title, section, lang = "it" } = Astro.props;
+const { title, section, lang = "it", lockMobileScrollY = false } = Astro.props;
 
 const EMAIL = "isidoro.pannitti@gmail.com";
 const INSTAGRAM_HANDLE = "@_isoradio";
@@ -44,7 +45,7 @@ const italianPath = pathname.startsWith("/en") ? pathname.slice(3) || "/" : path
 const switchHref = lang === "it" ? englishPath : italianPath;
 ---
 
-<html lang={lang}>
+<html lang={lang} class:list={{ "lock-mobile-scroll-y": lockMobileScrollY }}>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -185,98 +186,25 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				color: #9b9b9b;
 			}
 
-			.swipe-info {
-				--peek: 1.35rem;
-				position: fixed;
-				left: var(--edge);
-				right: var(--edge);
-				bottom: 0;
-				z-index: 35;
-				transform: translateY(calc(100% - var(--peek)));
-				will-change: transform;
-				pointer-events: none;
-			}
-
-			.swipe-info.is-ready {
-				transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
-			}
-
-			.swipe-info.is-open {
-				transform: translateY(0);
-			}
-
-			.swipe-info__panel {
-				background: rgba(255, 255, 255, 0.94);
-				backdrop-filter: blur(14px);
-				-webkit-backdrop-filter: blur(14px);
-				border: 1px solid rgba(0, 0, 0, 0.08);
-				border-bottom: 0;
-				border-radius: 1.15rem 1.15rem 0 0;
-				box-shadow: 0 -18px 40px rgba(0, 0, 0, 0.08);
-				pointer-events: auto;
-				overflow: hidden;
-			}
-
-			.swipe-info__handle {
-				display: grid;
-				justify-items: center;
-				gap: 0;
-				width: 100%;
-				padding: 0.7rem 1rem 0.45rem;
-				border: 0;
-				background: transparent;
-				color: inherit;
-				font: inherit;
-				text-transform: lowercase;
-				cursor: ns-resize;
-				touch-action: none;
-			}
-
-			.swipe-info__bar {
-				width: 2.6rem;
-				height: 0.22rem;
-				border-radius: 999px;
-				background: rgba(0, 0, 0, 0.22);
-			}
-
-			.swipe-info__content {
-				display: grid;
-				gap: 0.5rem;
-				padding: 0.45rem 1rem 1rem;
-				max-height: min(46vh, 26rem);
-				overflow: auto;
-			}
-
-			.swipe-info__title {
-				margin: 0;
-				font-size: 1rem;
-				text-transform: lowercase;
-			}
-
-			.swipe-info__list {
-				list-style: none;
-				margin: 0;
-				padding: 0;
-				display: grid;
-				gap: 0.3rem;
-			}
-
-			.swipe-info__item {
-				display: flex;
-				align-items: baseline;
-				justify-content: space-between;
-				gap: 1rem;
-			}
-
-			.swipe-info__meta {
-				color: #7d7d7d;
-				text-transform: lowercase;
-			}
-
 			@media (max-width: 980px) {
 				html,
 				body {
 					font-size: clamp(0.88rem, 3.5vw, 0.95rem);
+				}
+
+				html.lock-mobile-scroll-y,
+				body.lock-mobile-scroll-y {
+					height: 100dvh;
+					overflow-y: hidden;
+					overscroll-behavior-y: none;
+				}
+
+				body.lock-mobile-scroll-y main {
+					min-height: 0;
+					height: calc(100dvh - clamp(6.9rem, 17vh, 9.5rem) - 2rem);
+					overflow-y: hidden;
+					overscroll-behavior-y: none;
+					touch-action: pan-x;
 				}
 
 				.menu-trigger {
@@ -308,14 +236,6 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					margin-right: 0.5rem;
 				}
 
-				.swipe-info {
-					left: 0.75rem;
-					right: 0.75rem;
-				}
-
-				.swipe-info__content {
-					max-height: min(52vh, 24rem);
-				}
 			}
 
 			@keyframes image-fade-in {
@@ -329,7 +249,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			}
 		</style>
 	</head>
-	<body>
+	<body class:list={{ "lock-mobile-scroll-y": lockMobileScrollY }}>
 		<input class="menu-toggle" type="checkbox" id="sections-toggle" />
 
 		<div class="left-fixed">
@@ -397,97 +317,6 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				document.addEventListener("scroll", onScrollIntent, { passive: true, capture: true });
 			})();
 
-			(() => {
-				const drawers = document.querySelectorAll("[data-swipe-info]");
-				if (!drawers.length) return;
-
-				drawers.forEach((drawer) => {
-					const handle = drawer.querySelector("[data-swipe-info-handle]");
-					const panel = drawer.querySelector("[data-swipe-info-panel]");
-					if (!(handle instanceof HTMLElement) || !(panel instanceof HTMLElement)) return;
-
-					let closedY = 0;
-					let currentY = 0;
-					let startY = 0;
-					let startTranslate = 0;
-					let isDragging = false;
-					let moved = false;
-					let activePointerId = null;
-
-					const clampElastic = (value) => {
-						if (value < 0) return value * 0.32;
-						if (value > closedY) return closedY + (value - closedY) * 0.32;
-						return value;
-					};
-
-					const apply = (value, immediate = false) => {
-						currentY = value;
-						if (immediate) drawer.classList.remove("is-ready");
-						drawer.style.transform = `translateY(${value}px)`;
-					};
-
-					const measure = () => {
-						const peek = parseFloat(getComputedStyle(drawer).getPropertyValue("--peek")) || 56;
-						const panelHeight = panel.offsetHeight;
-						closedY = Math.max(panelHeight - peek, 0);
-						const isOpen = drawer.classList.contains("is-open");
-						apply(isOpen ? 0 : closedY, true);
-						requestAnimationFrame(() => drawer.classList.add("is-ready"));
-					};
-
-					const settle = (open) => {
-						drawer.classList.add("is-ready");
-						drawer.classList.toggle("is-open", open);
-						apply(open ? 0 : closedY);
-						handle.setAttribute("aria-expanded", open ? "true" : "false");
-					};
-
-					const onPointerMove = (event) => {
-						if (!isDragging) return;
-						const delta = event.clientY - startY;
-						moved = moved || Math.abs(delta) > 6;
-						drawer.classList.remove("is-ready");
-						apply(clampElastic(startTranslate + delta));
-					};
-
-					const onPointerUp = () => {
-						if (!isDragging) return;
-						isDragging = false;
-						if (activePointerId !== null) {
-							handle.releasePointerCapture?.(activePointerId);
-						}
-						activePointerId = null;
-						if (!moved) return;
-						settle(currentY < closedY * 0.58);
-					};
-
-					handle.addEventListener("pointerdown", (event) => {
-						isDragging = true;
-						moved = false;
-						activePointerId = event.pointerId;
-						startY = event.clientY;
-						startTranslate = currentY;
-						handle.setPointerCapture?.(event.pointerId);
-					});
-
-					handle.addEventListener("pointermove", onPointerMove);
-					handle.addEventListener("pointerup", onPointerUp);
-					handle.addEventListener("pointercancel", onPointerUp);
-
-					handle.addEventListener("click", (event) => {
-						if (moved) {
-							event.preventDefault();
-							moved = false;
-							return;
-						}
-
-						settle(!drawer.classList.contains("is-open"));
-					});
-
-					window.addEventListener("resize", measure);
-					measure();
-				});
-			})();
 		</script>
 		<Analytics />
 	</body>
