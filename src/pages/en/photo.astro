@@ -41,7 +41,7 @@ const photos = PHOTO_IMAGES.map((src, index) => {
 ---
 
 <SectionsLayout title="photo | isidoro pannitti architetto" section="photo" lang="en" lockMobileScrollY>
-	<div class="gallery-stage">
+	<div class="gallery-stage" aria-label="Photo sequence">
 		<div class="gallery" aria-label="Photo sequence">
 			{
 				photos.map((photo, index) => (
@@ -151,6 +151,7 @@ const photos = PHOTO_IMAGES.map((src, index) => {
 			overflow-y: hidden;
 			overscroll-behavior-x: contain;
 			overscroll-behavior-y: none;
+			scroll-snap-type: x mandatory;
 			touch-action: pan-x;
 			-webkit-overflow-scrolling: touch;
 			scrollbar-width: none;
@@ -171,7 +172,6 @@ const photos = PHOTO_IMAGES.map((src, index) => {
 			padding-left: 11vw;
 			padding-right: 11vw;
 			padding-bottom: 1rem;
-			scroll-padding-inline: 11vw;
 		}
 
 		.preview {
@@ -188,6 +188,16 @@ const photos = PHOTO_IMAGES.map((src, index) => {
 
 		.preview.is-wide {
 			width: clamp(17rem, 82vw, 23.5rem);
+		}
+
+		.preview:first-child {
+			margin-left: calc(var(--edge) - 11vw);
+			scroll-snap-align: start;
+		}
+
+		.preview:last-child {
+			margin-right: calc(var(--edge) - 11vw);
+			scroll-snap-align: end;
 		}
 
 		.preview img {
