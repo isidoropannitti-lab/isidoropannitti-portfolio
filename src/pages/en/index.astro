@@ -160,8 +160,6 @@ const ARCHITECTURE_IMAGES = [
 
 	@media (max-width: 760px) {
 		.gallery-stage {
-			height: 100%;
-			min-height: 100%;
 			overflow-x: auto;
 			overflow-y: hidden;
 			overscroll-behavior-x: contain;
@@ -180,13 +178,32 @@ const ARCHITECTURE_IMAGES = [
 
 		.gallery {
 			width: max-content;
-			min-width: 100%;
+			min-width: 0;
 			overflow: visible;
+			margin-inline: 0;
+			padding-left: 11vw;
+			padding-right: 11vw;
 			padding-bottom: 1rem;
+			scroll-padding-inline: 11vw;
+		}
+
+		.preview {
+			width: clamp(16rem, 78vw, 22rem);
+			scroll-snap-align: center;
+		}
+
+		.preview.is-compact {
+			width: clamp(14.25rem, 69vw, 19.5rem);
+		}
+
+		.preview.is-wide {
+			width: clamp(17rem, 82vw, 23.5rem);
 		}
 
 		.preview img {
-			height: clamp(35rem, 120vw, 41rem);
+			width: 100%;
+			height: auto;
+			aspect-ratio: 0.82 / 1;
 		}
 	}
 </style>

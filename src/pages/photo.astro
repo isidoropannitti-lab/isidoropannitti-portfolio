@@ -147,8 +147,6 @@ const photos = PHOTO_IMAGES.map((src, index) => {
 
 	@media (max-width: 760px) {
 		.gallery-stage {
-			height: 100%;
-			min-height: 100%;
 			overflow-x: auto;
 			overflow-y: hidden;
 			overscroll-behavior-x: contain;
@@ -167,22 +165,43 @@ const photos = PHOTO_IMAGES.map((src, index) => {
 
 		.gallery {
 			width: max-content;
-			min-width: 100%;
+			min-width: 0;
 			overflow: visible;
+			margin-inline: 0;
+			padding-left: 11vw;
+			padding-right: 11vw;
 			padding-bottom: 1rem;
+			scroll-padding-inline: 11vw;
+		}
+
+		.preview {
+			scroll-snap-align: center;
+		}
+
+		.preview {
+			width: clamp(16rem, 78vw, 22rem);
+		}
+
+		.preview.is-compact {
+			width: clamp(14.25rem, 69vw, 19.5rem);
+		}
+
+		.preview.is-wide {
+			width: clamp(17rem, 82vw, 23.5rem);
 		}
 
 		.preview img {
-			width: auto;
-			height: clamp(26.25rem, 77vh, 30.8rem);
+			width: 100%;
+			height: auto;
+			aspect-ratio: 0.82 / 1;
 		}
 
 		.preview.is-compact img {
-			height: clamp(23.8rem, 68.6vh, 28rem);
+			aspect-ratio: 0.75 / 1;
 		}
 
 		.preview.is-wide img {
-			height: clamp(28rem, 84vh, 32.9rem);
+			aspect-ratio: 0.9 / 1;
 		}
 	}
 </style>
