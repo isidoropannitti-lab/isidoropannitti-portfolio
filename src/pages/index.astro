@@ -13,49 +13,52 @@ const ARCHITECTURE_IMAGES = [
 ---
 
 <SectionsLayout title="isidoro pannitti architetto" section="architecture" lang="it" lockMobileScrollY>
-	<div class="gallery" data-home-gallery aria-label="Architecture sequence">
-		{
-			ARCHITECTURE_IMAGES.map((image) => (
-				<figure class:list={["preview", image.variant]}>
-					{
-						image.onGoing ? (
-							<>
-								<input
-									class="ongoing-toggle"
-									type="checkbox"
-									id={`ongoing-${image.label.replace(".", "-")}`}
-								/>
-								<label class="project-link ongoing-trigger" for={`ongoing-${image.label.replace(".", "-")}`}>
-									<img src={image.src} alt={image.label} loading="eager" />
-								</label>
-							</>
-						) : image.slug ? (
-							<a href={`/projects/${image.slug}`} class="project-link">
-								<img src={image.src} alt={image.label} loading="eager" />
-							</a>
-						) : (
-							<img src={image.src} alt={image.label} loading="eager" />
-						)
-					}
-					<figcaption>
-						<span>{image.label}</span>
+	<div class="gallery-stage" data-home-gallery-stage>
+		<div class="gallery" data-home-gallery aria-label="Architecture sequence">
+			{
+				ARCHITECTURE_IMAGES.map((image) => (
+					<figure class:list={["preview", image.variant]}>
 						{
-							image.onGoing && (
-								<span class="ongoing-label" aria-live="polite">in corso</span>
+							image.onGoing ? (
+								<>
+									<input
+										class="ongoing-toggle"
+										type="checkbox"
+										id={`ongoing-${image.label.replace(".", "-")}`}
+									/>
+									<label class="project-link ongoing-trigger" for={`ongoing-${image.label.replace(".", "-")}`}>
+										<img src={image.src} alt={image.label} loading="eager" />
+									</label>
+								</>
+							) : image.slug ? (
+								<a href={`/projects/${image.slug}`} class="project-link">
+									<img src={image.src} alt={image.label} loading="eager" />
+								</a>
+							) : (
+								<img src={image.src} alt={image.label} loading="eager" />
 							)
 						}
-					</figcaption>
-				</figure>
-			))
-		}
+						<figcaption>
+							<span>{image.label}</span>
+							{
+								image.onGoing && (
+									<span class="ongoing-label" aria-live="polite">in corso</span>
+								)
+							}
+						</figcaption>
+					</figure>
+				))
+			}
+		</div>
 	</div>
 
 	<script is:inline>
 		(() => {
 			const resetGallery = () => {
+				const stage = document.querySelector("[data-home-gallery-stage]");
 				const gallery = document.querySelector("[data-home-gallery]");
-				if (!(gallery instanceof HTMLElement)) return;
-				gallery.scrollLeft = 0;
+				if (stage instanceof HTMLElement) stage.scrollLeft = 0;
+				if (gallery instanceof HTMLElement) gallery.scrollLeft = 0;
 			};
 
 			if ("scrollRestoration" in history) {
@@ -73,6 +76,10 @@ const ARCHITECTURE_IMAGES = [
 </SectionsLayout>
 
 <style>
+	.gallery-stage {
+		width: 100%;
+	}
+
 	.gallery {
 		display: flex;
 		align-items: flex-start;
@@ -152,14 +159,30 @@ const ARCHITECTURE_IMAGES = [
 	}
 
 	@media (max-width: 760px) {
-		.gallery {
+		.gallery-stage {
 			height: 100%;
 			min-height: 100%;
-			padding-bottom: 1rem;
+			overflow-x: auto;
+			overflow-y: hidden;
+			overscroll-behavior-x: contain;
+			overscroll-behavior-y: none;
+			touch-action: pan-x;
+			-webkit-overflow-scrolling: touch;
+			scrollbar-width: none;
+			-ms-overflow-style: none;
 		}
 
-		.preview {
-			align-content: start;
+		.gallery-stage::-webkit-scrollbar {
+			width: 0;
+			height: 0;
+			display: none;
+		}
+
+		.gallery {
+			width: max-content;
+			min-width: 100%;
+			overflow: visible;
+			padding-bottom: 1rem;
 		}
 
 		.preview img {
