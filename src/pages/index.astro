@@ -158,8 +158,14 @@ const ARCHITECTURE_IMAGES = [
 
 	@media (max-width: 760px) {
 		.gallery-stage {
-			height: 100%;
-			min-height: 100%;
+			--mobile-card-width: clamp(17rem, 76vw, 21rem);
+			--mobile-card-height: min(
+				clamp(22rem, 56vh, 28rem),
+				calc(100dvh - clamp(6.9rem, 17vh, 9.5rem) - 5.5rem)
+			);
+			flex: 1 1 auto;
+			height: auto;
+			min-height: 0;
 			display: flex;
 			align-items: flex-start;
 			overflow-x: auto;
@@ -167,8 +173,11 @@ const ARCHITECTURE_IMAGES = [
 			overscroll-behavior-x: contain;
 			overscroll-behavior-y: none;
 			scroll-snap-type: x mandatory;
+			scroll-padding-left: 0;
 			touch-action: pan-x;
 			-webkit-overflow-scrolling: touch;
+			box-sizing: border-box;
+			padding: 0 calc((100% - var(--mobile-card-width)) / 2) 1.35rem 0;
 			scrollbar-width: none;
 			-ms-overflow-style: none;
 		}
@@ -181,43 +190,35 @@ const ARCHITECTURE_IMAGES = [
 
 		.gallery {
 			width: max-content;
-			min-width: 0;
+			min-width: max-content;
+			align-self: flex-start;
 			overflow: visible;
 			margin-inline: 0;
-			padding-left: 11vw;
-			padding-right: 11vw;
-			padding-bottom: 1rem;
+			padding: 0;
 		}
 
 		.preview {
-			width: auto;
+			width: var(--mobile-card-width);
 			scroll-snap-align: center;
 		}
 
 		.preview:first-child {
-			margin-left: calc(var(--edge) - 11vw);
 			scroll-snap-align: start;
 		}
 
-		.preview:last-child {
-			margin-right: calc(var(--edge) - 11vw);
-			scroll-snap-align: end;
-		}
-
 		.preview.is-compact {
-			width: auto;
+			width: var(--mobile-card-width);
 		}
 
 		.preview.is-wide {
-			width: auto;
+			width: var(--mobile-card-width);
 		}
 
 		.preview img {
-			width: auto;
-			max-width: 78vw;
-			height: clamp(27rem, 68vh, 33rem);
+			width: 100%;
+			height: var(--mobile-card-height);
 			aspect-ratio: auto;
-			object-fit: contain;
+			object-fit: cover;
 		}
 	}
 </style>

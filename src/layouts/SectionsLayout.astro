@@ -235,13 +235,21 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				html.lock-mobile-scroll-y,
 				body.lock-mobile-scroll-y {
 					height: 100dvh;
-					overflow-y: hidden;
-					overscroll-behavior-y: none;
+					overflow: hidden;
+					overscroll-behavior: none;
+				}
+
+				body.lock-mobile-scroll-y {
+					position: fixed;
+					inset: 0;
+					width: 100%;
 				}
 
 				body.lock-mobile-scroll-y main {
 					min-height: 0;
 					height: calc(100dvh - clamp(6.9rem, 17vh, 9.5rem) - 2rem);
+					display: flex;
+					flex-direction: column;
 					overflow-y: hidden;
 					overscroll-behavior-y: none;
 					touch-action: pan-x;
@@ -356,6 +364,41 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				window.addEventListener("wheel", onScrollIntent, { passive: true });
 				window.addEventListener("touchmove", onScrollIntent, { passive: true });
 				document.addEventListener("scroll", onScrollIntent, { passive: true, capture: true });
+			})();
+
+			(() => {
+				if (!document.body.classList.contains("lock-mobile-scroll-y")) return;
+				if (!window.matchMedia("(max-width: 980px)").matches) return;
+
+				let startX = 0;
+				let startY = 0;
+
+				window.addEventListener(
+					"touchstart",
+					(event) => {
+						const touch = event.touches[0];
+						if (!touch) return;
+						startX = touch.clientX;
+						startY = touch.clientY;
+					},
+					{ passive: true }
+				);
+
+				window.addEventListener(
+					"touchmove",
+					(event) => {
+						const touch = event.touches[0];
+						if (!touch) return;
+
+						const deltaX = Math.abs(touch.clientX - startX);
+						const deltaY = Math.abs(touch.clientY - startY);
+
+						if (deltaY > deltaX) {
+							event.preventDefault();
+						}
+					},
+					{ passive: false }
+				);
 			})();
 
 			(() => {
