@@ -140,17 +140,27 @@ const photos = PHOTO_IMAGES.map((src, index) => {
 	}
 
 	@media (max-width: 760px) {
+		.gallery {
+			height: 100%;
+			min-height: 100%;
+			padding-bottom: 1rem;
+		}
+
+		.preview {
+			align-content: start;
+		}
+
 		.preview img {
 			width: auto;
-			height: clamp(18.75rem, 55vh, 22rem);
+			height: clamp(26.25rem, 77vh, 30.8rem);
 		}
 
 		.preview.is-compact img {
-			height: clamp(17rem, 49vh, 20rem);
+			height: clamp(23.8rem, 68.6vh, 28rem);
 		}
 
 		.preview.is-wide img {
-			height: clamp(20rem, 60vh, 23.5rem);
+			height: clamp(28rem, 84vh, 32.9rem);
 		}
 	}
 </style>
