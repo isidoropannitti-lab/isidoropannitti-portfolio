@@ -190,7 +190,7 @@ const ARCHITECTURE_IMAGES = [
 		}
 
 		.preview {
-			width: clamp(16rem, 78vw, 22rem);
+			width: auto;
 			scroll-snap-align: center;
 		}
 
@@ -205,17 +205,19 @@ const ARCHITECTURE_IMAGES = [
 		}
 
 		.preview.is-compact {
-			width: clamp(14.25rem, 69vw, 19.5rem);
+			width: auto;
 		}
 
 		.preview.is-wide {
-			width: clamp(17rem, 82vw, 23.5rem);
+			width: auto;
 		}
 
 		.preview img {
-			width: 100%;
-			height: auto;
-			aspect-ratio: 0.82 / 1;
+			width: auto;
+			max-width: 78vw;
+			height: clamp(27rem, 68vh, 33rem);
+			aspect-ratio: auto;
+			object-fit: contain;
 		}
 	}
 </style>
