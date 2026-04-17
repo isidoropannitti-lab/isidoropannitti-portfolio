@@ -148,8 +148,8 @@ const photos = PHOTO_IMAGES.map((src, index) => {
 	@media (max-width: 760px) {
 		.gallery-stage {
 			--mobile-photo-height: min(
-				clamp(19.25rem, 50svh, 25rem),
-				calc(100svh - clamp(6.9rem, 17vh, 9.5rem) - 6.2rem - env(safe-area-inset-bottom, 0px))
+				clamp(20.25rem, 52svh, 26rem),
+				calc(100svh - clamp(6.9rem, 17vh, 9.5rem) - 6.55rem - env(safe-area-inset-bottom, 0px))
 			);
 			flex: 1 1 auto;
 			height: auto;
@@ -164,7 +164,7 @@ const photos = PHOTO_IMAGES.map((src, index) => {
 			touch-action: pan-x;
 			-webkit-overflow-scrolling: touch;
 			box-sizing: border-box;
-			padding-bottom: max(1.35rem, calc(env(safe-area-inset-bottom, 0px) + 0.9rem));
+			padding-bottom: max(1.7rem, calc(env(safe-area-inset-bottom, 0px) + 1.1rem));
 			scrollbar-width: none;
 			-ms-overflow-style: none;
 		}
@@ -219,7 +219,7 @@ const photos = PHOTO_IMAGES.map((src, index) => {
 		}
 
 		.preview figcaption {
-			min-height: 1.4rem;
+			min-height: 1.55rem;
 		}
 	}
 </style>
