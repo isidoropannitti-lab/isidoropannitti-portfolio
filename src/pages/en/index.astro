@@ -160,8 +160,8 @@ const ARCHITECTURE_IMAGES = [
 		.gallery-stage {
 			--mobile-card-width: clamp(17rem, 76vw, 21rem);
 			--mobile-card-height: min(
-				clamp(22.75rem, 55svh, 28.25rem),
-				calc(100svh - clamp(6.9rem, 17vh, 9.5rem) - 6.3rem - env(safe-area-inset-bottom, 0px))
+				clamp(21.5rem, 51svh, 26.75rem),
+				calc(100svh - clamp(6.9rem, 17vh, 9.5rem) - 7.35rem - env(safe-area-inset-bottom, 0px))
 			);
 			flex: 1 1 auto;
 			height: auto;
@@ -178,7 +178,7 @@ const ARCHITECTURE_IMAGES = [
 			-webkit-overflow-scrolling: touch;
 			box-sizing: border-box;
 			padding: 0 calc((100% - var(--mobile-card-width)) / 2)
-				max(1.7rem, calc(env(safe-area-inset-bottom, 0px) + 1.1rem)) 0;
+				max(2.2rem, calc(env(safe-area-inset-bottom, 0px) + 1.35rem)) 0;
 			scrollbar-width: none;
 			-ms-overflow-style: none;
 		}
@@ -223,7 +223,7 @@ const ARCHITECTURE_IMAGES = [
 		}
 
 		.preview figcaption {
-			min-height: 1.45rem;
+			min-height: 1.85rem;
 		}
 	}
 </style>
