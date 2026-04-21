@@ -417,6 +417,11 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					overlay.classList.toggle("is-dark", theme === "dark");
 				};
 
+				const resetOverlay = () => {
+					overlay.classList.remove("is-active");
+					overlay.style.transition = "";
+				};
+
 				const pendingTheme = sessionStorage.getItem(storageKey);
 				if (pendingTheme) {
 					sessionStorage.removeItem(storageKey);
@@ -431,6 +436,11 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 						});
 					});
 				}
+
+				window.addEventListener("pageshow", (event) => {
+					if (event.persisted) resetOverlay();
+				});
+				window.addEventListener("pagehide", resetOverlay);
 
 				document.addEventListener(
 					"click",
