@@ -246,10 +246,13 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				}
 
 				body.lock-mobile-scroll-y main {
+					--mobile-main-top: clamp(5.7rem, 13.5vh, 7.6rem);
+					--mobile-main-bottom: 1.15rem;
+					--mobile-caption-space: 2.35rem;
 					min-height: 0;
-					padding-top: clamp(5.9rem, 14vh, 7.8rem);
-					padding-bottom: 1.25rem;
-					height: calc(100svh - clamp(5.9rem, 14vh, 7.8rem) - 1.25rem);
+					padding-top: var(--mobile-main-top);
+					padding-bottom: var(--mobile-main-bottom);
+					height: calc(100svh - var(--mobile-main-top) - var(--mobile-main-bottom));
 					display: flex;
 					flex-direction: column;
 					overflow-y: hidden;

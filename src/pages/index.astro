@@ -161,8 +161,11 @@ const ARCHITECTURE_IMAGES = [
 		.gallery-stage {
 			--mobile-card-width: clamp(17rem, 76vw, 21rem);
 			--mobile-card-height: min(
-				clamp(22.4rem, 54svh, 27.5rem),
-				calc(100svh - clamp(5.9rem, 14vh, 7.8rem) - 6.15rem - env(safe-area-inset-bottom, 0px))
+				clamp(22rem, 54svh, 27.5rem),
+				calc(
+					100svh - var(--mobile-main-top) - var(--mobile-main-bottom) -
+						var(--mobile-caption-space) - 1.8rem - env(safe-area-inset-bottom, 0px)
+				)
 			);
 			flex: 1 1 auto;
 			height: auto;
@@ -224,7 +227,7 @@ const ARCHITECTURE_IMAGES = [
 		}
 
 		.preview figcaption {
-			min-height: 1.85rem;
+			min-height: var(--mobile-caption-space);
 		}
 	}
 </style>

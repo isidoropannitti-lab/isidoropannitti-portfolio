@@ -148,8 +148,11 @@ const photos = PHOTO_IMAGES.map((src, index) => {
 	@media (max-width: 760px) {
 		.gallery-stage {
 			--mobile-photo-height: min(
-				clamp(20.25rem, 52svh, 26rem),
-				calc(100svh - clamp(6.9rem, 17vh, 9.5rem) - 6.55rem - env(safe-area-inset-bottom, 0px))
+				clamp(20.75rem, 52svh, 26rem),
+				calc(
+					100svh - var(--mobile-main-top) - var(--mobile-main-bottom) -
+						var(--mobile-caption-space) - 1.8rem - env(safe-area-inset-bottom, 0px)
+				)
 			);
 			flex: 1 1 auto;
 			height: auto;
@@ -219,7 +222,7 @@ const photos = PHOTO_IMAGES.map((src, index) => {
 		}
 
 		.preview figcaption {
-			min-height: 1.55rem;
+			min-height: var(--mobile-caption-space);
 		}
 	}
 </style>
