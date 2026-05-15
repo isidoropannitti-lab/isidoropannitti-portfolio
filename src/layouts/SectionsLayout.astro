@@ -167,6 +167,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				user-select: none;
 				font-size: 1.3em;
 				line-height: 1;
+				transform-origin: 50% 52%;
 				transition: opacity 220ms ease, transform 260ms ease;
 			}
 
@@ -262,6 +263,10 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 				.menu-trigger {
 					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+					width: 1em;
+					height: 1em;
 				}
 
 				.sections-nav {
@@ -287,6 +292,10 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					pointer-events: auto;
 					max-width: 92vw;
 					margin-right: 0.5rem;
+				}
+
+				.menu-toggle:checked ~ .right-fixed .menu-trigger {
+					transform: rotate(45deg);
 				}
 
 			}
@@ -332,7 +341,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					>{navLabels[lang].info}</a
 				>
 			</nav>
-			<label class="menu-trigger" for="sections-toggle">+</label>
+			<label class="menu-trigger" for="sections-toggle" aria-label="Toggle navigation">+</label>
 		</div>
 
 		<div class="lang-switch-fixed" data-lang-switch>
@@ -369,6 +378,20 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				window.addEventListener("wheel", onScrollIntent, { passive: true });
 				window.addEventListener("touchmove", onScrollIntent, { passive: true });
 				document.addEventListener("scroll", onScrollIntent, { passive: true, capture: true });
+			})();
+
+			(() => {
+				const menuToggle = document.querySelector("#sections-toggle");
+				const nav = document.querySelector(".sections-nav");
+				if (!(menuToggle instanceof HTMLInputElement) || !(nav instanceof HTMLElement)) return;
+
+				nav.addEventListener("click", (event) => {
+					const target = event.target;
+					if (!(target instanceof Element)) return;
+					if (target.closest("a")) {
+						menuToggle.checked = false;
+					}
+				});
 			})();
 
 			(() => {
