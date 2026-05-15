@@ -85,7 +85,7 @@ const ARCHITECTURE_IMAGES = [
 		flex-wrap: nowrap;
 		box-sizing: border-box;
 		width: calc(100% + (var(--edge) * 2));
-		gap: clamp(0.75rem, 1.8vw, 1.2rem);
+		gap: var(--space-16);
 		margin-inline: calc(var(--edge) * -1);
 		overflow-x: auto;
 		overscroll-behavior-x: contain;
@@ -95,7 +95,7 @@ const ARCHITECTURE_IMAGES = [
 		scroll-snap-type: x mandatory;
 		touch-action: pan-x;
 		-webkit-overflow-scrolling: touch;
-		padding-bottom: 0.45rem;
+		padding-bottom: var(--space-8);
 		scrollbar-width: none;
 		-ms-overflow-style: none;
 	}
@@ -110,7 +110,7 @@ const ARCHITECTURE_IMAGES = [
 		flex: 0 0 auto;
 		margin: 0;
 		display: grid;
-		gap: 0.45rem;
+		gap: var(--space-16);
 		scroll-snap-align: start;
 	}
 
@@ -139,12 +139,12 @@ const ARCHITECTURE_IMAGES = [
 	.preview figcaption {
 		display: flex;
 		align-items: baseline;
-		gap: 0.5rem;
+		gap: var(--space-8);
 	}
 
 	.ongoing-label {
 		opacity: 0;
-		transform: translateY(0.08rem);
+		transform: translateY(var(--space-4));
 		transition: opacity 220ms ease, transform 220ms ease;
 	}
 
@@ -164,7 +164,7 @@ const ARCHITECTURE_IMAGES = [
 				clamp(22rem, 54svh, 27.5rem),
 				calc(
 					100svh - var(--mobile-main-top) - var(--mobile-main-bottom) -
-						var(--mobile-caption-space) - 1.8rem - env(safe-area-inset-bottom, 0px)
+						var(--mobile-caption-space) - var(--space-24) - env(safe-area-inset-bottom, 0px)
 				)
 			);
 			flex: 1 1 auto;
@@ -182,7 +182,7 @@ const ARCHITECTURE_IMAGES = [
 			-webkit-overflow-scrolling: touch;
 			box-sizing: border-box;
 			padding: 0 calc((100% - var(--mobile-card-width)) / 2)
-				max(2.2rem, calc(env(safe-area-inset-bottom, 0px) + 1.35rem)) 0;
+				max(var(--space-32), calc(env(safe-area-inset-bottom, 0px) + var(--space-24))) 0;
 			scrollbar-width: none;
 			-ms-overflow-style: none;
 		}
