@@ -148,6 +148,11 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				display: inline-block;
 			}
 
+			.magnetic-target {
+				--magnet-x: 0px;
+				--magnet-y: 0px;
+			}
+
 			.right-fixed {
 				right: var(--edge);
 				text-transform: lowercase;
@@ -310,6 +315,15 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 			}
 
+			@media (min-width: 981px) and (pointer: fine) {
+				.magnetic-target {
+					display: inline-block;
+					transform: translate3d(var(--magnet-x), var(--magnet-y), 0);
+					transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+					will-change: transform;
+				}
+			}
+
 			@keyframes image-fade-in {
 				from {
 					opacity: 0;
@@ -333,10 +347,12 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 		<div class="left-fixed">
 			<p>
-				<a class="site-home" href={prefix || "/"}>isidoro pannitti architetto</a>
+				<a class="site-home magnetic-target" href={prefix || "/"} data-magnetic
+					>isidoro pannitti architetto</a
+				>
 			</p>
 			<p>
-				<a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+				<a class="magnetic-target" href={`mailto:${EMAIL}`} data-magnetic>{EMAIL}</a>
 			</p>
 			<p>
 				<a href={INSTAGRAM_URL} target="_blank" rel="noreferrer noopener">{INSTAGRAM_HANDLE}</a>
@@ -357,7 +373,9 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					>{navLabels[lang].info}</a
 				>
 			</nav>
-			<label class="menu-trigger" for="sections-toggle" aria-label="Toggle navigation">+</label>
+			<label class="menu-trigger magnetic-target" for="sections-toggle" aria-label="Toggle navigation" data-magnetic
+				>+</label
+			>
 		</div>
 
 		<div class="lang-switch-fixed" data-lang-switch>
@@ -408,6 +426,52 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 						menuToggle.checked = false;
 					}
 				});
+			})();
+
+			(() => {
+				const supportsFinePointer = window.matchMedia("(min-width: 981px) and (pointer: fine)");
+				if (!supportsFinePointer.matches) return;
+
+				const targets = Array.from(document.querySelectorAll("[data-magnetic]")).filter(
+					(target) => target instanceof HTMLElement
+				);
+				if (!targets.length) return;
+
+				const maxShift = 3;
+				const radius = 74;
+
+				const resetTarget = (target) => {
+					target.style.setProperty("--magnet-x", "0px");
+					target.style.setProperty("--magnet-y", "0px");
+				};
+
+				document.addEventListener(
+					"mousemove",
+					(event) => {
+						targets.forEach((target) => {
+							const rect = target.getBoundingClientRect();
+							const centerX = rect.left + rect.width / 2;
+							const centerY = rect.top + rect.height / 2;
+							const deltaX = event.clientX - centerX;
+							const deltaY = event.clientY - centerY;
+							const distance = Math.hypot(deltaX, deltaY);
+
+							if (distance > radius) {
+								resetTarget(target);
+								return;
+							}
+
+							const pull = 1 - distance / radius;
+							const shiftX = (deltaX / radius) * maxShift * pull;
+							const shiftY = (deltaY / radius) * maxShift * pull;
+							target.style.setProperty("--magnet-x", `${shiftX.toFixed(2)}px`);
+							target.style.setProperty("--magnet-y", `${shiftY.toFixed(2)}px`);
+						});
+					},
+					{ passive: true }
+				);
+
+				window.addEventListener("blur", () => targets.forEach(resetTarget));
 			})();
 
 			(() => {
