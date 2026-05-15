@@ -165,7 +165,7 @@ const ARCHITECTURE_IMAGES = [
 				clamp(22rem, 48svh, 25rem),
 				calc(
 					100svh - var(--mobile-main-top) - var(--mobile-main-bottom) -
-						var(--mobile-caption-space) - var(--space-32) - env(safe-area-inset-bottom, 0px)
+						var(--mobile-caption-space) - var(--space-48) - env(safe-area-inset-bottom, 0px)
 				)
 			);
 			flex: 1 1 auto;
@@ -229,6 +229,7 @@ const ARCHITECTURE_IMAGES = [
 
 		.preview figcaption {
 			min-height: var(--mobile-caption-space);
+			padding-bottom: var(--space-8);
 		}
 	}
 </style>
