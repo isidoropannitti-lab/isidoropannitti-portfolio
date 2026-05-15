@@ -153,6 +153,12 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				--magnet-y: 0px;
 			}
 
+			.left-fixed a,
+			.sections-nav a,
+			.sections-nav span {
+				display: inline-block;
+			}
+
 			.right-fixed {
 				right: var(--edge);
 				text-transform: lowercase;
@@ -315,11 +321,10 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 			}
 
-			@media (min-width: 981px) and (pointer: fine) {
+			@media (pointer: fine) {
 				.magnetic-target {
-					display: inline-block;
 					transform: translate3d(var(--magnet-x), var(--magnet-y), 0);
-					transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+					transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
 					will-change: transform;
 				}
 			}
@@ -355,21 +360,32 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				<a class="magnetic-target" href={`mailto:${EMAIL}`} data-magnetic>{EMAIL}</a>
 			</p>
 			<p>
-				<a href={INSTAGRAM_URL} target="_blank" rel="noreferrer noopener">{INSTAGRAM_HANDLE}</a>
+				<a class="magnetic-target" href={INSTAGRAM_URL} target="_blank" rel="noreferrer noopener" data-magnetic
+					>{INSTAGRAM_HANDLE}</a
+				>
 			</p>
 		</div>
 
 		<div class="right-fixed">
 			<nav class="sections-nav" aria-label="Sections">
-				<a class:list={{ active: section === "architecture" }} href={getSectionHref("architecture")}
+				<a
+					class:list={{ active: section === "architecture", "magnetic-target": true }}
+					href={getSectionHref("architecture")}
+					data-magnetic
 					>{navLabels[lang].architecture}</a
 				>
-				<span>,&nbsp;</span>
-				<a class:list={{ active: section === "photo" }} href={getSectionHref("photo")}
+				<span class="magnetic-target" data-magnetic>,&nbsp;</span>
+				<a
+					class:list={{ active: section === "photo", "magnetic-target": true }}
+					href={getSectionHref("photo")}
+					data-magnetic
 					>{navLabels[lang].photo}</a
 				>
-				<span>,&nbsp;</span>
-				<a class:list={{ active: section === "info" }} href={getSectionHref("info")}
+				<span class="magnetic-target" data-magnetic>,&nbsp;</span>
+				<a
+					class:list={{ active: section === "info", "magnetic-target": true }}
+					href={getSectionHref("info")}
+					data-magnetic
 					>{navLabels[lang].info}</a
 				>
 			</nav>
@@ -429,7 +445,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			})();
 
 			(() => {
-				const supportsFinePointer = window.matchMedia("(min-width: 981px) and (pointer: fine)");
+				const supportsFinePointer = window.matchMedia("(pointer: fine)");
 				if (!supportsFinePointer.matches) return;
 
 				const targets = Array.from(document.querySelectorAll("[data-magnetic]")).filter(
@@ -437,8 +453,8 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				);
 				if (!targets.length) return;
 
-				const maxShift = 3;
-				const radius = 74;
+				const maxShift = 6;
+				const radius = 96;
 
 				const resetTarget = (target) => {
 					target.style.setProperty("--magnet-x", "0px");
