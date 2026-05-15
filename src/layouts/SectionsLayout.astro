@@ -47,7 +47,11 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 <html
 	lang={lang}
-	class:list={{ "lock-mobile-scroll-y": lockMobileScrollY, "theme-photo": section === "photo" }}
+	class:list={{
+		"lock-mobile-scroll-y": lockMobileScrollY,
+		"theme-photo": section === "photo",
+		"theme-paper": section !== "photo",
+	}}
 >
 	<head>
 		<meta charset="utf-8" />
@@ -65,6 +69,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			:root {
 				color-scheme: light;
 				--edge: clamp(1.25rem, 3vw, 2.5rem);
+				--paper-bg: #f7f5ef;
 				--photo-bg: #000;
 			}
 
@@ -89,6 +94,11 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			body.theme-photo {
 				background: var(--photo-bg);
 				color: #fff;
+			}
+
+			html.theme-paper,
+			body.theme-paper {
+				background: var(--paper-bg);
 			}
 
 			a {
@@ -311,7 +321,13 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			}
 		</style>
 	</head>
-	<body class:list={{ "lock-mobile-scroll-y": lockMobileScrollY, "theme-photo": section === "photo" }}>
+	<body
+		class:list={{
+			"lock-mobile-scroll-y": lockMobileScrollY,
+			"theme-photo": section === "photo",
+			"theme-paper": section !== "photo",
+		}}
+	>
 		<div class="page-transition-overlay" aria-hidden="true" data-page-transition></div>
 		<input class="menu-toggle" type="checkbox" id="sections-toggle" />
 
