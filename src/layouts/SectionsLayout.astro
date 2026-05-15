@@ -268,6 +268,10 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				background: var(--photo-bg);
 			}
 
+			.page-transition-overlay.is-project {
+				background: var(--project-bg);
+			}
+
 			.page-transition-overlay.is-active {
 				opacity: 1;
 			}
@@ -281,6 +285,10 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			}
 
 			::view-transition-new(root) {
+				animation: quiet-page-in 290ms cubic-bezier(0.22, 1, 0.36, 1) both;
+			}
+
+			body.is-project-entering main {
 				animation: quiet-page-in 290ms cubic-bezier(0.22, 1, 0.36, 1) both;
 			}
 
@@ -661,30 +669,43 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				if (!(overlay instanceof HTMLElement)) return;
 
 				const storageKey = "section-transition-theme";
+				const entryKey = "section-transition-entry";
 				const resolveTheme = (pathname) => {
 					const normalized = pathname.replace(/\/+$/, "") || "/";
-					return normalized === "/photo" || normalized === "/en/photo" ? "dark" : "light";
+					if (normalized === "/photo" || normalized === "/en/photo") return "dark";
+					if (/^\/(?:en\/)?projects\/[^/]+$/.test(normalized)) return "project";
+					return "light";
 				};
 
 				const setTheme = (theme) => {
 					overlay.classList.toggle("is-dark", theme === "dark");
+					overlay.classList.toggle("is-project", theme === "project");
 				};
 
 				const resetOverlay = () => {
 					overlay.classList.remove("is-active");
+					document.body.classList.remove("is-project-entering");
 					overlay.style.transition = "";
 				};
 
 				const pendingTheme = sessionStorage.getItem(storageKey);
+				const pendingEntry = sessionStorage.getItem(entryKey);
 				if (pendingTheme) {
 					sessionStorage.removeItem(storageKey);
 					setTheme(pendingTheme);
 					overlay.style.transition = "none";
 					overlay.classList.add("is-active");
+					if (pendingEntry === "project") {
+						sessionStorage.removeItem(entryKey);
+						document.body.classList.add("is-project-entering");
+						window.setTimeout(() => {
+							document.body.classList.remove("is-project-entering");
+						}, 320);
+					}
 
 					requestAnimationFrame(() => {
 						requestAnimationFrame(() => {
-							overlay.style.transition = "opacity 420ms ease";
+							overlay.style.transition = "opacity 280ms ease";
 							overlay.classList.remove("is-active");
 						});
 					});
@@ -718,6 +739,9 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 						const theme = resolveTheme(url.pathname);
 						sessionStorage.setItem(storageKey, theme);
+						if (theme === "project") {
+							sessionStorage.setItem(entryKey, "project");
+						}
 						setTheme(theme);
 						overlay.classList.add("is-active");
 						event.preventDefault();
