@@ -151,6 +151,8 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			.magnetic-target {
 				--magnet-x: 0px;
 				--magnet-y: 0px;
+				transform: translate3d(var(--magnet-x), var(--magnet-y), 0);
+				transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
 			}
 
 			.left-fixed a,
@@ -323,8 +325,6 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 			@media (pointer: fine) {
 				.magnetic-target {
-					transform: translate3d(var(--magnet-x), var(--magnet-y), 0);
-					transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
 					will-change: transform;
 				}
 			}
@@ -488,6 +488,58 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				);
 
 				window.addEventListener("blur", () => targets.forEach(resetTarget));
+			})();
+
+			(() => {
+				const supportsTouch = window.matchMedia("(pointer: coarse)");
+				if (!supportsTouch.matches) return;
+
+				const targets = Array.from(document.querySelectorAll("[data-magnetic]")).filter(
+					(target) => target instanceof HTMLElement
+				);
+				if (!targets.length) return;
+
+				const maxShift = 4;
+				const releaseDelay = 120;
+
+				const resetTarget = (target) => {
+					target.style.setProperty("--magnet-x", "0px");
+					target.style.setProperty("--magnet-y", "0px");
+				};
+
+				targets.forEach((target) => {
+					let releaseTimer;
+
+					target.addEventListener(
+						"touchstart",
+						(event) => {
+							const touch = event.touches[0];
+							if (!touch) return;
+
+							window.clearTimeout(releaseTimer);
+							const rect = target.getBoundingClientRect();
+							const centerX = rect.left + rect.width / 2;
+							const centerY = rect.top + rect.height / 2;
+							const deltaX = touch.clientX - centerX;
+							const deltaY = touch.clientY - centerY;
+							const distance = Math.max(Math.hypot(deltaX, deltaY), 1);
+							const shiftX = (deltaX / distance) * maxShift;
+							const shiftY = (deltaY / distance) * maxShift;
+
+							target.style.setProperty("--magnet-x", `${shiftX.toFixed(2)}px`);
+							target.style.setProperty("--magnet-y", `${shiftY.toFixed(2)}px`);
+						},
+						{ passive: true }
+					);
+
+					const release = () => {
+						window.clearTimeout(releaseTimer);
+						releaseTimer = window.setTimeout(() => resetTarget(target), releaseDelay);
+					};
+
+					target.addEventListener("touchend", release, { passive: true });
+					target.addEventListener("touchcancel", () => resetTarget(target), { passive: true });
+				});
 			})();
 
 			(() => {
