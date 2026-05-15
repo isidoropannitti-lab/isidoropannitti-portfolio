@@ -1,8 +1,5 @@
 ---
 import SectionsLayout from "../layouts/SectionsLayout.astro";
-import { readFile, readdir } from "node:fs/promises";
-
-const IMAGE_EXTENSIONS = /\.(avif|gif|jpe?g|png|webp)$/i;
 
 const ARCHITECTURE_IMAGES = [
 	{ src: "/images/architecture/23.4-cover.webp", label: "23.4", slug: "23-4", variant: "is-base" },
@@ -14,116 +11,53 @@ const ARCHITECTURE_IMAGES = [
 	{ src: "/images/architecture/25-8-cover.webp", label: "25.8", onGoing: true, variant: "is-base" },
 	{ src: "/images/architecture/26-2-cover.jpeg", label: "26.2", slug: "26-2", variant: "is-wide" },
 ];
-
-const sortByFileName = (a: string, b: string) =>
-	a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
-
-const readProjectTeaser = async (slug: string) => {
-	const folderUrl = new URL(`../../public/images/projects/${slug}/`, import.meta.url);
-	for (const filename of ["teaser-it.txt", "teaser.txt"]) {
-		try {
-			const text = await readFile(new URL(filename, folderUrl), "utf-8");
-			const clean = text.trim();
-			if (clean) return clean;
-		} catch {
-			// Try the next fallback.
-		}
-	}
-	return "";
-};
-
-const readProjectImages = async (slug: string) => {
-	const folderUrl = new URL(`../../public/images/projects/${slug}/`, import.meta.url);
-	try {
-		const entries = await readdir(folderUrl, { withFileTypes: true });
-		return entries
-			.filter((entry) => entry.isFile() && IMAGE_EXTENSIONS.test(entry.name))
-			.map((entry) => entry.name)
-			.sort(sortByFileName)
-			.map((filename) => `/images/projects/${slug}/${filename}`);
-	} catch {
-		return [];
-	}
-};
-
-const PROJECT_DETAILS = await Promise.all(
-	ARCHITECTURE_IMAGES.filter((image) => image.slug).map(async (image) => ({
-		slug: image.slug,
-		label: image.label,
-		teaser: await readProjectTeaser(image.slug),
-		images: await readProjectImages(image.slug),
-	}))
-);
-
-const projectDetailsBySlug = new Map(PROJECT_DETAILS.map((project) => [project.slug, project]));
 ---
 
 <SectionsLayout title="isidoro pannitti architetto" section="architecture" lang="it" lockMobileScrollY>
 	<div class="gallery-stage" data-home-gallery-stage aria-label="Architecture sequence">
 		<div class="gallery" data-home-gallery aria-label="Architecture sequence">
 			{
-				ARCHITECTURE_IMAGES.map((image) => {
-					const project = image.slug ? projectDetailsBySlug.get(image.slug) : undefined;
-					return (
-						<figure class:list={["preview", image.variant]} data-preview data-project-slug={image.slug}>
-							{
-								image.onGoing ? (
-									<>
-										<input
-											class="ongoing-toggle"
-											type="checkbox"
-											id={`ongoing-${image.label.replace(".", "-")}`}
-										/>
-										<label class="project-link ongoing-trigger" for={`ongoing-${image.label.replace(".", "-")}`}>
-											<img src={image.src} alt={image.label} loading="eager" />
-										</label>
-									</>
-								) : image.slug ? (
-									<button class="project-link" type="button" data-project-trigger data-project-slug={image.slug}>
+				ARCHITECTURE_IMAGES.map((image) => (
+					<figure class:list={["preview", image.variant]}>
+						{
+							image.onGoing ? (
+								<>
+									<input
+										class="ongoing-toggle"
+										type="checkbox"
+										id={`ongoing-${image.label.replace(".", "-")}`}
+									/>
+									<label class="project-link ongoing-trigger" for={`ongoing-${image.label.replace(".", "-")}`}>
 										<img src={image.src} alt={image.label} loading="eager" />
-									</button>
-								) : (
+									</label>
+								</>
+							) : image.slug ? (
+								<a href={`/projects/${image.slug}`} class="project-link">
 									<img src={image.src} alt={image.label} loading="eager" />
+								</a>
+							) : (
+								<img src={image.src} alt={image.label} loading="eager" />
+							)
+						}
+						<figcaption>
+							<span>{image.label}</span>
+							{
+								image.onGoing && (
+									<span class="ongoing-label" aria-live="polite">in corso</span>
 								)
 							}
-							<figcaption>
-								<span>{image.label}</span>
-								{
-									image.onGoing && (
-										<span class="ongoing-label" aria-live="polite">in corso</span>
-									)
-								}
-							</figcaption>
-							{project?.teaser && <p class="preview-teaser">{project.teaser}</p>}
-						</figure>
-					);
-				})
+						</figcaption>
+					</figure>
+				))
 			}
 		</div>
 	</div>
 
-	<div class="inline-projects" data-inline-projects aria-live="polite">
-		{
-			PROJECT_DETAILS.map((project) => (
-				<section class="inline-project" data-project-content={project.slug} aria-label={`foto progetto ${project.label}`}>
-					<div class="inline-images">
-						{project.images.map((src) => (
-							<figure class="inline-image">
-								<img src={src} alt={`${project.label} progetto`} loading="lazy" decoding="async" />
-							</figure>
-						))}
-					</div>
-				</section>
-			))
-		}
-	</div>
-
 	<script is:inline>
 		(() => {
-			const stage = document.querySelector("[data-home-gallery-stage]");
-			const gallery = document.querySelector("[data-home-gallery]");
 			const resetGallery = () => {
-				if (stage instanceof HTMLElement && !stage.classList.contains("is-expanded")) stage.scrollLeft = 0;
+				const stage = document.querySelector("[data-home-gallery-stage]");
+				if (stage instanceof HTMLElement) stage.scrollLeft = 0;
 			};
 
 			if ("scrollRestoration" in history) {
@@ -136,47 +70,6 @@ const projectDetailsBySlug = new Map(PROJECT_DETAILS.map((project) => [project.s
 
 			window.addEventListener("load", resetGallery, { once: true });
 			window.addEventListener("pageshow", resetGallery);
-
-			if (!(stage instanceof HTMLElement) || !(gallery instanceof HTMLElement)) return;
-
-			const root = document.documentElement;
-			const previews = Array.from(gallery.querySelectorAll("[data-preview]")).filter(
-				(preview) => preview instanceof HTMLElement
-			);
-			const projectContents = Array.from(document.querySelectorAll("[data-project-content]")).filter(
-				(content) => content instanceof HTMLElement
-			);
-
-			gallery.addEventListener("click", (event) => {
-				const target = event.target;
-				if (!(target instanceof Element)) return;
-
-				const trigger = target.closest("[data-project-trigger]");
-				if (!(trigger instanceof HTMLElement)) return;
-
-				const slug = trigger.dataset.projectSlug;
-				const selected = trigger.closest("[data-preview]");
-				if (!slug || !(selected instanceof HTMLElement)) return;
-
-				root.classList.add("inline-project-open");
-				document.body.classList.add("inline-project-open");
-				stage.classList.add("is-expanded");
-				gallery.classList.add("is-expanded");
-
-				previews.forEach((preview) => {
-					const isSelected = preview === selected;
-					preview.classList.toggle("is-selected", isSelected);
-					preview.classList.toggle("is-hidden", !isSelected);
-				});
-
-				projectContents.forEach((content) => {
-					content.classList.toggle("is-active", content.dataset.projectContent === slug);
-				});
-
-				window.setTimeout(() => {
-					selected.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
-				}, 80);
-			});
 		})();
 	</script>
 </SectionsLayout>
@@ -219,7 +112,6 @@ const projectDetailsBySlug = new Map(PROJECT_DETAILS.map((project) => [project.s
 		display: grid;
 		gap: var(--space-16);
 		scroll-snap-align: start;
-		transition: opacity 220ms ease;
 	}
 
 	.preview img {
@@ -230,29 +122,8 @@ const projectDetailsBySlug = new Map(PROJECT_DETAILS.map((project) => [project.s
 		object-position: center;
 	}
 
-	.gallery.is-expanded {
-		overflow: visible;
-	}
-
-	.gallery.is-expanded .preview.is-hidden {
-		opacity: 0;
-		pointer-events: none;
-	}
-
-	.gallery.is-expanded .preview.is-selected {
-		grid-template-columns: auto minmax(16rem, 26rem);
-		align-items: start;
-	}
-
 	.project-link {
 		display: block;
-		padding: 0;
-		border: 0;
-		background: transparent;
-		color: inherit;
-		font: inherit;
-		text-align: inherit;
-		cursor: pointer;
 	}
 
 	.ongoing-toggle {
@@ -271,56 +142,6 @@ const projectDetailsBySlug = new Map(PROJECT_DETAILS.map((project) => [project.s
 		gap: var(--space-8);
 	}
 
-	.preview-teaser {
-		display: none;
-		grid-column: 2;
-		grid-row: 1 / span 2;
-		max-width: 26rem;
-		margin: 0;
-		white-space: pre-line;
-		opacity: 0;
-		transform: translateY(6px);
-		transition: opacity 260ms ease, transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
-	}
-
-	.gallery.is-expanded .preview.is-selected .preview-teaser {
-		display: block;
-		opacity: 1;
-		transform: translateY(0);
-		transition-delay: 120ms;
-	}
-
-	.inline-projects {
-		margin-top: var(--space-64);
-	}
-
-	.inline-project {
-		display: none;
-	}
-
-	.inline-project.is-active {
-		display: block;
-	}
-
-	.inline-images {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: var(--space-64) var(--space-48);
-		opacity: 0;
-		transform: translateY(var(--space-16));
-		animation: inline-images-in 420ms cubic-bezier(0.22, 1, 0.36, 1) 140ms both;
-	}
-
-	.inline-image {
-		margin: 0;
-	}
-
-	.inline-image img {
-		display: block;
-		width: 100%;
-		height: auto;
-	}
-
 	.ongoing-label {
 		opacity: 0;
 		transform: translateY(var(--space-4));
@@ -334,36 +155,6 @@ const projectDetailsBySlug = new Map(PROJECT_DETAILS.map((project) => [project.s
 
 	.ongoing-trigger img {
 		pointer-events: none;
-	}
-
-	:global(html.inline-project-open),
-	:global(body.inline-project-open) {
-		height: auto;
-		overflow-y: auto;
-		overscroll-behavior-y: auto;
-	}
-
-	:global(body.inline-project-open) {
-		position: static;
-		inset: auto;
-	}
-
-	:global(body.inline-project-open main) {
-		height: auto;
-		overflow-y: visible;
-		touch-action: auto;
-	}
-
-	@keyframes inline-images-in {
-		from {
-			opacity: 0;
-			transform: translateY(var(--space-16));
-		}
-
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
 	}
 
 	@media (max-width: 760px) {
@@ -397,12 +188,6 @@ const projectDetailsBySlug = new Map(PROJECT_DETAILS.map((project) => [project.s
 			-ms-overflow-style: none;
 		}
 
-		.gallery-stage.is-expanded {
-			display: block;
-			overflow: visible;
-			padding-bottom: var(--space-32);
-		}
-
 		.gallery-stage::-webkit-scrollbar {
 			width: 0;
 			height: 0;
@@ -416,11 +201,6 @@ const projectDetailsBySlug = new Map(PROJECT_DETAILS.map((project) => [project.s
 			overflow: visible;
 			margin-inline: 0;
 			padding: 0;
-		}
-
-		.gallery.is-expanded {
-			width: auto;
-			min-width: 0;
 		}
 
 		.preview {
@@ -450,26 +230,6 @@ const projectDetailsBySlug = new Map(PROJECT_DETAILS.map((project) => [project.s
 		.preview figcaption {
 			min-height: var(--mobile-caption-space);
 			padding-bottom: var(--space-8);
-		}
-
-		.gallery.is-expanded .preview.is-selected {
-			width: var(--mobile-card-width);
-			grid-template-columns: 1fr;
-		}
-
-		.preview-teaser {
-			grid-column: 1;
-			grid-row: auto;
-			max-width: var(--mobile-card-width);
-		}
-
-		.inline-projects {
-			margin-top: var(--space-32);
-		}
-
-		.inline-images {
-			grid-template-columns: 1fr;
-			gap: var(--space-48);
 		}
 	}
 </style>
