@@ -526,6 +526,8 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 				targets.forEach((target) => {
 					let releaseTimer;
+					let startX = 0;
+					let startY = 0;
 
 					target.addEventListener(
 						"touchstart",
@@ -534,6 +536,22 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 							if (!touch) return;
 
 							window.clearTimeout(releaseTimer);
+							startX = touch.clientX;
+							startY = touch.clientY;
+						},
+						{ passive: true }
+					);
+
+					target.addEventListener(
+						"touchmove",
+						(event) => {
+							const touch = event.touches[0];
+							if (!touch) return;
+
+							const movementX = touch.clientX - startX;
+							const movementY = touch.clientY - startY;
+							if (Math.hypot(movementX, movementY) < 4) return;
+
 							const rect = target.getBoundingClientRect();
 							const centerX = rect.left + rect.width / 2;
 							const centerY = rect.top + rect.height / 2;
