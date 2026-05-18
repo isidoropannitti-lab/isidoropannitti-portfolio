@@ -33,7 +33,7 @@ const ARCHITECTURE_IMAGES = [
 										id={`ongoing-${image.label.replace(".", "-")}`}
 									/>
 									<label
-										class="project-link ongoing-trigger magnetic-target"
+										class="project-link ongoing-trigger magnetic-target pressable"
 										for={`ongoing-${image.label.replace(".", "-")}`}
 										data-magnetic
 									>
@@ -41,11 +41,11 @@ const ARCHITECTURE_IMAGES = [
 									</label>
 								</>
 							) : image.slug ? (
-								<a href={`/projects/${image.slug}`} class="project-link magnetic-target" data-magnetic>
+								<a href={`/projects/${image.slug}`} class="project-link magnetic-target pressable" data-magnetic>
 									<img src={image.src} alt={image.label} loading="eager" />
 								</a>
 							) : (
-								<img class="magnetic-target" src={image.src} alt={image.label} loading="eager" data-magnetic />
+								<img class="magnetic-target pressable" src={image.src} alt={image.label} loading="eager" data-magnetic />
 							)
 						}
 						<figcaption>

@@ -167,8 +167,35 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			:global(.magnetic-target) {
 				--magnet-x: 0px;
 				--magnet-y: 0px;
-				transform: translate3d(var(--magnet-x), var(--magnet-y), 0);
+				--press-scale: 1;
+				transform: translate3d(var(--magnet-x), var(--magnet-y), 0) scale(var(--press-scale));
 				transition: transform 420ms cubic-bezier(0.2, 1, 0.34, 1);
+			}
+
+			:global(.pressable) {
+				--press-scale: 1;
+				transform: scale(var(--press-scale));
+				transform-origin: center;
+				transition: transform 170ms cubic-bezier(0.22, 1, 0.36, 1);
+				-webkit-tap-highlight-color: transparent;
+			}
+
+			:global(.pressable:active) {
+				--press-scale: 0.998;
+				transition-duration: 120ms;
+				transition-timing-function: cubic-bezier(0.25, 0.8, 0.32, 1);
+			}
+
+			:global(.magnetic-target.pressable) {
+				transform: translate3d(var(--magnet-x), var(--magnet-y), 0) scale(var(--press-scale));
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				:global(.pressable),
+				:global(.pressable:active) {
+					--press-scale: 1;
+					transition: none;
+				}
 			}
 
 			.left-fixed a,
@@ -202,13 +229,14 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 			.menu-trigger {
 				--menu-rotation: 0deg;
+				--press-scale: 1;
 				display: none;
 				cursor: pointer;
 				user-select: none;
 				font-size: 1.3em;
 				line-height: 1;
 				transform-origin: 50% 52%;
-				transform: rotate(var(--menu-rotation));
+				transform: rotate(var(--menu-rotation)) scale(var(--press-scale));
 				transition: opacity 280ms ease, transform 520ms cubic-bezier(0.2, 1, 0.34, 1);
 				will-change: transform;
 			}
@@ -376,15 +404,15 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 		<div class="left-fixed">
 			<p>
-				<a class="site-home" href={prefix || "/"}
+				<a class="site-home pressable" href={prefix || "/"}
 					>isidoro pannitti architetto</a
 				>
 			</p>
 			<p>
-				<a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+				<a class="pressable" href={`mailto:${EMAIL}`}>{EMAIL}</a>
 			</p>
 			<p>
-				<a href={INSTAGRAM_URL} target="_blank" rel="noreferrer noopener"
+				<a class="pressable" href={INSTAGRAM_URL} target="_blank" rel="noreferrer noopener"
 					>{INSTAGRAM_HANDLE}</a
 				>
 			</p>
@@ -393,24 +421,24 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 		<div class="right-fixed">
 			<nav class="sections-nav" aria-label="Sections">
 				<a
-					class:list={{ active: section === "architecture" }}
+					class:list={{ active: section === "architecture", pressable: true }}
 					href={getSectionHref("architecture")}
 					>{navLabels[lang].architecture}</a
 				>
 				<span>,&nbsp;</span>
 				<a
-					class:list={{ active: section === "photo" }}
+					class:list={{ active: section === "photo", pressable: true }}
 					href={getSectionHref("photo")}
 					>{navLabels[lang].photo}</a
 				>
 				<span>,&nbsp;</span>
 				<a
-					class:list={{ active: section === "info" }}
+					class:list={{ active: section === "info", pressable: true }}
 					href={getSectionHref("info")}
 					>{navLabels[lang].info}</a
 				>
 			</nav>
-			<label class="menu-trigger" for="sections-toggle" aria-label="Toggle navigation"
+			<label class="menu-trigger pressable" for="sections-toggle" aria-label="Toggle navigation"
 				>+</label
 			>
 		</div>
