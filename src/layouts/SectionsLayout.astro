@@ -186,6 +186,12 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				transition-timing-function: cubic-bezier(0.25, 0.8, 0.32, 1);
 			}
 
+			:global(.pressable-control:active) {
+				--press-scale: 0.985;
+				transition-duration: 110ms;
+				transition-timing-function: cubic-bezier(0.25, 0.8, 0.32, 1);
+			}
+
 			:global(.magnetic-target.pressable) {
 				transform: translate3d(var(--magnet-x), var(--magnet-y), 0) scale(var(--press-scale));
 			}
@@ -404,15 +410,15 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 		<div class="left-fixed">
 			<p>
-				<a class="site-home pressable" href={prefix || "/"}
+				<a class="site-home pressable pressable-control" href={prefix || "/"}
 					>isidoro pannitti architetto</a
 				>
 			</p>
 			<p>
-				<a class="pressable" href={`mailto:${EMAIL}`}>{EMAIL}</a>
+				<a class="pressable pressable-control" href={`mailto:${EMAIL}`}>{EMAIL}</a>
 			</p>
 			<p>
-				<a class="pressable" href={INSTAGRAM_URL} target="_blank" rel="noreferrer noopener"
+				<a class="pressable pressable-control" href={INSTAGRAM_URL} target="_blank" rel="noreferrer noopener"
 					>{INSTAGRAM_HANDLE}</a
 				>
 			</p>
@@ -421,24 +427,24 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 		<div class="right-fixed">
 			<nav class="sections-nav" aria-label="Sections">
 				<a
-					class:list={{ active: section === "architecture", pressable: true }}
+					class:list={{ active: section === "architecture", pressable: true, "pressable-control": true }}
 					href={getSectionHref("architecture")}
 					>{navLabels[lang].architecture}</a
 				>
 				<span>,&nbsp;</span>
 				<a
-					class:list={{ active: section === "photo", pressable: true }}
+					class:list={{ active: section === "photo", pressable: true, "pressable-control": true }}
 					href={getSectionHref("photo")}
 					>{navLabels[lang].photo}</a
 				>
 				<span>,&nbsp;</span>
 				<a
-					class:list={{ active: section === "info", pressable: true }}
+					class:list={{ active: section === "info", pressable: true, "pressable-control": true }}
 					href={getSectionHref("info")}
 					>{navLabels[lang].info}</a
 				>
 			</nav>
-			<label class="menu-trigger pressable" for="sections-toggle" aria-label="Toggle navigation"
+			<label class="menu-trigger pressable pressable-control" for="sections-toggle" aria-label="Toggle navigation"
 				>+</label
 			>
 		</div>
