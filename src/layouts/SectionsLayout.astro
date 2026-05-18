@@ -259,12 +259,14 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				right: var(--edge);
 				bottom: var(--edge);
 				z-index: 20;
-				color: #b9b9b9;
+				color: #fff;
+				mix-blend-mode: difference;
 				transition: opacity 260ms ease;
 			}
 
 			body.theme-photo .lang-switch-fixed {
-				color: color-mix(in srgb, var(--photo-text) 72%, transparent);
+				color: #fff;
+				mix-blend-mode: difference;
 			}
 
 			.lang-switch-fixed.is-hidden {
@@ -279,11 +281,11 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			}
 
 			.lang-switch-fixed .active {
-				color: #9b9b9b;
+				color: inherit;
 			}
 
 			body.theme-photo .lang-switch-fixed .active {
-				color: var(--photo-text);
+				color: inherit;
 			}
 
 			.page-transition-overlay {
