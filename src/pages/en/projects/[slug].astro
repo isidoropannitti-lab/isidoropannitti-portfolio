@@ -197,8 +197,8 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 	</article>
 
 	<div class="project-image-controls" data-project-image-controls aria-label="Image size controls">
-		<button class="project-image-control pressable pressable-control" type="button" data-project-image-decrease aria-label="Decrease image size">-</button>
-		<button class="project-image-control pressable pressable-control" type="button" data-project-image-increase aria-label="Increase image size">+</button>
+		<button class="project-image-control is-decrease pressable pressable-control" type="button" data-project-image-decrease aria-label="Decrease image size" disabled>-</button>
+		<button class="project-image-control is-increase pressable pressable-control" type="button" data-project-image-increase aria-label="Increase image size">+</button>
 	</div>
 </SectionsLayout>
 
@@ -213,9 +213,11 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 		bottom: var(--edge);
 		z-index: 24;
 		display: flex;
-		align-items: baseline;
+		align-items: center;
 		gap: var(--space-8);
 		color: #9b9b9b;
+		line-height: 1;
+		transform: translateY(-0.08rem);
 	}
 
 	.project-image-control {
@@ -227,9 +229,30 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 		font: inherit;
 		line-height: 1;
 		cursor: pointer;
+		width: 0.9em;
+		height: 1em;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		transform-origin: 50% 50%;
+		transition:
+			opacity 240ms ease,
+			transform 360ms cubic-bezier(0.2, 1, 0.34, 1);
 	}
 
-	.project-image-control[hidden] {
+	.project-image-control.is-decrease {
+		opacity: 0;
+		pointer-events: none;
+		transform: translateY(0.08em) rotate(90deg) scale(0.72);
+	}
+
+	.project-image-controls.has-decrease .project-image-control.is-decrease {
+		opacity: 1;
+		pointer-events: auto;
+		transform: translateY(0) rotate(0deg) scale(var(--press-scale));
+	}
+
+	.project-image-control.is-increase[hidden] {
 		display: none;
 	}
 
@@ -451,7 +474,7 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 	const decrease = document.querySelector("[data-project-image-decrease]");
 	const increase = document.querySelector("[data-project-image-increase]");
 
-	if (projectPage instanceof HTMLElement && controls && decrease instanceof HTMLButtonElement && increase instanceof HTMLButtonElement) {
+	if (projectPage instanceof HTMLElement && controls instanceof HTMLElement && decrease instanceof HTMLButtonElement && increase instanceof HTMLButtonElement) {
 		let level = 0;
 		const maxLevel = 5;
 
@@ -459,7 +482,8 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 			for (let index = 1; index <= maxLevel; index += 1) {
 				projectPage.classList.toggle(`is-image-scale-${index}`, level === index);
 			}
-			decrease.hidden = level === 0;
+			controls.classList.toggle("has-decrease", level > 0);
+			decrease.disabled = level === 0;
 			increase.hidden = level === maxLevel;
 		};
 
