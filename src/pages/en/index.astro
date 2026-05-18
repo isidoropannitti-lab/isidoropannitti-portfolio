@@ -2,14 +2,14 @@
 import SectionsLayout from "../../layouts/SectionsLayout.astro";
 
 const ARCHITECTURE_IMAGES = [
-	{ src: "/images/architecture/23.4-cover.webp", label: "23.4", slug: "23-4", variant: "is-base" },
-	{ src: "/images/architecture/25-1-cover.webp", label: "25.1", slug: "25-1", variant: "is-base" },
-	{ src: "/images/architecture/25-2-cover.webp", label: "25.2", slug: "25-2", variant: "is-base" },
-	{ src: "/images/architecture/25-3-cover.webp", label: "25.3", onGoing: true, variant: "is-wide" },
+	{ src: "/images/architecture/23.4-cover.webp", label: "23.4", slug: "23-4", variant: "is-vertical" },
+	{ src: "/images/architecture/25-1-cover.webp", label: "25.1", slug: "25-1", variant: "is-cinematic" },
+	{ src: "/images/architecture/25-2-cover.webp", label: "25.2", slug: "25-2", variant: "is-vertical" },
+	{ src: "/images/architecture/25-3-cover.webp", label: "25.3", onGoing: true, variant: "is-cinematic" },
 	{ src: "/images/architecture/25-4-cover.webp", label: "25.4", slug: "25-4", variant: "is-compact" },
-	{ src: "/images/architecture/25-6-cover.webp", label: "25.6", slug: "25-6", variant: "is-base" },
+	{ src: "/images/architecture/25-6-cover.webp", label: "25.6", slug: "25-6", variant: "is-vertical" },
 	{ src: "/images/architecture/25-8-cover.webp", label: "25.8", onGoing: true, variant: "is-base" },
-	{ src: "/images/architecture/26-2-cover.jpeg", label: "26.2", slug: "26-2", variant: "is-wide" },
+	{ src: "/images/architecture/26-2-cover.jpeg", label: "26.2", slug: "26-2", variant: "is-cinematic" },
 ];
 ---
 
@@ -81,7 +81,7 @@ const ARCHITECTURE_IMAGES = [
 		overscroll-behavior-x: contain;
 		padding-top: var(--space-8);
 		padding-left: var(--edge);
-		padding-right: 0;
+		padding-right: var(--edge);
 		scroll-padding-left: var(--edge);
 		scroll-snap-type: x proximity;
 		touch-action: pan-x;
@@ -113,6 +113,21 @@ const ARCHITECTURE_IMAGES = [
 		object-position: center;
 	}
 
+	.preview.is-cinematic img {
+		width: clamp(34rem, 56vw, 48rem);
+		height: clamp(20rem, 32vw, 24rem);
+	}
+
+	.preview.is-vertical img {
+		width: clamp(16rem, 24vw, 20rem);
+		height: clamp(24rem, 40vw, 30rem);
+	}
+
+	.preview.is-compact img {
+		width: clamp(18rem, 28vw, 22rem);
+		height: clamp(23rem, 38vw, 28rem);
+	}
+
 	.project-link {
 		display: block;
 	}
@@ -131,6 +146,7 @@ const ARCHITECTURE_IMAGES = [
 		display: flex;
 		align-items: baseline;
 		gap: var(--space-8);
+		min-height: var(--space-24);
 	}
 
 	.ongoing-label {
@@ -192,7 +208,7 @@ const ARCHITECTURE_IMAGES = [
 			align-self: flex-start;
 			overflow: visible;
 			margin-inline: 0;
-			padding: 0;
+			padding: 0 var(--edge) 0 0;
 		}
 
 		.preview {
@@ -205,6 +221,14 @@ const ARCHITECTURE_IMAGES = [
 		}
 
 		.preview.is-compact {
+			width: var(--mobile-card-width);
+		}
+
+		.preview.is-cinematic {
+			width: var(--mobile-card-width);
+		}
+
+		.preview.is-vertical {
 			width: var(--mobile-card-width);
 		}
 
