@@ -27,16 +27,20 @@ const ARCHITECTURE_IMAGES = [
 										type="checkbox"
 										id={`ongoing-${image.label.replace(".", "-")}`}
 									/>
-									<label class="project-link ongoing-trigger" for={`ongoing-${image.label.replace(".", "-")}`}>
+									<label
+										class="project-link ongoing-trigger magnetic-target"
+										for={`ongoing-${image.label.replace(".", "-")}`}
+										data-magnetic
+									>
 										<img src={image.src} alt={image.label} loading="eager" />
 									</label>
 								</>
 							) : image.slug ? (
-								<a href={`/projects/${image.slug}`} class="project-link">
+								<a href={`/projects/${image.slug}`} class="project-link magnetic-target" data-magnetic>
 									<img src={image.src} alt={image.label} loading="eager" />
 								</a>
 							) : (
-								<img src={image.src} alt={image.label} loading="eager" />
+								<img class="magnetic-target" src={image.src} alt={image.label} loading="eager" data-magnetic />
 							)
 						}
 						<figcaption>

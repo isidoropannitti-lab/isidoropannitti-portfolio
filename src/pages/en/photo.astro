@@ -47,7 +47,7 @@ const photos = PHOTO_IMAGES.map((src, index) => {
 				photos.map((photo, index) => (
 					<figure class:list={["preview", photo.variant]}>
 						<input class="location-toggle" type="checkbox" id={`photo-toggle-en-${index}`} />
-						<label class="photo-trigger" for={`photo-toggle-en-${index}`}>
+						<label class="photo-trigger magnetic-target" for={`photo-toggle-en-${index}`} data-magnetic>
 							<img src={encodeURI(photo.src)} alt={photo.location} loading="eager" />
 						</label>
 						<figcaption>
