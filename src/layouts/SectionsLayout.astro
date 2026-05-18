@@ -688,9 +688,12 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					let resetTimer;
 
 					const maxScroll = () => Math.max(scroller.scrollWidth - scroller.clientWidth, 0);
-					const resetBrake = () => {
+					const releaseBrake = () => {
 						pull = 0;
 						stage.style.setProperty("--section-brake-x", "0px");
+					};
+					const snapBackToEnd = () => {
+						releaseBrake();
 						scroller.scrollTo({ left: maxScroll(), behavior: "smooth" });
 					};
 
@@ -704,8 +707,8 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 							const intent = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
 							if (intent <= 0) {
-								pull = 0;
-								stage.style.setProperty("--section-brake-x", "0px");
+								window.clearTimeout(resetTimer);
+								releaseBrake();
 								return;
 							}
 
@@ -725,12 +728,12 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 								return;
 							}
 
-							resetTimer = window.setTimeout(resetBrake, resetDelay);
+							resetTimer = window.setTimeout(snapBackToEnd, resetDelay);
 						},
 						{ passive: false }
 					);
 
-					stage.addEventListener("mouseleave", resetBrake);
+					stage.addEventListener("mouseleave", snapBackToEnd);
 				});
 			})();
 
