@@ -139,7 +139,7 @@ const photos = PHOTO_IMAGES.map((src, index) => {
 	.location-label {
 		opacity: 0;
 		transform: translateY(var(--space-4));
-		transition: opacity 220ms ease, transform 220ms ease;
+		transition: opacity 320ms ease, transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
 	}
 
 	.location-toggle:checked ~ figcaption .location-label {
