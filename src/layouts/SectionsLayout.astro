@@ -690,8 +690,8 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 				const overlay = document.querySelector("[data-page-transition]");
 				const storageKey = "section-transition-theme";
-				const threshold = 220;
-				const maxBrake = 48;
+				const threshold = 260;
+				const maxBrake = 64;
 				const resetDelay = 280;
 				let isNavigating = false;
 
@@ -731,13 +731,15 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					let resetTimer;
 
 					const maxScroll = () => Math.max(scroller.scrollWidth - scroller.clientWidth, 0);
+					const trailingSpace = () => parseFloat(window.getComputedStyle(scroller).paddingRight) || 0;
+					const restingEnd = () => Math.max(maxScroll() - trailingSpace(), 0);
 					const releaseBrake = () => {
 						pull = 0;
 						stage.style.setProperty("--section-brake-x", "0px");
 					};
 					const snapBackToEnd = () => {
 						releaseBrake();
-						scroller.scrollTo({ left: maxScroll(), behavior: "smooth" });
+						scroller.scrollTo({ left: restingEnd(), behavior: "smooth" });
 					};
 
 					scroller.addEventListener(
@@ -752,14 +754,18 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 							if (intent <= 0) {
 								window.clearTimeout(resetTimer);
 								releaseBrake();
+								if (scroller.scrollLeft > restingEnd()) {
+									scroller.scrollTo({ left: restingEnd(), behavior: "smooth" });
+								}
 								return;
 							}
 
-							const atEnd = scroller.scrollLeft >= maxScroll() - 2;
+							const atEnd = scroller.scrollLeft >= restingEnd() - 2;
 							if (!atEnd) return;
 
 							event.preventDefault();
 							window.clearTimeout(resetTimer);
+							if (scroller.scrollLeft > restingEnd()) scroller.scrollLeft = restingEnd();
 
 							pull = Math.min(threshold, pull + Math.abs(intent));
 							const easedPull = 1 - Math.pow(1 - pull / threshold, 2.1);
@@ -794,8 +800,8 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 				const overlay = document.querySelector("[data-page-transition]");
 				const storageKey = "section-transition-theme";
-				const threshold = 96;
-				const maxBrake = 28;
+				const threshold = 112;
+				const maxBrake = 36;
 				const resetDelay = 220;
 				let isNavigating = false;
 
