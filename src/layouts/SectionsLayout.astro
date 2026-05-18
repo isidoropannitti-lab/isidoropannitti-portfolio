@@ -739,7 +739,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					};
 					const snapBackToEnd = () => {
 						releaseBrake();
-						scroller.scrollTo({ left: restingEnd(), behavior: "smooth" });
+						if (scroller.scrollLeft > restingEnd()) scroller.scrollLeft = restingEnd();
 					};
 
 					scroller.addEventListener(
@@ -754,9 +754,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 							if (intent <= 0) {
 								window.clearTimeout(resetTimer);
 								releaseBrake();
-								if (scroller.scrollLeft > restingEnd()) {
-									scroller.scrollTo({ left: restingEnd(), behavior: "smooth" });
-								}
+								if (scroller.scrollLeft > restingEnd()) scroller.scrollLeft = restingEnd();
 								return;
 							}
 
@@ -765,7 +763,8 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 							event.preventDefault();
 							window.clearTimeout(resetTimer);
-							if (scroller.scrollLeft > restingEnd()) scroller.scrollLeft = restingEnd();
+							const rest = restingEnd();
+							if (scroller.scrollLeft !== rest) scroller.scrollLeft = rest;
 
 							pull = Math.min(threshold, pull + Math.abs(intent) * 0.9);
 							const easedPull = 1 - Math.pow(1 - pull / threshold, 1.7);
