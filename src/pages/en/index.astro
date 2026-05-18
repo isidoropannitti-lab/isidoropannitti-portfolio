@@ -62,26 +62,6 @@ const ARCHITECTURE_IMAGES = [
 			}
 		</div>
 	</div>
-
-	<script is:inline>
-		(() => {
-			const resetGallery = () => {
-				const stage = document.querySelector("[data-home-gallery-stage]");
-				if (stage instanceof HTMLElement) stage.scrollLeft = 0;
-			};
-
-			if ("scrollRestoration" in history) {
-				history.scrollRestoration = "manual";
-			}
-
-			requestAnimationFrame(() => {
-				requestAnimationFrame(resetGallery);
-			});
-
-			window.addEventListener("load", resetGallery, { once: true });
-			window.addEventListener("pageshow", resetGallery);
-		})();
-	</script>
 </SectionsLayout>
 
 <style>

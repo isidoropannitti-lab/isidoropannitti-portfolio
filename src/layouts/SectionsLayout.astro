@@ -478,6 +478,31 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			})();
 
 			(() => {
+				const resetSectionFlows = () => {
+					document.querySelectorAll("[data-section-flow]").forEach((stage) => {
+						if (!(stage instanceof HTMLElement)) return;
+						const scroller = stage.querySelector(".gallery");
+						const target = scroller instanceof HTMLElement ? scroller : stage;
+
+						target.scrollLeft = 0;
+						stage.scrollLeft = 0;
+						stage.style.setProperty("--section-brake-x", "0px");
+					});
+				};
+
+				if ("scrollRestoration" in history) {
+					history.scrollRestoration = "manual";
+				}
+
+				requestAnimationFrame(() => {
+					requestAnimationFrame(resetSectionFlows);
+				});
+
+				window.addEventListener("load", resetSectionFlows, { once: true });
+				window.addEventListener("pageshow", resetSectionFlows);
+			})();
+
+			(() => {
 				const supportsFinePointer = window.matchMedia("(pointer: fine)");
 				if (!supportsFinePointer.matches) return;
 
