@@ -521,6 +521,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				let idleTimer;
 				let selectionTimer;
 				let isRunning = false;
+				let isCollapsed = false;
 
 				const title = document.querySelector(".site-home");
 				const email = document.querySelector("[data-home-email]");
@@ -543,6 +544,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 				const wait = (duration) => new Promise((resolve) => window.setTimeout(resolve, duration));
 				const typingDelay = (index) => 58 + ((index * 23) % 74);
+				const fastTypingDelay = (index) => 18 + ((index * 17) % 26);
 
 				const getTextNode = (element) => {
 					if (element.firstChild instanceof Text) return element.firstChild;
@@ -579,6 +581,10 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 				const resetIdleTimer = () => {
 					if (isRunning) return;
+					if (isCollapsed) {
+						void triggerTextRestore();
+						return;
+					}
 					window.clearTimeout(idleTimer);
 					idleTimer = window.setTimeout(() => {
 						void triggerTextDelete();
@@ -608,6 +614,15 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					}
 				};
 
+				const typeText = async (element, text) => {
+					element.textContent = "";
+					for (let index = 0; index < text.length; index += 1) {
+						element.textContent = `${element.textContent ?? ""}${text[index]}`;
+						placeCaret(element);
+						await wait(fastTypingDelay(index));
+					}
+				};
+
 				const suppressSelection = () => {
 					document.body.classList.add("is-home-easter-clicking");
 					window.getSelection()?.removeAllRanges();
@@ -619,7 +634,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				};
 
 				const triggerTextDelete = async () => {
-					if (isRunning) return;
+					if (isRunning || isCollapsed) return;
 
 					isRunning = true;
 					document.body.classList.add("is-home-easter-active");
@@ -651,7 +666,30 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					await wait(520);
 					caret.classList.remove("is-visible");
 					document.body.classList.remove("is-home-easter-active");
+					isCollapsed = true;
 					isRunning = false;
+				};
+
+				const triggerTextRestore = async () => {
+					if (isRunning || !isCollapsed) return;
+
+					isRunning = true;
+					isCollapsed = false;
+					document.body.classList.add("is-home-easter-active");
+					suppressSelection();
+
+					await wait(120);
+					await typeText(title, originals.title);
+					await wait(90);
+					await typeText(email, originals.email);
+					await wait(80);
+					await typeText(instagram, originals.instagram);
+
+					await wait(220);
+					caret.classList.remove("is-visible");
+					document.body.classList.remove("is-home-easter-active");
+					isRunning = false;
+					resetIdleTimer();
 				};
 
 				const registerBlankClick = (event) => {
