@@ -195,11 +195,42 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 			}
 		</ul>
 	</article>
+
+	<div class="project-image-controls" data-project-image-controls aria-label="Image size controls">
+		<button class="project-image-control pressable pressable-control" type="button" data-project-image-decrease aria-label="Decrease image size">-</button>
+		<button class="project-image-control pressable pressable-control" type="button" data-project-image-increase aria-label="Increase image size">+</button>
+	</div>
 </SectionsLayout>
 
 <style>
 	.project-page {
 		max-width: 100%;
+	}
+
+	.project-image-controls {
+		position: fixed;
+		right: calc(var(--edge) + var(--space-48));
+		bottom: var(--edge);
+		z-index: 24;
+		display: flex;
+		align-items: baseline;
+		gap: var(--space-8);
+		color: #9b9b9b;
+	}
+
+	.project-image-control {
+		appearance: none;
+		border: 0;
+		padding: 0;
+		background: transparent;
+		color: inherit;
+		font: inherit;
+		line-height: 1;
+		cursor: pointer;
+	}
+
+	.project-image-control[hidden] {
+		display: none;
 	}
 
 	.hero {
@@ -219,6 +250,14 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 		width: 17rem;
 		height: auto;
 		display: block;
+	}
+
+	.project-page.is-image-scale-1 .hero img {
+		width: 19rem;
+	}
+
+	.project-page.is-image-scale-2 .hero img {
+		width: 21rem;
 	}
 
 	.hero figcaption {
@@ -281,6 +320,16 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 		width: min(calc(100% + var(--space-96)), clamp(21rem, 34vw, 30rem));
 	}
 
+	.project-page.is-image-scale-1 .project-grid {
+		--project-col: clamp(15.75rem, 24.75vw, 23.5rem);
+		--project-gap-col: clamp(12.25rem, 19.25vw, 18.5rem);
+	}
+
+	.project-page.is-image-scale-2 .project-grid {
+		--project-col: clamp(17.5rem, 27.5vw, 26rem);
+		--project-gap-col: clamp(10.5rem, 16.5vw, 16rem);
+	}
+
 	@media (max-width: 980px) {
 		.hero-head {
 			grid-template-columns: 1fr;
@@ -289,6 +338,14 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 
 		.hero img {
 			width: 22rem;
+		}
+
+		.project-page.is-image-scale-1 .hero img {
+			width: min(100%, 24rem);
+		}
+
+		.project-page.is-image-scale-2 .hero img {
+			width: min(100%, 26rem);
 		}
 
 		.project-grid {
@@ -306,5 +363,52 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 		.grid-item.is-emphasized {
 			width: min(100%, clamp(18rem, 82vw, 28rem));
 		}
+
+		.project-page.is-image-scale-1 .grid-item {
+			width: min(100%, clamp(17.5rem, 79vw, 26rem));
+		}
+
+		.project-page.is-image-scale-1 .grid-item.is-emphasized {
+			width: min(100%, clamp(19rem, 88vw, 30rem));
+		}
+
+		.project-page.is-image-scale-2 .grid-item {
+			width: min(100%, clamp(19rem, 86vw, 28rem));
+		}
+
+		.project-page.is-image-scale-2 .grid-item.is-emphasized {
+			width: min(100%, clamp(20rem, 92vw, 32rem));
+		}
 	}
 </style>
+
+<script>
+	const projectPage = document.querySelector(".project-page");
+	const controls = document.querySelector("[data-project-image-controls]");
+	const decrease = document.querySelector("[data-project-image-decrease]");
+	const increase = document.querySelector("[data-project-image-increase]");
+
+	if (projectPage instanceof HTMLElement && controls && decrease instanceof HTMLButtonElement && increase instanceof HTMLButtonElement) {
+		let level = 0;
+		const maxLevel = 2;
+
+		const applyLevel = () => {
+			projectPage.classList.toggle("is-image-scale-1", level === 1);
+			projectPage.classList.toggle("is-image-scale-2", level === 2);
+			decrease.hidden = level === 0;
+			increase.hidden = level === maxLevel;
+		};
+
+		decrease.addEventListener("click", () => {
+			level = Math.max(0, level - 1);
+			applyLevel();
+		});
+
+		increase.addEventListener("click", () => {
+			level = Math.min(maxLevel, level + 1);
+			applyLevel();
+		});
+
+		applyLevel();
+	}
+</script>
