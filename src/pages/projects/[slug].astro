@@ -260,6 +260,18 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 		width: 21rem;
 	}
 
+	.project-page.is-image-scale-3 .hero img {
+		width: 23rem;
+	}
+
+	.project-page.is-image-scale-4 .hero img {
+		width: 25rem;
+	}
+
+	.project-page.is-image-scale-5 .hero img {
+		width: 27rem;
+	}
+
 	.hero figcaption {
 		display: flex;
 		align-items: baseline;
@@ -330,6 +342,21 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 		--project-gap-col: clamp(10.5rem, 16.5vw, 16rem);
 	}
 
+	.project-page.is-image-scale-3 .project-grid {
+		--project-col: clamp(19.25rem, 30.25vw, 28.5rem);
+		--project-gap-col: clamp(8.75rem, 13.75vw, 13.5rem);
+	}
+
+	.project-page.is-image-scale-4 .project-grid {
+		--project-col: clamp(21rem, 33vw, 31rem);
+		--project-gap-col: clamp(7rem, 11vw, 11rem);
+	}
+
+	.project-page.is-image-scale-5 .project-grid {
+		--project-col: clamp(22.75rem, 35.75vw, 33.5rem);
+		--project-gap-col: clamp(5.25rem, 8.25vw, 8.5rem);
+	}
+
 	@media (max-width: 980px) {
 		.hero-head {
 			grid-template-columns: 1fr;
@@ -346,6 +373,18 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 
 		.project-page.is-image-scale-2 .hero img {
 			width: min(100%, 26rem);
+		}
+
+		.project-page.is-image-scale-3 .hero img {
+			width: min(100%, 28rem);
+		}
+
+		.project-page.is-image-scale-4 .hero img {
+			width: min(100%, 30rem);
+		}
+
+		.project-page.is-image-scale-5 .hero img {
+			width: min(100%, 32rem);
 		}
 
 		.project-grid {
@@ -379,6 +418,30 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 		.project-page.is-image-scale-2 .grid-item.is-emphasized {
 			width: min(100%, clamp(20rem, 92vw, 32rem));
 		}
+
+		.project-page.is-image-scale-3 .grid-item {
+			width: min(100%, clamp(20.5rem, 90vw, 30rem));
+		}
+
+		.project-page.is-image-scale-3 .grid-item.is-emphasized {
+			width: min(100%, clamp(21rem, 94vw, 34rem));
+		}
+
+		.project-page.is-image-scale-4 .grid-item {
+			width: min(100%, clamp(22rem, 94vw, 32rem));
+		}
+
+		.project-page.is-image-scale-4 .grid-item.is-emphasized {
+			width: min(100%, clamp(22.5rem, 96vw, 36rem));
+		}
+
+		.project-page.is-image-scale-5 .grid-item {
+			width: min(100%, clamp(23.5rem, 96vw, 34rem));
+		}
+
+		.project-page.is-image-scale-5 .grid-item.is-emphasized {
+			width: min(100%, clamp(24rem, 98vw, 38rem));
+		}
 	}
 </style>
 
@@ -390,11 +453,12 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 
 	if (projectPage instanceof HTMLElement && controls && decrease instanceof HTMLButtonElement && increase instanceof HTMLButtonElement) {
 		let level = 0;
-		const maxLevel = 2;
+		const maxLevel = 5;
 
 		const applyLevel = () => {
-			projectPage.classList.toggle("is-image-scale-1", level === 1);
-			projectPage.classList.toggle("is-image-scale-2", level === 2);
+			for (let index = 1; index <= maxLevel; index += 1) {
+				projectPage.classList.toggle(`is-image-scale-${index}`, level === index);
+			}
 			decrease.hidden = level === 0;
 			increase.hidden = level === maxLevel;
 		};
