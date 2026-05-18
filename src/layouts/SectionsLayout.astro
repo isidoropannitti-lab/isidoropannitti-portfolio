@@ -493,49 +493,78 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				);
 				if (!targets.length) return;
 
-				const maxShift = 2.5;
+				const maxShift = 2;
+				const easing = 0.12;
 				let activeTarget = null;
 				let frame = 0;
 				let latestEvent = null;
+				let currentX = 0;
+				let currentY = 0;
+				let targetX = 0;
+				let targetY = 0;
 
 				const resetTarget = (target) => {
 					target.style.setProperty("--magnet-x", "0px");
 					target.style.setProperty("--magnet-y", "0px");
 				};
 
+				const startAnimation = () => {
+					if (!frame) frame = window.requestAnimationFrame(updateActiveTarget);
+				};
+
 				const updateActiveTarget = () => {
 					frame = 0;
-					if (!activeTarget || !latestEvent) return;
+					if (!activeTarget) return;
 
-					const rect = activeTarget.getBoundingClientRect();
-					const centerX = rect.left + rect.width / 2;
-					const centerY = rect.top + rect.height / 2;
-					const deltaX = latestEvent.clientX - centerX;
-					const deltaY = latestEvent.clientY - centerY;
-					const normalizedX = Math.max(-1, Math.min(1, deltaX / Math.max(rect.width / 2, 1)));
-					const normalizedY = Math.max(-1, Math.min(1, deltaY / Math.max(rect.height / 2, 1)));
-					const shiftX = normalizedX * maxShift;
-					const shiftY = normalizedY * maxShift;
+					currentX += (targetX - currentX) * easing;
+					currentY += (targetY - currentY) * easing;
+					activeTarget.style.setProperty("--magnet-x", `${currentX.toFixed(2)}px`);
+					activeTarget.style.setProperty("--magnet-y", `${currentY.toFixed(2)}px`);
 
-					activeTarget.style.setProperty("--magnet-x", `${shiftX.toFixed(2)}px`);
-					activeTarget.style.setProperty("--magnet-y", `${shiftY.toFixed(2)}px`);
+					const isSettled = Math.abs(targetX - currentX) < 0.02 && Math.abs(targetY - currentY) < 0.02;
+					if (!isSettled) {
+						startAnimation();
+						return;
+					}
+
+					currentX = targetX;
+					currentY = targetY;
+					activeTarget.style.setProperty("--magnet-x", `${currentX.toFixed(2)}px`);
+					activeTarget.style.setProperty("--magnet-y", `${currentY.toFixed(2)}px`);
+					if (!latestEvent && targetX === 0 && targetY === 0) activeTarget = null;
 				};
 
 				targets.forEach((target) => {
 					target.addEventListener("pointerenter", () => {
 						if (activeTarget && activeTarget !== target) resetTarget(activeTarget);
 						activeTarget = target;
+						currentX = 0;
+						currentY = 0;
+						targetX = 0;
+						targetY = 0;
 					});
 
 					target.addEventListener("pointermove", (event) => {
 						if (activeTarget !== target) return;
 						latestEvent = event;
-						if (!frame) frame = window.requestAnimationFrame(updateActiveTarget);
+						const rect = activeTarget.getBoundingClientRect();
+						const centerX = rect.left + rect.width / 2;
+						const centerY = rect.top + rect.height / 2;
+						const deltaX = latestEvent.clientX - centerX;
+						const deltaY = latestEvent.clientY - centerY;
+						const normalizedX = Math.max(-1, Math.min(1, deltaX / Math.max(rect.width / 2, 1)));
+						const normalizedY = Math.max(-1, Math.min(1, deltaY / Math.max(rect.height / 2, 1)));
+						targetX = normalizedX * maxShift;
+						targetY = normalizedY * maxShift;
+						startAnimation();
 					});
 
 					target.addEventListener("pointerleave", () => {
-						resetTarget(target);
-						if (activeTarget === target) activeTarget = null;
+						if (activeTarget !== target) return;
+						latestEvent = null;
+						targetX = 0;
+						targetY = 0;
+						startAnimation();
 					});
 				});
 
@@ -554,8 +583,8 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				);
 				if (!targets.length) return;
 
-				const maxShift = 2.5;
-				const releaseDelay = 120;
+				const maxShift = 2;
+				const releaseDelay = 180;
 
 				const resetTarget = (target) => {
 					target.style.setProperty("--magnet-x", "0px");
