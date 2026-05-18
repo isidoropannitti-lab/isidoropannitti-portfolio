@@ -151,11 +151,13 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 		<div class="hero-head">
 			<figure class="hero">
 				<img
+					class="magnetic-target pressable"
 					src={project.data.cover}
 					alt={project.data.coverAlt}
 					loading="eager"
 					fetchpriority="high"
 					decoding="sync"
+					data-magnetic
 					onerror={`this.onerror=null;this.src='${heroFallbackSrc}'`}
 				/>
 				<figcaption>
@@ -179,7 +181,14 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 						style={`--grid-col:${image.column === "left" ? 1 : 3}; --grid-row:${image.row};`}
 					>
 						<figure>
-							<img src={image.src} alt={image.alt} loading="lazy" decoding="async" />
+							<img
+								class="magnetic-target pressable"
+								src={image.src}
+								alt={image.alt}
+								loading="lazy"
+								decoding="async"
+								data-magnetic
+							/>
 						</figure>
 					</li>
 				))
