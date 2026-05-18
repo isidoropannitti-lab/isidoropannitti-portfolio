@@ -167,7 +167,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				transform: translateY(0);
 				transition:
 					opacity 900ms ease,
-					transform 2800ms cubic-bezier(0.16, 1, 0.3, 1);
+					transform 1200ms cubic-bezier(0.16, 1, 0.3, 1);
 				will-change: transform, opacity;
 			}
 
@@ -179,17 +179,12 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				--idle-shift: calc((2lh + (var(--space-4) * 2)) * -1);
 			}
 
-			body.is-home-idle .left-fixed p:nth-child(n + 2) {
-				opacity: 0;
-				transform: translateY(var(--idle-shift));
-			}
-
 			body.is-home-idle .left-fixed p:nth-child(2) {
-				animation: contact-tuck-one 2900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+				animation: contact-tuck-mail 4200ms cubic-bezier(0.16, 1, 0.3, 1) both;
 			}
 
 			body.is-home-idle .left-fixed p:nth-child(3) {
-				animation: contact-tuck-two 3100ms cubic-bezier(0.16, 1, 0.3, 1) both;
+				animation: contact-tuck-instagram 4800ms cubic-bezier(0.16, 1, 0.3, 1) 1350ms both;
 			}
 
 			.site-home {
@@ -432,47 +427,77 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				}
 			}
 
-			@keyframes contact-tuck-one {
+			@keyframes contact-tuck-mail {
 				0% {
 					opacity: 1;
-					transform: translateY(0);
+					transform: translate(0, 0);
 				}
 
 				16% {
 					opacity: 1;
-					transform: translateY(var(--space-8));
+					transform: translate(0, var(--space-8));
 				}
 
-				72% {
-					opacity: 0.22;
-					transform: translateY(calc(var(--idle-shift) - var(--space-8)));
+				30% {
+					opacity: 1;
+					transform: translate(var(--space-4), var(--space-8));
+				}
+
+				42% {
+					opacity: 1;
+					transform: translate(calc(var(--space-4) * -1), var(--space-8));
+				}
+
+				54% {
+					opacity: 1;
+					transform: translate(0, var(--space-8));
+				}
+
+				74% {
+					opacity: 0;
+					transform: translate(0, calc(var(--idle-shift) - var(--space-8)));
 				}
 
 				100% {
 					opacity: 0;
-					transform: translateY(var(--idle-shift));
+					transform: translate(0, var(--idle-shift));
 				}
 			}
 
-			@keyframes contact-tuck-two {
+			@keyframes contact-tuck-instagram {
 				0% {
 					opacity: 1;
-					transform: translateY(0);
+					transform: translate(0, 0);
 				}
 
 				18% {
 					opacity: 1;
-					transform: translateY(var(--space-8));
+					transform: translate(0, var(--space-12));
+				}
+
+				30% {
+					opacity: 1;
+					transform: translate(var(--space-8), var(--space-12));
+				}
+
+				42% {
+					opacity: 1;
+					transform: translate(calc(var(--space-8) * -1), var(--space-12));
+				}
+
+				54% {
+					opacity: 1;
+					transform: translate(var(--space-4), var(--space-12));
 				}
 
 				74% {
-					opacity: 0.18;
-					transform: translateY(calc(var(--idle-shift) - var(--space-8)));
+					opacity: 0;
+					transform: translate(0, calc(var(--idle-shift) - var(--space-12)));
 				}
 
 				100% {
 					opacity: 0;
-					transform: translateY(var(--idle-shift));
+					transform: translate(0, var(--idle-shift));
 				}
 			}
 		</style>
@@ -545,24 +570,44 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			(() => {
 				if (!document.body.classList.contains("is-home-page")) return;
 
-				const idleDelay = 15000;
-				let idleTimer;
+				const activationClicks = 5;
+				let clickCount = 0;
+				let clickTimer;
 
-				const showContact = () => {
+				const restoreContact = () => {
 					document.body.classList.remove("is-home-idle");
-					window.clearTimeout(idleTimer);
-					idleTimer = window.setTimeout(() => {
-						document.body.classList.add("is-home-idle");
-					}, idleDelay);
 				};
 
-				["pointermove", "pointerdown", "keydown", "wheel", "touchstart", "touchmove", "scroll"].forEach(
+				const triggerContactTuck = () => {
+					document.body.classList.remove("is-home-idle");
+					requestAnimationFrame(() => {
+						document.body.classList.add("is-home-idle");
+					});
+				};
+
+				const registerBlankClick = (event) => {
+					const target = event.target;
+					if (!(target instanceof Element)) return;
+					if (target.closest("a, button, label, input, nav, figure, img")) return;
+
+					window.clearTimeout(clickTimer);
+					clickTimer = window.setTimeout(() => {
+						clickCount = 0;
+					}, 1400);
+
+					clickCount += 1;
+					if (clickCount < activationClicks) return;
+
+					clickCount = 0;
+					triggerContactTuck();
+				};
+
+				window.addEventListener("pointerdown", registerBlankClick, { passive: true });
+				["pointermove", "keydown", "wheel", "touchmove", "scroll"].forEach(
 					(eventName) => {
-						window.addEventListener(eventName, showContact, { passive: true });
+						window.addEventListener(eventName, restoreContact, { passive: true });
 					}
 				);
-
-				showContact();
 			})();
 
 			(() => {
