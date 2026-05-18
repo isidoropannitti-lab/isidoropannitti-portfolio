@@ -112,6 +112,15 @@ const photos = PHOTO_IMAGES.map((src, index) => {
 	.photo-trigger {
 		display: block;
 		cursor: pointer;
+		transition: opacity 360ms ease;
+	}
+
+	.gallery:has(.location-toggle:checked) .photo-trigger {
+		opacity: 0.8;
+	}
+
+	.preview:has(.location-toggle:checked) .photo-trigger {
+		opacity: 1;
 	}
 
 	.preview img {

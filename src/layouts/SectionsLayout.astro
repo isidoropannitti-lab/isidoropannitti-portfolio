@@ -81,6 +81,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				--edge: var(--space-48);
 				--paper-bg: #faf9f7;
 				--photo-bg: #000;
+				--photo-text: #d8d1c5;
 			}
 
 			* {
@@ -103,7 +104,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			html.theme-photo,
 			body.theme-photo {
 				background: var(--photo-bg);
-				color: #fff;
+				color: var(--photo-text);
 			}
 
 			html.theme-paper,
@@ -150,6 +151,11 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1), opacity 320ms ease;
 			}
 
+			body.theme-photo .left-fixed {
+				color: var(--photo-text);
+				mix-blend-mode: normal;
+			}
+
 			.left-fixed p {
 				margin: 0;
 			}
@@ -185,7 +191,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			}
 
 			body.theme-photo .right-fixed {
-				color: #fff;
+				color: var(--photo-text);
 			}
 
 			.sections-nav {
@@ -228,7 +234,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			}
 
 			body.theme-photo .lang-switch-fixed {
-				color: rgba(255, 255, 255, 0.72);
+				color: color-mix(in srgb, var(--photo-text) 72%, transparent);
 			}
 
 			.lang-switch-fixed.is-hidden {
@@ -246,7 +252,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			}
 
 			body.theme-photo .lang-switch-fixed .active {
-				color: #fff;
+				color: var(--photo-text);
 			}
 
 			.page-transition-overlay {
