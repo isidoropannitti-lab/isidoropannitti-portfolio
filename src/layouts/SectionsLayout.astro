@@ -805,7 +805,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				const storageKey = "section-transition-theme";
 				const threshold = 86;
 				const maxBrake = 14;
-				const resetDelay = 170;
+				const holdDelay = 900;
 				let isNavigating = false;
 
 				const resolveTheme = (pathname) => {
@@ -846,15 +846,17 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					let startY = 0;
 					let brakeStartX = 0;
 					let isBraking = false;
+					let isTouching = false;
 
 					const maxScroll = () => Math.max(stage.scrollWidth - stage.clientWidth, 0);
 					const releaseBrake = () => {
 						pull = 0;
 						isBraking = false;
+						isTouching = false;
 						stage.classList.remove("is-section-dragging");
 						stage.style.setProperty("--section-brake-x", "0px");
 					};
-					const releaseLater = (delay = resetDelay) => {
+					const releaseLater = (delay = holdDelay) => {
 						window.clearTimeout(resetTimer);
 						resetTimer = window.setTimeout(releaseBrake, delay);
 					};
@@ -865,13 +867,14 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 							const touch = event.touches[0];
 							if (!touch) return;
 
-								window.clearTimeout(resetTimer);
-								startX = touch.clientX;
-								startY = touch.clientY;
-								brakeStartX = touch.clientX;
-								isBraking = false;
-							},
-							{ passive: true }
+							window.clearTimeout(resetTimer);
+							isTouching = true;
+							startX = touch.clientX;
+							startY = touch.clientY;
+							brakeStartX = touch.clientX;
+							isBraking = false;
+						},
+						{ passive: true }
 					);
 
 					stage.addEventListener(
@@ -885,46 +888,53 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 							const touch = event.touches[0];
 							if (!touch) return;
 
-								const movementX = touch.clientX - startX;
-								const movementY = touch.clientY - startY;
+							const movementX = touch.clientX - startX;
+							const movementY = touch.clientY - startY;
 
-								if (Math.abs(movementY) > Math.abs(movementX)) return;
+							if (Math.abs(movementY) > Math.abs(movementX)) return;
 
-								if (movementX >= 0) {
-									window.clearTimeout(resetTimer);
-									releaseBrake();
-									return;
-								}
-
-								const atEnd = stage.scrollLeft >= maxScroll() - 2;
-								if (!atEnd) return;
-
-								event.preventDefault();
+							if (movementX >= 0) {
 								window.clearTimeout(resetTimer);
+								releaseBrake();
+								return;
+							}
 
-								if (!isBraking) {
-									isBraking = true;
-									brakeStartX = touch.clientX;
-									stage.classList.add("is-section-dragging");
-								}
+							const atEnd = stage.scrollLeft >= maxScroll() - 2;
+							if (!atEnd) return;
 
-								const dragPastEnd = Math.max(0, brakeStartX - touch.clientX);
-								pull = Math.min(threshold, dragPastEnd * 0.9);
-								const easedPull = 1 - Math.pow(1 - pull / threshold, 1.7);
-								const brake = -Math.min(maxBrake, easedPull * maxBrake);
-								stage.style.setProperty("--section-brake-x", `${brake.toFixed(2)}px`);
+							event.preventDefault();
+							window.clearTimeout(resetTimer);
+
+							if (!isBraking) {
+								isBraking = true;
+								brakeStartX = touch.clientX;
+								stage.classList.add("is-section-dragging");
+							}
+
+							const dragPastEnd = Math.max(0, brakeStartX - touch.clientX);
+							pull = Math.min(threshold, dragPastEnd * 0.9);
+							const easedPull = 1 - Math.pow(1 - pull / threshold, 1.7);
+							const brake = -Math.min(maxBrake, easedPull * maxBrake);
+							stage.style.setProperty("--section-brake-x", `${brake.toFixed(2)}px`);
 
 							if (pull >= threshold) {
 								navigateSoftly(nextHref);
 								return;
 							}
 
-								releaseLater(260);
-							},
-							{ passive: false }
-						);
+							if (isTouching) releaseLater();
+						},
+						{ passive: false }
+					);
 
-						stage.addEventListener("touchend", () => releaseLater(80), { passive: true });
+					stage.addEventListener(
+						"touchend",
+						() => {
+							window.clearTimeout(resetTimer);
+							releaseBrake();
+						},
+						{ passive: true }
+					);
 					stage.addEventListener("touchcancel", releaseBrake, { passive: true });
 				});
 			})();
