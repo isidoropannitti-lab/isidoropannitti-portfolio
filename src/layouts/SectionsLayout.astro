@@ -734,7 +734,10 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 						{ passive: false }
 					);
 
-					stage.addEventListener("mouseleave", snapBackToEnd);
+					stage.addEventListener("mouseleave", () => {
+						window.clearTimeout(resetTimer);
+						releaseBrake();
+					});
 				});
 			})();
 
