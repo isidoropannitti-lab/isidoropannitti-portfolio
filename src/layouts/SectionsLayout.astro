@@ -467,7 +467,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				);
 				if (!targets.length) return;
 
-				const maxShift = 6;
+				const maxShift = 9;
 				const radius = 96;
 
 				const resetTarget = (target) => {
@@ -484,16 +484,20 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 							const centerY = rect.top + rect.height / 2;
 							const deltaX = event.clientX - centerX;
 							const deltaY = event.clientY - centerY;
-							const distance = Math.hypot(deltaX, deltaY);
+							const outsideX = Math.max(rect.left - event.clientX, 0, event.clientX - rect.right);
+							const outsideY = Math.max(rect.top - event.clientY, 0, event.clientY - rect.bottom);
+							const outsideDistance = Math.hypot(outsideX, outsideY);
 
-							if (distance > radius) {
+							if (outsideDistance > radius) {
 								resetTarget(target);
 								return;
 							}
 
-							const pull = 1 - distance / radius;
-							const shiftX = (deltaX / radius) * maxShift * pull;
-							const shiftY = (deltaY / radius) * maxShift * pull;
+							const pull = 1 - outsideDistance / radius;
+							const normalizedX = Math.max(-1, Math.min(1, deltaX / Math.max(rect.width / 2, 1)));
+							const normalizedY = Math.max(-1, Math.min(1, deltaY / Math.max(rect.height / 2, 1)));
+							const shiftX = normalizedX * maxShift * pull;
+							const shiftY = normalizedY * maxShift * pull;
 							target.style.setProperty("--magnet-x", `${shiftX.toFixed(2)}px`);
 							target.style.setProperty("--magnet-y", `${shiftY.toFixed(2)}px`);
 						});
