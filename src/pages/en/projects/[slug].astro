@@ -218,6 +218,12 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 		color: #9b9b9b;
 		line-height: 1;
 		transform: translateY(-0.08rem);
+		transition: opacity 260ms ease;
+	}
+
+	.project-image-controls.is-hidden {
+		opacity: 0;
+		pointer-events: none;
 	}
 
 	.project-image-control {
@@ -503,6 +509,7 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 	if (canResizeImages && projectPage instanceof HTMLElement && controls instanceof HTMLElement && decrease instanceof HTMLButtonElement && increase instanceof HTMLButtonElement) {
 		let level = 0;
 		const maxLevel = 5;
+		let revealTimer;
 
 		const applyLevel = () => {
 			for (let index = 1; index <= maxLevel; index += 1) {
@@ -510,6 +517,18 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 			}
 			controls.classList.toggle("has-decrease", level > 0);
 			decrease.disabled = level === 0;
+		};
+
+		const hide = () => controls.classList.add("is-hidden");
+		const showLater = () => {
+			clearTimeout(revealTimer);
+			revealTimer = window.setTimeout(() => {
+				controls.classList.remove("is-hidden");
+			}, 700);
+		};
+		const onScrollIntent = () => {
+			hide();
+			showLater();
 		};
 
 		decrease.addEventListener("click", () => {
@@ -521,6 +540,9 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 			level = Math.min(maxLevel, level + 1);
 			applyLevel();
 		});
+
+		window.addEventListener("wheel", onScrollIntent, { passive: true });
+		document.addEventListener("scroll", onScrollIntent, { passive: true, capture: true });
 
 		applyLevel();
 	}
