@@ -370,6 +370,10 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					transform: translate3d(var(--section-brake-x), 0, 0);
 					transition: transform 340ms cubic-bezier(0.22, 1, 0.36, 1);
 				}
+
+				:global([data-section-flow].is-section-dragging .gallery) {
+					transition: none;
+				}
 			}
 
 			@keyframes image-fade-in {
@@ -840,16 +844,19 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					let resetTimer;
 					let startX = 0;
 					let startY = 0;
-					let lastX = 0;
+					let brakeStartX = 0;
+					let isBraking = false;
 
 					const maxScroll = () => Math.max(stage.scrollWidth - stage.clientWidth, 0);
 					const releaseBrake = () => {
 						pull = 0;
+						isBraking = false;
+						stage.classList.remove("is-section-dragging");
 						stage.style.setProperty("--section-brake-x", "0px");
 					};
-					const releaseLater = () => {
+					const releaseLater = (delay = resetDelay) => {
 						window.clearTimeout(resetTimer);
-						resetTimer = window.setTimeout(releaseBrake, resetDelay);
+						resetTimer = window.setTimeout(releaseBrake, delay);
 					};
 
 					stage.addEventListener(
@@ -858,12 +865,13 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 							const touch = event.touches[0];
 							if (!touch) return;
 
-							window.clearTimeout(resetTimer);
-							startX = touch.clientX;
-							startY = touch.clientY;
-							lastX = touch.clientX;
-						},
-						{ passive: true }
+								window.clearTimeout(resetTimer);
+								startX = touch.clientX;
+								startY = touch.clientY;
+								brakeStartX = touch.clientX;
+								isBraking = false;
+							},
+							{ passive: true }
 					);
 
 					stage.addEventListener(
@@ -877,41 +885,46 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 							const touch = event.touches[0];
 							if (!touch) return;
 
-							const movementX = touch.clientX - startX;
-							const movementY = touch.clientY - startY;
-							const intent = lastX - touch.clientX;
-							lastX = touch.clientX;
+								const movementX = touch.clientX - startX;
+								const movementY = touch.clientY - startY;
 
-							if (Math.abs(movementY) > Math.abs(movementX)) return;
+								if (Math.abs(movementY) > Math.abs(movementX)) return;
 
-							if (intent <= 0) {
+								if (movementX >= 0) {
+									window.clearTimeout(resetTimer);
+									releaseBrake();
+									return;
+								}
+
+								const atEnd = stage.scrollLeft >= maxScroll() - 2;
+								if (!atEnd) return;
+
+								event.preventDefault();
 								window.clearTimeout(resetTimer);
-								releaseBrake();
-								return;
-							}
 
-							const atEnd = stage.scrollLeft >= maxScroll() - 2;
-							if (!atEnd) return;
+								if (!isBraking) {
+									isBraking = true;
+									brakeStartX = touch.clientX;
+									stage.classList.add("is-section-dragging");
+								}
 
-							event.preventDefault();
-							window.clearTimeout(resetTimer);
-
-							pull = Math.min(threshold, pull + Math.abs(intent) * 0.9);
-							const easedPull = 1 - Math.pow(1 - pull / threshold, 1.7);
-							const brake = -Math.min(maxBrake, easedPull * maxBrake);
-							stage.style.setProperty("--section-brake-x", `${brake.toFixed(2)}px`);
+								const dragPastEnd = Math.max(0, brakeStartX - touch.clientX);
+								pull = Math.min(threshold, dragPastEnd * 0.9);
+								const easedPull = 1 - Math.pow(1 - pull / threshold, 1.7);
+								const brake = -Math.min(maxBrake, easedPull * maxBrake);
+								stage.style.setProperty("--section-brake-x", `${brake.toFixed(2)}px`);
 
 							if (pull >= threshold) {
 								navigateSoftly(nextHref);
 								return;
 							}
 
-							releaseLater();
-						},
-						{ passive: false }
-					);
+								releaseLater(260);
+							},
+							{ passive: false }
+						);
 
-					stage.addEventListener("touchend", releaseLater, { passive: true });
+						stage.addEventListener("touchend", () => releaseLater(80), { passive: true });
 					stage.addEventListener("touchcancel", releaseBrake, { passive: true });
 				});
 			})();
