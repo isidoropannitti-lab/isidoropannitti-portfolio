@@ -579,6 +579,11 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					instagram.textContent = originals.instagram;
 				};
 
+				const hideCaret = () => {
+					caret.classList.remove("is-visible");
+					caret.style.transform = "translate3d(-999px, -999px, 0)";
+				};
+
 				const resetIdleTimer = () => {
 					if (isRunning) return;
 					if (isCollapsed) {
@@ -603,8 +608,9 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 				const deleteBeforeFinalCharacter = async (element, finalText) => {
 					let index = 0;
-					while ((element.textContent ?? "") !== finalText) {
+					while ((element.textContent ?? "") !== finalText && index < 32) {
 						const current = element.textContent ?? "";
+						if (current.length <= finalText.length) break;
 						const finalCharacter = current.slice(-1);
 						const prefix = current.slice(0, -1);
 						element.textContent = `${prefix.slice(0, -1)}${finalCharacter}`;
@@ -612,6 +618,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 						await wait(typingDelay(index));
 						index += 1;
 					}
+					element.textContent = finalText;
 				};
 
 				const typeText = async (element, text) => {
@@ -664,7 +671,10 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					await deleteBeforeFinalCharacter(title, "ip");
 
 					await wait(520);
-					caret.classList.remove("is-visible");
+					title.textContent = "ip";
+					email.textContent = "";
+					instagram.textContent = "";
+					hideCaret();
 					document.body.classList.remove("is-home-easter-active");
 					isCollapsed = true;
 					isRunning = false;
@@ -686,7 +696,8 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					await typeText(instagram, originals.instagram);
 
 					await wait(220);
-					caret.classList.remove("is-visible");
+					resetText();
+					hideCaret();
 					document.body.classList.remove("is-home-easter-active");
 					isRunning = false;
 					resetIdleTimer();
