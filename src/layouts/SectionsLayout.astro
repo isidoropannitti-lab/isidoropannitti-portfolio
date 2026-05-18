@@ -466,8 +466,8 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			})();
 
 			(() => {
-				const resetSectionFlows = () => {
-					document.querySelectorAll("[data-section-flow]").forEach((stage) => {
+				const resetGalleries = () => {
+					document.querySelectorAll("[data-reset-gallery]").forEach((stage) => {
 						if (!(stage instanceof HTMLElement)) return;
 						const scroller = stage.querySelector(".gallery");
 						const target = scroller instanceof HTMLElement ? scroller : stage;
@@ -482,11 +482,11 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				}
 
 				requestAnimationFrame(() => {
-					requestAnimationFrame(resetSectionFlows);
+					requestAnimationFrame(resetGalleries);
 				});
 
-				window.addEventListener("load", resetSectionFlows, { once: true });
-				window.addEventListener("pageshow", resetSectionFlows);
+				window.addEventListener("load", resetGalleries, { once: true });
+				window.addEventListener("pageshow", resetGalleries);
 			})();
 
 			(() => {
