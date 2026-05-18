@@ -359,6 +359,13 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				}
 			}
 
+			@media (max-width: 980px) and (pointer: coarse) {
+				:global([data-section-flow] .gallery) {
+					transform: translate3d(var(--section-brake-x), 0, 0);
+					transition: transform 460ms cubic-bezier(0.18, 1.06, 0.28, 1);
+				}
+			}
+
 			@keyframes image-fade-in {
 				from {
 					opacity: 0;
@@ -738,6 +745,134 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 						window.clearTimeout(resetTimer);
 						releaseBrake();
 					});
+				});
+			})();
+
+			(() => {
+				const supportsMobileFlow = window.matchMedia("(max-width: 980px) and (pointer: coarse)");
+				if (!supportsMobileFlow.matches) return;
+
+				const stages = Array.from(document.querySelectorAll("[data-section-flow]")).filter(
+					(stage) => stage instanceof HTMLElement
+				);
+				if (!stages.length) return;
+
+				const overlay = document.querySelector("[data-page-transition]");
+				const storageKey = "section-transition-theme";
+				const threshold = 96;
+				const maxBrake = 28;
+				const resetDelay = 220;
+				let isNavigating = false;
+
+				const resolveTheme = (pathname) => {
+					const normalized = pathname.replace(/\/+$/, "") || "/";
+					return normalized === "/photo" || normalized === "/en/photo" ? "dark" : "light";
+				};
+
+				const setOverlayTheme = (theme) => {
+					if (!(overlay instanceof HTMLElement)) return;
+					overlay.classList.toggle("is-dark", theme === "dark");
+				};
+
+				const navigateSoftly = (href) => {
+					if (isNavigating) return;
+					isNavigating = true;
+
+					const url = new URL(href, window.location.href);
+					sessionStorage.setItem(storageKey, resolveTheme(url.pathname));
+					setOverlayTheme(resolveTheme(url.pathname));
+
+					if (overlay instanceof HTMLElement) {
+						overlay.classList.add("is-active");
+					}
+
+					window.setTimeout(() => {
+						window.location.href = url.toString();
+					}, 340);
+				};
+
+				stages.forEach((stage) => {
+					const nextHref = stage.dataset.nextSectionHref;
+					const gallery = stage.querySelector(".gallery");
+					if (!nextHref || !(gallery instanceof HTMLElement)) return;
+
+					let pull = 0;
+					let resetTimer;
+					let startX = 0;
+					let startY = 0;
+					let lastX = 0;
+
+					const maxScroll = () => Math.max(stage.scrollWidth - stage.clientWidth, 0);
+					const releaseBrake = () => {
+						pull = 0;
+						stage.style.setProperty("--section-brake-x", "0px");
+					};
+					const releaseLater = () => {
+						window.clearTimeout(resetTimer);
+						resetTimer = window.setTimeout(releaseBrake, resetDelay);
+					};
+
+					stage.addEventListener(
+						"touchstart",
+						(event) => {
+							const touch = event.touches[0];
+							if (!touch) return;
+
+							window.clearTimeout(resetTimer);
+							startX = touch.clientX;
+							startY = touch.clientY;
+							lastX = touch.clientX;
+						},
+						{ passive: true }
+					);
+
+					stage.addEventListener(
+						"touchmove",
+						(event) => {
+							if (isNavigating) {
+								event.preventDefault();
+								return;
+							}
+
+							const touch = event.touches[0];
+							if (!touch) return;
+
+							const movementX = touch.clientX - startX;
+							const movementY = touch.clientY - startY;
+							const intent = lastX - touch.clientX;
+							lastX = touch.clientX;
+
+							if (Math.abs(movementY) > Math.abs(movementX)) return;
+
+							if (intent <= 0) {
+								window.clearTimeout(resetTimer);
+								releaseBrake();
+								return;
+							}
+
+							const atEnd = stage.scrollLeft >= maxScroll() - 2;
+							if (!atEnd) return;
+
+							event.preventDefault();
+							window.clearTimeout(resetTimer);
+
+							pull = Math.min(threshold, pull + Math.abs(intent));
+							const easedPull = 1 - Math.pow(1 - pull / threshold, 2.1);
+							const brake = -Math.min(maxBrake, easedPull * maxBrake);
+							stage.style.setProperty("--section-brake-x", `${brake.toFixed(2)}px`);
+
+							if (pull >= threshold) {
+								navigateSoftly(nextHref);
+								return;
+							}
+
+							releaseLater();
+						},
+						{ passive: false }
+					);
+
+					stage.addEventListener("touchend", releaseLater, { passive: true });
+					stage.addEventListener("touchcancel", releaseBrake, { passive: true });
 				});
 			})();
 
