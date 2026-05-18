@@ -264,9 +264,30 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 
 	.hero-head {
 		display: grid;
-		grid-template-columns: 17rem minmax(16rem, 32rem);
+		--hero-col: 17rem;
+		grid-template-columns: var(--hero-col) minmax(16rem, 32rem);
 		align-items: start;
 		column-gap: var(--space-64);
+	}
+
+	.project-page.is-image-scale-1 .hero-head {
+		--hero-col: 19rem;
+	}
+
+	.project-page.is-image-scale-2 .hero-head {
+		--hero-col: 21rem;
+	}
+
+	.project-page.is-image-scale-3 .hero-head {
+		--hero-col: 23rem;
+	}
+
+	.project-page.is-image-scale-4 .hero-head {
+		--hero-col: 25rem;
+	}
+
+	.project-page.is-image-scale-5 .hero-head {
+		--hero-col: 27rem;
 	}
 
 	.hero img {
@@ -381,6 +402,10 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 	}
 
 	@media (max-width: 980px) {
+		.project-image-controls {
+			display: none;
+		}
+
 		.hero-head {
 			grid-template-columns: 1fr;
 			row-gap: var(--space-16);
@@ -473,8 +498,9 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 	const controls = document.querySelector("[data-project-image-controls]");
 	const decrease = document.querySelector("[data-project-image-decrease]");
 	const increase = document.querySelector("[data-project-image-increase]");
+	const canResizeImages = window.matchMedia("(min-width: 981px)").matches;
 
-	if (projectPage instanceof HTMLElement && controls instanceof HTMLElement && decrease instanceof HTMLButtonElement && increase instanceof HTMLButtonElement) {
+	if (canResizeImages && projectPage instanceof HTMLElement && controls instanceof HTMLElement && decrease instanceof HTMLButtonElement && increase instanceof HTMLButtonElement) {
 		let level = 0;
 		const maxLevel = 5;
 
@@ -484,7 +510,6 @@ for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
 			}
 			controls.classList.toggle("has-decrease", level > 0);
 			decrease.disabled = level === 0;
-			increase.hidden = level === maxLevel;
 		};
 
 		decrease.addEventListener("click", () => {
