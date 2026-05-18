@@ -187,6 +187,11 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				animation: contact-tuck-instagram 5200ms cubic-bezier(0.16, 1, 0.3, 1) 1500ms both;
 			}
 
+			body.is-home-easter-clicking {
+				user-select: none;
+				-webkit-user-select: none;
+			}
+
 			.site-home {
 				display: inline-block;
 			}
@@ -598,6 +603,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				const activationClicks = 5;
 				let clickCount = 0;
 				let clickTimer;
+				let selectionTimer;
 
 				const restoreContact = () => {
 					document.body.classList.remove("is-home-idle");
@@ -610,11 +616,23 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					});
 				};
 
+				const suppressSelection = () => {
+					document.body.classList.add("is-home-easter-clicking");
+					window.getSelection()?.removeAllRanges();
+					window.clearTimeout(selectionTimer);
+					selectionTimer = window.setTimeout(() => {
+						document.body.classList.remove("is-home-easter-clicking");
+						window.getSelection()?.removeAllRanges();
+					}, 1500);
+				};
+
 				const registerBlankClick = (event) => {
 					const target = event.target;
 					if (!(target instanceof Element)) return;
 					if (target.closest("a, button, label, input, nav, figure, img")) return;
 
+					event.preventDefault();
+					suppressSelection();
 					window.clearTimeout(clickTimer);
 					clickTimer = window.setTimeout(() => {
 						clickCount = 0;
@@ -627,7 +645,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					triggerContactTuck();
 				};
 
-				window.addEventListener("pointerdown", registerBlankClick, { passive: true });
+				window.addEventListener("pointerdown", registerBlankClick, { passive: false });
 				["pointermove", "keydown", "wheel", "touchmove", "scroll"].forEach(
 					(eventName) => {
 						window.addEventListener(eventName, restoreContact, { passive: true });
