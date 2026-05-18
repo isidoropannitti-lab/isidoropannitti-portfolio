@@ -165,6 +165,10 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				transition: transform 340ms cubic-bezier(0.22, 1, 0.36, 1);
 			}
 
+			:global([data-section-flow]) {
+				--section-brake-x: 0px;
+			}
+
 			.left-fixed a,
 			.sections-nav a,
 			.sections-nav span {
@@ -343,6 +347,14 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			@media (pointer: fine) {
 				:global(.magnetic-target) {
 					will-change: transform;
+				}
+			}
+
+			@media (min-width: 981px) and (pointer: fine) {
+				:global([data-section-flow] .gallery) {
+					padding-right: var(--space-128);
+					transform: translate3d(var(--section-brake-x), 0, 0);
+					transition: transform 380ms cubic-bezier(0.22, 1, 0.36, 1);
 				}
 			}
 
@@ -622,6 +634,104 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					},
 					{ passive: false }
 				);
+			})();
+
+			(() => {
+				const supportsDesktopFlow = window.matchMedia("(min-width: 981px) and (pointer: fine)");
+				if (!supportsDesktopFlow.matches) return;
+
+				const stages = Array.from(document.querySelectorAll("[data-section-flow]")).filter(
+					(stage) => stage instanceof HTMLElement
+				);
+				if (!stages.length) return;
+
+				const overlay = document.querySelector("[data-page-transition]");
+				const storageKey = "section-transition-theme";
+				const threshold = 120;
+				const maxBrake = 24;
+				const resetDelay = 170;
+				let isNavigating = false;
+
+				const resolveTheme = (pathname) => {
+					const normalized = pathname.replace(/\/+$/, "") || "/";
+					return normalized === "/photo" || normalized === "/en/photo" ? "dark" : "light";
+				};
+
+				const setOverlayTheme = (theme) => {
+					if (!(overlay instanceof HTMLElement)) return;
+					overlay.classList.toggle("is-dark", theme === "dark");
+				};
+
+				const navigateSoftly = (href) => {
+					if (isNavigating) return;
+					isNavigating = true;
+
+					const url = new URL(href, window.location.href);
+					sessionStorage.setItem(storageKey, resolveTheme(url.pathname));
+					setOverlayTheme(resolveTheme(url.pathname));
+
+					if (overlay instanceof HTMLElement) {
+						overlay.classList.add("is-active");
+					}
+
+					window.setTimeout(() => {
+						window.location.href = url.toString();
+					}, 320);
+				};
+
+				stages.forEach((stage) => {
+					const nextHref = stage.dataset.nextSectionHref;
+					const scroller = stage.querySelector(".gallery");
+					if (!nextHref || !(scroller instanceof HTMLElement)) return;
+
+					let pull = 0;
+					let resetTimer;
+
+					const maxScroll = () => Math.max(scroller.scrollWidth - scroller.clientWidth, 0);
+					const resetBrake = () => {
+						pull = 0;
+						stage.style.setProperty("--section-brake-x", "0px");
+						scroller.scrollTo({ left: maxScroll(), behavior: "smooth" });
+					};
+
+					scroller.addEventListener(
+						"wheel",
+						(event) => {
+							if (isNavigating) {
+								event.preventDefault();
+								return;
+							}
+
+							const intent = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+							if (intent <= 0) {
+								pull = 0;
+								stage.style.setProperty("--section-brake-x", "0px");
+								return;
+							}
+
+							const atEnd = scroller.scrollLeft >= maxScroll() - 2;
+							if (!atEnd) return;
+
+							event.preventDefault();
+							window.clearTimeout(resetTimer);
+
+							pull = Math.min(threshold, pull + Math.abs(intent));
+							const easedPull = 1 - Math.pow(1 - pull / threshold, 3);
+							const brake = -Math.min(maxBrake, easedPull * maxBrake);
+							stage.style.setProperty("--section-brake-x", `${brake.toFixed(2)}px`);
+
+							if (pull >= threshold) {
+								navigateSoftly(nextHref);
+								return;
+							}
+
+							resetTimer = window.setTimeout(resetBrake, resetDelay);
+						},
+						{ passive: false }
+					);
+
+					stage.addEventListener("mouseleave", resetBrake);
+				});
 			})();
 
 			(() => {
