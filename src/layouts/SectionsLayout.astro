@@ -162,7 +162,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				--magnet-x: 0px;
 				--magnet-y: 0px;
 				transform: translate3d(var(--magnet-x), var(--magnet-y), 0);
-				transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+				transition: transform 340ms cubic-bezier(0.22, 1, 0.36, 1);
 			}
 
 			.left-fixed a,
@@ -467,7 +467,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				);
 				if (!targets.length) return;
 
-				const maxShift = 4;
+				const maxShift = 2.5;
 				let activeTarget = null;
 				let frame = 0;
 				let latestEvent = null;
@@ -528,7 +528,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				);
 				if (!targets.length) return;
 
-				const maxShift = 4;
+				const maxShift = 2.5;
 				const releaseDelay = 120;
 
 				const resetTarget = (target) => {
