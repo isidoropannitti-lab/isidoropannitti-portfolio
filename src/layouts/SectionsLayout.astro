@@ -158,7 +158,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				display: inline-block;
 			}
 
-			.magnetic-target {
+			:global(.magnetic-target) {
 				--magnet-x: 0px;
 				--magnet-y: 0px;
 				transform: translate3d(var(--magnet-x), var(--magnet-y), 0);
@@ -341,7 +341,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			}
 
 			@media (pointer: fine) {
-				.magnetic-target {
+				:global(.magnetic-target) {
 					will-change: transform;
 				}
 			}
