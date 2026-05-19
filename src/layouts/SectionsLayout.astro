@@ -114,8 +114,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			body.theme-photo,
 			body.theme-photo .left-fixed,
 			body.theme-photo .right-fixed,
-			body.theme-photo .lang-switch-fixed,
-			body.theme-photo .photo-contrast-toggle {
+			body.theme-photo .lang-switch-fixed {
 				transition: background-color 420ms cubic-bezier(0.22, 1, 0.36, 1),
 					color 420ms cubic-bezier(0.22, 1, 0.36, 1),
 					border-color 420ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -349,24 +348,40 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			}
 
 			.photo-contrast-toggle {
+				--liquid-x: 0px;
+				--liquid-y: 0px;
+				--liquid-scale-x: 1;
+				--liquid-scale-y: 1;
+				--liquid-radius: 50%;
 				position: fixed;
-				right: var(--edge);
-				bottom: calc(var(--edge) + var(--space-32));
+				right: calc(var(--edge) + 3.05em);
+				bottom: calc(var(--edge) + 0.36em);
 				z-index: 20;
 				display: inline-flex;
 				align-items: center;
 				justify-content: center;
-				border: 1px solid rgba(216, 209, 197, 0.42);
-				border-radius: 999px;
-				background: rgba(216, 209, 197, 0.08);
-				color: var(--photo-text);
+				width: 0.78em;
+				height: 0.78em;
+				border: 1px solid rgba(216, 209, 197, 0.48);
+				border-radius: var(--liquid-radius);
+				background: var(--photo-text);
+				color: transparent;
 				font: inherit;
-				font-size: 0.78em;
-				font-weight: 300;
-				letter-spacing: 0.01em;
-				line-height: 1;
-				padding: var(--space-8) var(--space-12);
+				line-height: 0;
+				padding: 0;
 				cursor: pointer;
+				transform: translate3d(var(--liquid-x), var(--liquid-y), 0)
+					scale(
+						calc(var(--press-scale) * var(--liquid-scale-x)),
+						calc(var(--press-scale) * var(--liquid-scale-y))
+					);
+				transform-origin: center;
+				transition: background-color 420ms cubic-bezier(0.22, 1, 0.36, 1),
+					border-color 420ms cubic-bezier(0.22, 1, 0.36, 1),
+					border-radius 360ms cubic-bezier(0.2, 1, 0.34, 1),
+					opacity 260ms ease,
+					transform 520ms cubic-bezier(0.2, 1, 0.34, 1);
+				will-change: transform, border-radius;
 				-webkit-tap-highlight-color: transparent;
 			}
 
@@ -376,9 +391,8 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			}
 
 			body.theme-photo.is-photo-soft .photo-contrast-toggle {
-				border-color: rgba(36, 33, 29, 0.22);
-				background: rgba(36, 33, 29, 0.04);
-				color: var(--photo-soft-text);
+				border-color: rgba(36, 33, 29, 0.48);
+				background: #000;
 			}
 
 			.page-transition-overlay {
@@ -476,8 +490,10 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				}
 
 				.photo-contrast-toggle {
-					bottom: calc(var(--edge) + var(--space-32));
-					padding: var(--space-8) var(--space-12);
+					right: calc(var(--edge) + 3.05em);
+					bottom: calc(var(--edge) + 0.42em);
+					width: 0.78em;
+					height: 0.78em;
 				}
 
 			}
@@ -585,9 +601,10 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					aria-label={lang === "it" ? "Riduci contrasto" : "Reduce contrast"}
 					aria-pressed="false"
 					data-photo-contrast-toggle
-				>
-					soft
-				</button>
+					data-liquid-toggle
+					data-soft-label={lang === "it" ? "Riduci contrasto" : "Reduce contrast"}
+					data-dark-label={lang === "it" ? "Ripristina contrasto nero" : "Restore black contrast"}
+				></button>
 			)
 		}
 
@@ -602,8 +619,11 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 				const updateLabel = () => {
 					const isSoft = document.body.classList.contains("is-photo-soft");
-					toggle.textContent = isSoft ? "black" : "soft";
 					toggle.setAttribute("aria-pressed", String(isSoft));
+					toggle.setAttribute(
+						"aria-label",
+						isSoft ? toggle.dataset.darkLabel ?? "" : toggle.dataset.softLabel ?? ""
+					);
 				};
 
 				document.documentElement.classList.remove("is-photo-soft");
@@ -615,6 +635,75 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					document.documentElement.classList.toggle("is-photo-soft", isSoft);
 					updateLabel();
 				});
+			})();
+		</script>
+
+		<script is:inline>
+			(() => {
+				const toggle = document.querySelector("[data-liquid-toggle]");
+				if (!(toggle instanceof HTMLElement)) return;
+				if (!window.matchMedia("(pointer: fine)").matches) return;
+				if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+				const radius = 92;
+				const maxShift = 5.5;
+				let frame = 0;
+
+				const reset = () => {
+					toggle.style.setProperty("--liquid-x", "0px");
+					toggle.style.setProperty("--liquid-y", "0px");
+					toggle.style.setProperty("--liquid-scale-x", "1");
+					toggle.style.setProperty("--liquid-scale-y", "1");
+					toggle.style.setProperty("--liquid-radius", "50%");
+				};
+
+				const shapeToward = (event) => {
+					const rect = toggle.getBoundingClientRect();
+					const centerX = rect.left + rect.width / 2;
+					const centerY = rect.top + rect.height / 2;
+					const deltaX = event.clientX - centerX;
+					const deltaY = event.clientY - centerY;
+					const distance = Math.hypot(deltaX, deltaY);
+
+					if (distance > radius) {
+						reset();
+						return;
+					}
+
+					const pull = Math.pow(1 - distance / radius, 1.55);
+					const angle = Math.atan2(deltaY, deltaX);
+					const axisX = Math.abs(Math.cos(angle));
+					const axisY = Math.abs(Math.sin(angle));
+					const shiftX = Math.cos(angle) * maxShift * pull;
+					const shiftY = Math.sin(angle) * maxShift * pull;
+					const stretch = 1 + pull * 0.34;
+					const squeeze = 1 - pull * 0.14;
+
+					toggle.style.setProperty("--liquid-x", `${shiftX.toFixed(2)}px`);
+					toggle.style.setProperty("--liquid-y", `${shiftY.toFixed(2)}px`);
+					const scaleX = 1 + (stretch - 1) * axisX - (1 - squeeze) * axisY;
+					const scaleY = 1 + (stretch - 1) * axisY - (1 - squeeze) * axisX;
+					const radiusShape = `${(50 - pull * 12).toFixed(1)}% ${(50 + pull * 16).toFixed(
+						1
+					)}% ${(50 + pull * 10).toFixed(1)}% ${(50 - pull * 8).toFixed(1)}%`;
+
+					toggle.style.setProperty("--liquid-scale-x", scaleX.toFixed(3));
+					toggle.style.setProperty("--liquid-scale-y", scaleY.toFixed(3));
+					toggle.style.setProperty("--liquid-radius", radiusShape);
+				};
+
+				window.addEventListener(
+					"pointermove",
+					(event) => {
+						if (frame) return;
+						frame = window.requestAnimationFrame(() => {
+							frame = 0;
+							shapeToward(event);
+						});
+					},
+					{ passive: true }
+				);
+				window.addEventListener("blur", reset);
 			})();
 		</script>
 
