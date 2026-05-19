@@ -32,7 +32,7 @@ try {
 ---
 
 <SectionsLayout title="info | isidoro pannitti architetto" section="info" lang="it">
-	<section class="info-content" aria-label="Bio e archivio">
+	<section class="info-content" aria-label="Bio e lista lavori">
 		<p class="bio">{bioText}</p>
 		<div class="archive-block" data-info-archive>
 			<button
@@ -42,7 +42,7 @@ try {
 				aria-controls="archive-list-it"
 				data-info-archive-toggle
 			>
-				archivio
+				lista lavori
 			</button>
 			<ul class="archive-list" id="archive-list-it" data-info-archive-list>
 				{archiveItems.map((item) => <li><a href={item.href}>{item.place}, {item.year}, {item.type}</a></li>)}
