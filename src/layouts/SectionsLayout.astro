@@ -627,6 +627,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			(() => {
 				const toggle = document.querySelector("[data-photo-contrast-toggle]");
 				if (!(toggle instanceof HTMLButtonElement)) return;
+				const storageKey = "photo-contrast-soft";
 
 				const updateLabel = () => {
 					const isSoft = document.body.classList.contains("is-photo-soft");
@@ -637,14 +638,19 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					);
 				};
 
-				document.documentElement.classList.remove("is-photo-soft");
-				document.body.classList.remove("is-photo-soft");
+				const applySoftState = (isSoft) => {
+					document.documentElement.classList.toggle("is-photo-soft", isSoft);
+					document.body.classList.toggle("is-photo-soft", isSoft);
+					updateLabel();
+				};
+
+				applySoftState(window.sessionStorage.getItem(storageKey) === "true");
 				updateLabel();
 
 				toggle.addEventListener("click", () => {
-					const isSoft = document.body.classList.toggle("is-photo-soft");
-					document.documentElement.classList.toggle("is-photo-soft", isSoft);
-					updateLabel();
+					const isSoft = !document.body.classList.contains("is-photo-soft");
+					window.sessionStorage.setItem(storageKey, String(isSoft));
+					applySoftState(isSoft);
 				});
 			})();
 		</script>
@@ -720,11 +726,15 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 		<script is:inline>
 			(() => {
-				const idleDelay = 5000;
+				const idleDelay = 7000;
+				const postRestoreStableDelay = 40000;
 				let idleTimer;
 				let selectionTimer;
 				let isRunning = false;
 				let isCollapsed = false;
+				let isDeleting = false;
+				let restoreRequested = false;
+				let stableUntil = 0;
 
 				const title = document.querySelector(".site-home");
 				const email = document.querySelector("[data-home-email]");
@@ -746,8 +756,16 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				};
 
 				const wait = (duration) => new Promise((resolve) => window.setTimeout(resolve, duration));
+				const interruptibleWait = async (duration) => {
+					const startedAt = Date.now();
+					while (Date.now() - startedAt < duration) {
+						if (isDeleting && restoreRequested) return false;
+						await wait(Math.min(48, duration - (Date.now() - startedAt)));
+					}
+					return true;
+				};
 				const typingDelay = (index) => 58 + ((index * 23) % 74);
-				const fastTypingDelay = (index) => 18 + ((index * 17) % 26);
+				const fastTypingDelay = (index) => 10 + ((index * 13) % 16);
 
 				const getTextNode = (element) => {
 					if (element.firstChild instanceof Text) return element.firstChild;
@@ -788,7 +806,10 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				};
 
 				const resetIdleTimer = () => {
-					if (isRunning) return;
+					if (isRunning) {
+						if (isDeleting) restoreRequested = true;
+						return;
+					}
 					if (isCollapsed) {
 						void triggerTextRestore();
 						return;
@@ -796,37 +817,46 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					window.clearTimeout(idleTimer);
 					idleTimer = window.setTimeout(() => {
 						void triggerTextDelete();
-					}, idleDelay);
+					}, Math.max(idleDelay, stableUntil - Date.now()));
 				};
 
 				const deleteFromEnd = async (element, targetText = "") => {
 					let index = 0;
 					while ((element.textContent ?? "").length > targetText.length) {
+						if (restoreRequested) return false;
 						element.textContent = (element.textContent ?? "").slice(0, -1);
 						placeCaret(element);
-						await wait(typingDelay(index));
+						if (!(await interruptibleWait(typingDelay(index)))) return false;
 						index += 1;
 					}
+					return true;
 				};
 
 				const deleteBeforeFinalCharacter = async (element, finalText) => {
 					let index = 0;
 					while ((element.textContent ?? "") !== finalText && index < 32) {
+						if (restoreRequested) return false;
 						const current = element.textContent ?? "";
 						if (current.length <= finalText.length) break;
 						const finalCharacter = current.slice(-1);
 						const prefix = current.slice(0, -1);
 						element.textContent = `${prefix.slice(0, -1)}${finalCharacter}`;
 						placeCaret(element, "before-last");
-						await wait(typingDelay(index));
+						if (!(await interruptibleWait(typingDelay(index)))) return false;
 						index += 1;
 					}
 					element.textContent = finalText;
+					return true;
 				};
 
-				const typeText = async (element, text) => {
-					element.textContent = "";
-					for (let index = 0; index < text.length; index += 1) {
+				const typeText = async (element, text, { replace = true } = {}) => {
+					if (replace) element.textContent = "";
+					let current = element.textContent ?? "";
+					if (!text.startsWith(current)) {
+						current = "";
+						element.textContent = "";
+					}
+					for (let index = current.length; index < text.length; index += 1) {
 						element.textContent = `${element.textContent ?? ""}${text[index]}`;
 						placeCaret(element);
 						await wait(fastTypingDelay(index));
@@ -847,31 +877,33 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					if (isRunning || isCollapsed) return;
 
 					isRunning = true;
+					isDeleting = true;
+					restoreRequested = false;
 					document.body.classList.add("is-home-easter-active");
 					suppressSelection();
 					resetText();
 
-					await wait(360);
+					if (!(await interruptibleWait(360))) return triggerTextRestore();
 					placeCaret(instagram);
-					await wait(620);
-					await deleteFromEnd(instagram);
+					if (!(await interruptibleWait(620))) return triggerTextRestore();
+					if (!(await deleteFromEnd(instagram))) return triggerTextRestore();
 
-					await wait(420);
+					if (!(await interruptibleWait(420))) return triggerTextRestore();
 					placeCaret(email);
-					await wait(560);
-					await deleteFromEnd(email);
+					if (!(await interruptibleWait(560))) return triggerTextRestore();
+					if (!(await deleteFromEnd(email))) return triggerTextRestore();
 
-					await wait(460);
+					if (!(await interruptibleWait(460))) return triggerTextRestore();
 					placeCaret(title);
-					await wait(520);
-					await deleteFromEnd(title, "isidoro pannitti ");
-					await wait(220);
-					await deleteFromEnd(title, "isidoro p");
+					if (!(await interruptibleWait(520))) return triggerTextRestore();
+					if (!(await deleteFromEnd(title, "isidoro pannitti "))) return triggerTextRestore();
+					if (!(await interruptibleWait(220))) return triggerTextRestore();
+					if (!(await deleteFromEnd(title, "isidoro p"))) return triggerTextRestore();
 
-					await wait(300);
+					if (!(await interruptibleWait(300))) return triggerTextRestore();
 					placeCaret(title, "before-last");
-					await wait(360);
-					await deleteBeforeFinalCharacter(title, "ip");
+					if (!(await interruptibleWait(360))) return triggerTextRestore();
+					if (!(await deleteBeforeFinalCharacter(title, "ip"))) return triggerTextRestore();
 
 					await wait(520);
 					title.textContent = "ip";
@@ -880,28 +912,32 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					hideCaret();
 					document.body.classList.remove("is-home-easter-active");
 					isCollapsed = true;
+					isDeleting = false;
 					isRunning = false;
 				};
 
 				const triggerTextRestore = async () => {
-					if (isRunning || !isCollapsed) return;
+					if (isRunning && !isDeleting) return;
 
 					isRunning = true;
+					isDeleting = false;
+					restoreRequested = false;
 					isCollapsed = false;
 					document.body.classList.add("is-home-easter-active");
 					suppressSelection();
 
-					await wait(120);
-					await typeText(title, originals.title);
-					await wait(90);
-					await typeText(email, originals.email);
 					await wait(80);
-					await typeText(instagram, originals.instagram);
+					await typeText(title, originals.title, { replace: false });
+					await wait(48);
+					await typeText(email, originals.email, { replace: false });
+					await wait(40);
+					await typeText(instagram, originals.instagram, { replace: false });
 
 					await wait(220);
 					resetText();
 					hideCaret();
 					document.body.classList.remove("is-home-easter-active");
+					stableUntil = Date.now() + postRestoreStableDelay;
 					isRunning = false;
 					resetIdleTimer();
 				};
