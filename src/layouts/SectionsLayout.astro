@@ -85,6 +85,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				--photo-bg: #000;
 				--photo-text: #d8d1c5;
 				--photo-soft-text: #24211d;
+				--photo-theme-duration: 820ms;
 			}
 
 			* {
@@ -115,9 +116,19 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			body.theme-photo .left-fixed,
 			body.theme-photo .right-fixed,
 			body.theme-photo .lang-switch-fixed {
-				transition: background-color 420ms cubic-bezier(0.22, 1, 0.36, 1),
-					color 420ms cubic-bezier(0.22, 1, 0.36, 1),
-					border-color 420ms cubic-bezier(0.22, 1, 0.36, 1),
+				transition: background-color var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
+					color var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
+					border-color var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
+					opacity 260ms ease,
+					transform 170ms cubic-bezier(0.22, 1, 0.36, 1);
+			}
+
+			body.theme-photo main,
+			body.theme-photo figcaption,
+			body.theme-photo .sections-nav a,
+			body.theme-photo .sections-nav span,
+			body.theme-photo .lang-switch-fixed a {
+				transition: color var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
 					opacity 260ms ease,
 					transform 170ms cubic-bezier(0.22, 1, 0.36, 1);
 			}
@@ -376,8 +387,8 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 						calc(var(--press-scale) * var(--liquid-scale-y))
 					);
 				transform-origin: center;
-				transition: background-color 420ms cubic-bezier(0.22, 1, 0.36, 1),
-					border-color 420ms cubic-bezier(0.22, 1, 0.36, 1),
+				transition: background-color var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
+					border-color var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
 					border-radius 360ms cubic-bezier(0.2, 1, 0.34, 1),
 					opacity 260ms ease,
 					transform 520ms cubic-bezier(0.2, 1, 0.34, 1);
