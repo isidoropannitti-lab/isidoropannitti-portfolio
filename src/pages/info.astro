@@ -107,6 +107,10 @@ try {
 		transition-duration: 120ms;
 	}
 
+	.archive-toggle.is-liquid-touch {
+		transition: color 260ms ease, transform 150ms cubic-bezier(0.2, 1, 0.34, 1);
+	}
+
 	.archive-list {
 		display: grid;
 		gap: var(--space-8);
@@ -165,8 +169,8 @@ try {
 
 		if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 			const supportsFinePointer = window.matchMedia("(pointer: fine)").matches;
-			const radius = supportsFinePointer ? 136 : 96;
-			const maxShift = supportsFinePointer ? 7 : 11;
+			const radius = supportsFinePointer ? 136 : 116;
+			const maxShift = supportsFinePointer ? 7 : 18;
 			let frame = 0;
 			let activePointerId = null;
 
@@ -185,19 +189,21 @@ try {
 				const deltaY = clientY - centerY;
 				const distance = Math.hypot(deltaX, deltaY);
 
-				if (distance > radius) {
+				if (supportsFinePointer && distance > radius) {
 					resetArchiveMagnet();
 					return;
 				}
 
-				const pull = Math.pow(1 - distance / radius, 1.28);
+				const pull = supportsFinePointer
+					? Math.pow(1 - distance / radius, 1.28)
+					: Math.pow(Math.min(distance / radius, 1), 0.62);
 				const angle = Math.atan2(deltaY, deltaX);
 				const axisX = Math.abs(Math.cos(angle));
 				const axisY = Math.abs(Math.sin(angle));
 				const shiftX = Math.cos(angle) * maxShift * pull;
 				const shiftY = Math.sin(angle) * maxShift * pull;
-				const stretch = 1 + pull * (supportsFinePointer ? 0.14 : 0.32);
-				const squeeze = 1 - pull * (supportsFinePointer ? 0.055 : 0.16);
+				const stretch = 1 + pull * (supportsFinePointer ? 0.14 : 0.46);
+				const squeeze = 1 - pull * (supportsFinePointer ? 0.055 : 0.22);
 
 				archiveToggle.style.setProperty("--archive-x", `${shiftX.toFixed(2)}px`);
 				archiveToggle.style.setProperty("--archive-y", `${shiftY.toFixed(2)}px`);
@@ -226,6 +232,7 @@ try {
 			} else {
 				archiveToggle.addEventListener("pointerdown", (event) => {
 					activePointerId = event.pointerId;
+					archiveToggle.classList.add("is-liquid-touch");
 					archiveToggle.setPointerCapture?.(event.pointerId);
 					pullArchiveToggle(event.clientX, event.clientY);
 				});
@@ -237,6 +244,7 @@ try {
 
 				const releaseArchiveToggle = () => {
 					activePointerId = null;
+					archiveToggle.classList.remove("is-liquid-touch");
 					resetArchiveMagnet();
 				};
 

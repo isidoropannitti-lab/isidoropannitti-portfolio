@@ -424,6 +424,14 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				opacity: 0.72;
 			}
 
+			.photo-contrast-toggle.is-liquid-touch {
+				transition: background-color var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
+					border-color var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
+					border-radius 140ms cubic-bezier(0.2, 1, 0.34, 1),
+					opacity 260ms ease,
+					transform 140ms cubic-bezier(0.2, 1, 0.34, 1);
+			}
+
 			html.theme-photo.is-photo-soft body.theme-photo .photo-contrast-toggle,
 			body.theme-photo.is-photo-soft .photo-contrast-toggle {
 				border-color: rgba(36, 33, 29, 0.48);
@@ -702,8 +710,8 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
 				const supportsFinePointer = window.matchMedia("(pointer: fine)").matches;
-				const radius = supportsFinePointer ? 92 : 82;
-				const maxShift = supportsFinePointer ? 5.5 : 9;
+				const radius = supportsFinePointer ? 92 : 96;
+				const maxShift = supportsFinePointer ? 5.5 : 12;
 				let frame = 0;
 				let activePointerId = null;
 
@@ -715,7 +723,7 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 					toggle.style.setProperty("--liquid-radius", "50%");
 				};
 
-				const shapeToward = (clientX, clientY) => {
+				const shapeToward = (clientX, clientY, isTouchDrag = false) => {
 					const rect = toggle.getBoundingClientRect();
 					const centerX = rect.left + rect.width / 2;
 					const centerY = rect.top + rect.height / 2;
@@ -723,25 +731,27 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 					const deltaY = clientY - centerY;
 					const distance = Math.hypot(deltaX, deltaY);
 
-					if (distance > radius) {
+					if (!isTouchDrag && distance > radius) {
 						reset();
 						return;
 					}
 
-					const pull = Math.pow(1 - distance / radius, supportsFinePointer ? 1.55 : 1.12);
+					const pull = isTouchDrag
+						? Math.pow(Math.min(distance / radius, 1), 0.62)
+						: Math.pow(1 - distance / radius, 1.55);
 					const angle = Math.atan2(deltaY, deltaX);
 					const axisX = Math.abs(Math.cos(angle));
 					const axisY = Math.abs(Math.sin(angle));
 					const shiftX = Math.cos(angle) * maxShift * pull;
 					const shiftY = Math.sin(angle) * maxShift * pull;
-					const stretch = 1 + pull * (supportsFinePointer ? 0.34 : 0.58);
-					const squeeze = 1 - pull * (supportsFinePointer ? 0.14 : 0.24);
+					const stretch = 1 + pull * (supportsFinePointer ? 0.34 : 0.72);
+					const squeeze = 1 - pull * (supportsFinePointer ? 0.14 : 0.28);
 
 					toggle.style.setProperty("--liquid-x", `${shiftX.toFixed(2)}px`);
 					toggle.style.setProperty("--liquid-y", `${shiftY.toFixed(2)}px`);
 					const scaleX = 1 + (stretch - 1) * axisX - (1 - squeeze) * axisY;
 					const scaleY = 1 + (stretch - 1) * axisY - (1 - squeeze) * axisX;
-					const radiusPull = supportsFinePointer ? pull : pull * 1.45;
+					const radiusPull = supportsFinePointer ? pull : pull * 1.72;
 					const radiusShape = `${(50 - radiusPull * 12).toFixed(1)}% ${(50 + radiusPull * 16).toFixed(
 						1
 					)}% ${(50 + radiusPull * 10).toFixed(1)}% ${(50 - radiusPull * 8).toFixed(1)}%`;
@@ -766,17 +776,19 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				} else {
 					toggle.addEventListener("pointerdown", (event) => {
 						activePointerId = event.pointerId;
+						toggle.classList.add("is-liquid-touch");
 						toggle.setPointerCapture?.(event.pointerId);
-						shapeToward(event.clientX, event.clientY);
+						shapeToward(event.clientX, event.clientY, true);
 					});
 
 					toggle.addEventListener("pointermove", (event) => {
 						if (event.pointerId !== activePointerId) return;
-						shapeToward(event.clientX, event.clientY);
+						shapeToward(event.clientX, event.clientY, true);
 					});
 
 					const release = () => {
 						activePointerId = null;
+						toggle.classList.remove("is-liquid-touch");
 						reset();
 					};
 
