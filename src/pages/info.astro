@@ -8,12 +8,12 @@ const DEFAULT_BIO =
 let bioText = DEFAULT_BIO;
 
 const archiveItems = [
-	{ place: "Milano", year: "2026", type: "allestimento museale" },
-	{ place: "Roma", year: "2025", type: "residenza privata" },
-	{ place: "Milano", year: "2025", type: "allestimento museale" },
-	{ place: "Milano", year: "2025", type: "residenza privata" },
-	{ place: "Maddaloni", year: "2025", type: "padiglione pubblico" },
-	{ place: "Milano", year: "2023", type: "allestimento espositivo" },
+	{ place: "Milano", year: "2026", type: "allestimento museale", href: "/projects/26-2" },
+	{ place: "Roma", year: "2025", type: "residenza privata", href: "/projects/25-6" },
+	{ place: "Milano", year: "2025", type: "allestimento museale", href: "/projects/25-4" },
+	{ place: "Milano", year: "2025", type: "residenza privata", href: "/projects/25-2" },
+	{ place: "Maddaloni", year: "2025", type: "padiglione pubblico", href: "/projects/25-1" },
+	{ place: "Milano", year: "2023", type: "allestimento espositivo", href: "/projects/23-4" },
 ];
 
 try {
@@ -45,7 +45,7 @@ try {
 				archivio
 			</button>
 			<ul class="archive-list" id="archive-list-it" data-info-archive-list>
-				{archiveItems.map((item) => <li>{item.place}, {item.year}, {item.type}</li>)}
+				{archiveItems.map((item) => <li><a href={item.href}>{item.place}, {item.year}, {item.type}</a></li>)}
 			</ul>
 		</div>
 	</section>
@@ -115,6 +115,22 @@ try {
 			margin-top 640ms cubic-bezier(0.22, 1, 0.36, 1),
 			opacity 360ms ease,
 			transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.archive-list a {
+		display: inline-block;
+		color: inherit;
+		transition: opacity 220ms ease, transform 260ms cubic-bezier(0.2, 1, 0.34, 1);
+	}
+
+	.archive-list a:hover,
+	.archive-list a:focus-visible {
+		opacity: 0.54;
+		transform: translateX(var(--space-4));
+	}
+
+	.archive-list a:active {
+		transform: translateX(var(--space-4)) scale(0.99);
 	}
 
 	.archive-block.is-open .archive-list {
