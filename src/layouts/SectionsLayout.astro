@@ -84,6 +84,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				--paper-bg: #faf9f7;
 				--photo-bg: #000;
 				--photo-text: #d8d1c5;
+				--photo-soft-text: #24211d;
 			}
 
 			* {
@@ -107,6 +108,25 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			body.theme-photo {
 				background: var(--photo-bg);
 				color: var(--photo-text);
+			}
+
+			html.theme-photo,
+			body.theme-photo,
+			body.theme-photo .left-fixed,
+			body.theme-photo .right-fixed,
+			body.theme-photo .lang-switch-fixed,
+			body.theme-photo .photo-contrast-toggle {
+				transition: background-color 420ms cubic-bezier(0.22, 1, 0.36, 1),
+					color 420ms cubic-bezier(0.22, 1, 0.36, 1),
+					border-color 420ms cubic-bezier(0.22, 1, 0.36, 1),
+					opacity 260ms ease,
+					transform 170ms cubic-bezier(0.22, 1, 0.36, 1);
+			}
+
+			html.theme-photo.is-photo-soft,
+			body.theme-photo.is-photo-soft {
+				background: var(--paper-bg);
+				color: var(--photo-soft-text);
 			}
 
 			html.theme-paper,
@@ -156,6 +176,10 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			body.theme-photo .left-fixed {
 				color: var(--photo-text);
 				mix-blend-mode: normal;
+			}
+
+			body.theme-photo.is-photo-soft .left-fixed {
+				color: var(--photo-soft-text);
 			}
 
 			.left-fixed p {
@@ -250,6 +274,10 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				color: var(--photo-text);
 			}
 
+			body.theme-photo.is-photo-soft .right-fixed {
+				color: var(--photo-soft-text);
+			}
+
 			.sections-nav {
 				display: flex;
 				align-items: center;
@@ -296,6 +324,11 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				mix-blend-mode: difference;
 			}
 
+			body.theme-photo.is-photo-soft .lang-switch-fixed {
+				color: var(--photo-soft-text);
+				mix-blend-mode: normal;
+			}
+
 			.lang-switch-fixed.is-hidden {
 				opacity: 0;
 				pointer-events: none;
@@ -313,6 +346,39 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 			body.theme-photo .lang-switch-fixed .active {
 				color: inherit;
+			}
+
+			.photo-contrast-toggle {
+				position: fixed;
+				right: var(--edge);
+				bottom: calc(var(--edge) + var(--space-32));
+				z-index: 20;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				border: 1px solid rgba(216, 209, 197, 0.42);
+				border-radius: 999px;
+				background: rgba(216, 209, 197, 0.08);
+				color: var(--photo-text);
+				font: inherit;
+				font-size: 0.78em;
+				font-weight: 300;
+				letter-spacing: 0.01em;
+				line-height: 1;
+				padding: var(--space-8) var(--space-12);
+				cursor: pointer;
+				-webkit-tap-highlight-color: transparent;
+			}
+
+			.photo-contrast-toggle:hover,
+			.photo-contrast-toggle:focus-visible {
+				opacity: 0.72;
+			}
+
+			body.theme-photo.is-photo-soft .photo-contrast-toggle {
+				border-color: rgba(36, 33, 29, 0.22);
+				background: rgba(36, 33, 29, 0.04);
+				color: var(--photo-soft-text);
 			}
 
 			.page-transition-overlay {
@@ -407,6 +473,11 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 				.menu-toggle:checked ~ .right-fixed .menu-trigger {
 					--menu-rotation: 45deg;
+				}
+
+				.photo-contrast-toggle {
+					bottom: calc(var(--edge) + var(--space-32));
+					padding: var(--space-8) var(--space-12);
 				}
 
 			}
@@ -506,9 +577,46 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 			</a>
 		</div>
 
+		{
+			section === "photo" && (
+				<button
+					class="photo-contrast-toggle pressable pressable-control"
+					type="button"
+					aria-label={lang === "it" ? "Riduci contrasto" : "Reduce contrast"}
+					aria-pressed="false"
+					data-photo-contrast-toggle
+				>
+					soft
+				</button>
+			)
+		}
+
 		<main>
 			<slot />
 		</main>
+
+		<script is:inline>
+			(() => {
+				const toggle = document.querySelector("[data-photo-contrast-toggle]");
+				if (!(toggle instanceof HTMLButtonElement)) return;
+
+				const updateLabel = () => {
+					const isSoft = document.body.classList.contains("is-photo-soft");
+					toggle.textContent = isSoft ? "black" : "soft";
+					toggle.setAttribute("aria-pressed", String(isSoft));
+				};
+
+				document.documentElement.classList.remove("is-photo-soft");
+				document.body.classList.remove("is-photo-soft");
+				updateLabel();
+
+				toggle.addEventListener("click", () => {
+					const isSoft = document.body.classList.toggle("is-photo-soft");
+					document.documentElement.classList.toggle("is-photo-soft", isSoft);
+					updateLabel();
+				});
+			})();
+		</script>
 
 		<script is:inline>
 			(() => {
