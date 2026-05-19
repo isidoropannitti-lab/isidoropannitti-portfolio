@@ -386,6 +386,7 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				--liquid-y: 0px;
 				--liquid-scale-x: 1;
 				--liquid-scale-y: 1;
+				--liquid-angle: 0deg;
 				--liquid-radius: 50%;
 				position: fixed;
 				right: calc(var(--edge) + 3.05em);
@@ -405,6 +406,7 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				padding: 0;
 				cursor: pointer;
 				transform: translate3d(var(--liquid-x), var(--liquid-y), 0)
+					rotate(var(--liquid-angle))
 					scale(
 						calc(var(--press-scale) * var(--liquid-scale-x)),
 						calc(var(--press-scale) * var(--liquid-scale-y))
@@ -720,6 +722,7 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 					toggle.style.setProperty("--liquid-y", "0px");
 					toggle.style.setProperty("--liquid-scale-x", "1");
 					toggle.style.setProperty("--liquid-scale-y", "1");
+					toggle.style.setProperty("--liquid-angle", "0deg");
 					toggle.style.setProperty("--liquid-radius", "50%");
 				};
 
@@ -740,25 +743,18 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 						? Math.pow(Math.min(distance / radius, 1), 0.62)
 						: Math.pow(1 - distance / radius, 1.55);
 					const angle = Math.atan2(deltaY, deltaX);
-					const axisX = Math.abs(Math.cos(angle));
-					const axisY = Math.abs(Math.sin(angle));
 					const shiftX = Math.cos(angle) * maxShift * pull;
 					const shiftY = Math.sin(angle) * maxShift * pull;
-					const stretch = 1 + pull * (supportsFinePointer ? 0.34 : 0.84);
-					const squeeze = 1 - pull * (supportsFinePointer ? 0.14 : 0.32);
+					const stretch = 1 + pull * (supportsFinePointer ? 0.42 : 0.9);
+					const squeeze = 1 - pull * (supportsFinePointer ? 0.1 : 0.22);
+					const angleDegrees = (angle * 180) / Math.PI;
 
 					toggle.style.setProperty("--liquid-x", `${shiftX.toFixed(2)}px`);
 					toggle.style.setProperty("--liquid-y", `${shiftY.toFixed(2)}px`);
-					const scaleX = 1 + (stretch - 1) * axisX - (1 - squeeze) * axisY;
-					const scaleY = 1 + (stretch - 1) * axisY - (1 - squeeze) * axisX;
-					const radiusPull = supportsFinePointer ? pull : pull * 1.72;
-					const radiusShape = `${(50 - radiusPull * 12).toFixed(1)}% ${(50 + radiusPull * 16).toFixed(
-						1
-					)}% ${(50 + radiusPull * 10).toFixed(1)}% ${(50 - radiusPull * 8).toFixed(1)}%`;
-
-					toggle.style.setProperty("--liquid-scale-x", scaleX.toFixed(3));
-					toggle.style.setProperty("--liquid-scale-y", scaleY.toFixed(3));
-					toggle.style.setProperty("--liquid-radius", radiusShape);
+					toggle.style.setProperty("--liquid-angle", `${angleDegrees.toFixed(2)}deg`);
+					toggle.style.setProperty("--liquid-scale-x", stretch.toFixed(3));
+					toggle.style.setProperty("--liquid-scale-y", squeeze.toFixed(3));
+					toggle.style.setProperty("--liquid-radius", `${(50 - pull * 4).toFixed(1)}%`);
 				};
 
 				if (supportsFinePointer) {
