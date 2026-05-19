@@ -512,12 +512,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 
 		<script is:inline>
 			(() => {
-				if (!document.body.classList.contains("is-home-page")) return;
-
-				const activationClicks = 5;
-				const idleDelay = 10000;
-				let clickCount = 0;
-				let clickTimer;
+				const idleDelay = 5000;
 				let idleTimer;
 				let selectionTimer;
 				let isRunning = false;
@@ -703,32 +698,8 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 					resetIdleTimer();
 				};
 
-				const registerBlankClick = (event) => {
-					if (isRunning) return;
-					const target = event.target;
-					if (!(target instanceof Element)) return;
-					if (target.closest("a, button, label, input, nav, figure, img")) return;
-
-					event.preventDefault();
-					suppressSelection();
-					window.clearTimeout(clickTimer);
-					clickTimer = window.setTimeout(() => {
-						clickCount = 0;
-					}, 1400);
-
-					clickCount += 1;
-					if (clickCount < activationClicks) return;
-
-					clickCount = 0;
-					void triggerTextDelete();
-				};
-
-				window.addEventListener("pointerdown", registerBlankClick, { passive: false });
-				["pointermove", "keydown", "wheel", "touchmove", "scroll"].forEach(
-					(eventName) => {
-						window.addEventListener(eventName, resetIdleTimer, { passive: true });
-					}
-				);
+				window.addEventListener("pointermove", resetIdleTimer, { passive: true });
+				window.addEventListener("mousemove", resetIdleTimer, { passive: true });
 
 				resetIdleTimer();
 			})();
