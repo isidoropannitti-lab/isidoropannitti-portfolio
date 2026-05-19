@@ -533,10 +533,10 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				}
 
 				.photo-contrast-toggle {
-					right: calc(var(--edge) + 3.05em);
-					bottom: calc(var(--edge) + 0.42em);
-					width: 0.78em;
-					height: 0.78em;
+					right: calc(var(--edge) + 3.12em);
+					bottom: calc(var(--edge) + 0.22em);
+					width: 1.16em;
+					height: 1.16em;
 				}
 
 			}
@@ -710,8 +710,8 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
 				const supportsFinePointer = window.matchMedia("(pointer: fine)").matches;
-				const radius = supportsFinePointer ? 92 : 96;
-				const maxShift = supportsFinePointer ? 5.5 : 12;
+				const radius = supportsFinePointer ? 92 : 128;
+				const maxShift = supportsFinePointer ? 5.5 : 16;
 				let frame = 0;
 				let activePointerId = null;
 
@@ -744,8 +744,8 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 					const axisY = Math.abs(Math.sin(angle));
 					const shiftX = Math.cos(angle) * maxShift * pull;
 					const shiftY = Math.sin(angle) * maxShift * pull;
-					const stretch = 1 + pull * (supportsFinePointer ? 0.34 : 0.72);
-					const squeeze = 1 - pull * (supportsFinePointer ? 0.14 : 0.28);
+					const stretch = 1 + pull * (supportsFinePointer ? 0.34 : 0.84);
+					const squeeze = 1 - pull * (supportsFinePointer ? 0.14 : 0.32);
 
 					toggle.style.setProperty("--liquid-x", `${shiftX.toFixed(2)}px`);
 					toggle.style.setProperty("--liquid-y", `${shiftY.toFixed(2)}px`);
