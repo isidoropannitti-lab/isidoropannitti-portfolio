@@ -45,6 +45,9 @@ const isHomePage = normalizedPathname === "/" || normalizedPathname === "/en";
 const englishPath = pathname.startsWith("/en") ? pathname : `/en${pathname === "/" ? "" : pathname}`;
 const italianPath = pathname.startsWith("/en") ? pathname.slice(3) || "/" : pathname;
 const switchHref = lang === "it" ? englishPath : italianPath;
+const PAPER_THEME_COLOR = "#faf9f7";
+const PHOTO_THEME_COLOR = "#000000";
+const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 ---
 
 <html
@@ -58,6 +61,22 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content={themeColor} data-theme-color />
+		<meta name="apple-mobile-web-app-status-bar-style" content={section === "photo" ? "black-translucent" : "default"} />
+		{
+			section === "photo" && (
+				<script is:inline>
+					(() => {
+						const paperColor = "#faf9f7";
+						const photoColor = "#000000";
+						const isSoft = window.sessionStorage.getItem("photo-contrast-soft") === "true";
+						const color = isSoft ? paperColor : photoColor;
+						document.documentElement.classList.toggle("is-photo-soft", isSoft);
+						document.querySelector("[data-theme-color]")?.setAttribute("content", color);
+					})();
+				</script>
+			)
+		}
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
@@ -628,6 +647,9 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				const toggle = document.querySelector("[data-photo-contrast-toggle]");
 				if (!(toggle instanceof HTMLButtonElement)) return;
 				const storageKey = "photo-contrast-soft";
+				const paperColor = "#faf9f7";
+				const photoColor = "#000000";
+				const themeMeta = document.querySelector("[data-theme-color]");
 
 				const updateLabel = () => {
 					const isSoft = document.body.classList.contains("is-photo-soft");
@@ -641,6 +663,7 @@ const switchHref = lang === "it" ? englishPath : italianPath;
 				const applySoftState = (isSoft) => {
 					document.documentElement.classList.toggle("is-photo-soft", isSoft);
 					document.body.classList.toggle("is-photo-soft", isSoft);
+					themeMeta?.setAttribute("content", isSoft ? paperColor : photoColor);
 					updateLabel();
 				};
 
