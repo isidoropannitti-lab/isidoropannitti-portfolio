@@ -93,7 +93,7 @@ try {
 				calc(var(--press-scale) * var(--archive-scale-y))
 			);
 		transform-origin: left center;
-		transition: color 260ms ease, transform 520ms cubic-bezier(0.18, 1, 0.28, 1);
+		transition: color 260ms ease, transform 680ms cubic-bezier(0.16, 1, 0.26, 1);
 		-webkit-tap-highlight-color: transparent;
 	}
 
@@ -165,8 +165,8 @@ try {
 
 		if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 			const supportsFinePointer = window.matchMedia("(pointer: fine)").matches;
-			const radius = supportsFinePointer ? 136 : 72;
-			const maxShift = supportsFinePointer ? 7 : 4;
+			const radius = supportsFinePointer ? 136 : 96;
+			const maxShift = supportsFinePointer ? 7 : 11;
 			let frame = 0;
 			let activePointerId = null;
 
@@ -196,8 +196,8 @@ try {
 				const axisY = Math.abs(Math.sin(angle));
 				const shiftX = Math.cos(angle) * maxShift * pull;
 				const shiftY = Math.sin(angle) * maxShift * pull;
-				const stretch = 1 + pull * 0.14;
-				const squeeze = 1 - pull * 0.055;
+				const stretch = 1 + pull * (supportsFinePointer ? 0.14 : 0.32);
+				const squeeze = 1 - pull * (supportsFinePointer ? 0.055 : 0.16);
 
 				archiveToggle.style.setProperty("--archive-x", `${shiftX.toFixed(2)}px`);
 				archiveToggle.style.setProperty("--archive-y", `${shiftY.toFixed(2)}px`);
