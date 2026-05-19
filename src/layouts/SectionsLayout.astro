@@ -153,6 +153,7 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 			}
 
 			html.theme-photo.is-photo-soft,
+			html.theme-photo.is-photo-soft body.theme-photo,
 			body.theme-photo.is-photo-soft {
 				background: var(--paper-bg);
 				color: var(--photo-soft-text);
@@ -207,6 +208,7 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				mix-blend-mode: normal;
 			}
 
+			html.theme-photo.is-photo-soft body.theme-photo .left-fixed,
 			body.theme-photo.is-photo-soft .left-fixed {
 				color: var(--photo-soft-text);
 			}
@@ -303,6 +305,7 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				color: var(--photo-text);
 			}
 
+			html.theme-photo.is-photo-soft body.theme-photo .right-fixed,
 			body.theme-photo.is-photo-soft .right-fixed {
 				color: var(--photo-soft-text);
 			}
@@ -353,6 +356,7 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				mix-blend-mode: difference;
 			}
 
+			html.theme-photo.is-photo-soft body.theme-photo .lang-switch-fixed,
 			body.theme-photo.is-photo-soft .lang-switch-fixed {
 				color: var(--photo-soft-text);
 				mix-blend-mode: normal;
@@ -420,6 +424,7 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				opacity: 0.72;
 			}
 
+			html.theme-photo.is-photo-soft body.theme-photo .photo-contrast-toggle,
 			body.theme-photo.is-photo-soft .photo-contrast-toggle {
 				border-color: rgba(36, 33, 29, 0.48);
 				background: #000;
@@ -565,6 +570,18 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 			"is-home-page": isHomePage,
 		}}
 	>
+		{
+			section === "photo" && (
+				<script is:inline>
+					(() => {
+						const isSoft = window.sessionStorage.getItem("photo-contrast-soft") === "true";
+						const color = isSoft ? "#faf9f7" : "#000000";
+						document.body.classList.toggle("is-photo-soft", isSoft);
+						document.querySelector("[data-theme-color]")?.setAttribute("content", color);
+					})();
+				</script>
+			)
+		}
 		<div class="page-transition-overlay" aria-hidden="true" data-page-transition></div>
 		<input class="menu-toggle" type="checkbox" id="sections-toggle" />
 
