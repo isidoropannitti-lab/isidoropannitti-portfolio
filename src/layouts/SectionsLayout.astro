@@ -387,7 +387,7 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				--liquid-y: 0px;
 				position: fixed;
 				right: calc(var(--edge) + 3.18em);
-				bottom: calc(var(--edge-y) + 0.24em);
+				bottom: calc(var(--edge-y) + 0.05em);
 				z-index: 20;
 				display: inline-flex;
 				align-items: center;
@@ -549,9 +549,17 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 					--menu-rotation: 45deg;
 				}
 
+				.left-fixed {
+					top: var(--space-32);
+				}
+
+				.lang-switch-fixed {
+					bottom: var(--space-32);
+				}
+
 				.photo-contrast-toggle {
 					right: calc(var(--edge) + 3.22em);
-					bottom: calc(var(--edge-y) + 0.06em);
+					bottom: calc(var(--space-32) - 0.08em);
 					width: 1.96em;
 					height: 1.96em;
 				}
