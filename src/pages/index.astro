@@ -92,6 +92,18 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 		-webkit-user-select: none;
 	}
 
+	.gallery-stage .preview {
+		opacity: 0;
+		transform: translate3d(0, var(--space-8), 0);
+		transition: opacity 820ms cubic-bezier(0.22, 1, 0.36, 1),
+			transform 920ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.gallery-stage.is-ready .preview {
+		opacity: 1;
+		transform: translate3d(0, 0, 0);
+	}
+
 	.gallery-stage.is-dragging {
 		cursor: grabbing;
 	}
@@ -293,7 +305,7 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 				return;
 			}
 
-			currentX += distance * (isDragging ? 0.62 : 0.115);
+			currentX += distance * (isDragging ? 0.48 : 0.105);
 			normalizeLoop();
 			applyTransform();
 			frame = window.requestAnimationFrame(animate);
@@ -310,7 +322,7 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 
 			event.preventDefault();
 			if (!initialized) moveToMiddle();
-			targetX -= delta * 0.72;
+			targetX -= delta * 0.58;
 			startAnimation();
 		};
 
@@ -341,7 +353,7 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 			lastX = event.clientX;
 			lastTime = event.timeStamp;
 			if (Math.abs(delta) > 4) hasDragged = true;
-			targetX = startTargetX + delta;
+			targetX = startTargetX + delta * 0.84;
 			currentX = targetX;
 			normalizeLoop();
 			applyTransform();
@@ -351,7 +363,7 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 			if (!isDragging) return;
 			isDragging = false;
 			stage.classList.remove("is-dragging");
-			targetX += velocity * 520;
+			targetX += velocity * 420;
 			startAnimation();
 		};
 
@@ -371,6 +383,9 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 		window.addEventListener("resize", resetLoop, { passive: true });
 		window.addEventListener("load", resetLoop, { once: true });
 		window.addEventListener("pageshow", resetLoop);
+		window.setTimeout(() => {
+			stage.classList.add("is-ready");
+		}, 1000);
 		resetLoop();
 	}
 </script>
