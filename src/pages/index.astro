@@ -305,7 +305,7 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 				return;
 			}
 
-			currentX += distance * (isDragging ? 0.56 : 0.105);
+			currentX += distance * (isDragging ? 0.72 : 0.18);
 			normalizeLoop();
 			applyTransform();
 			frame = window.requestAnimationFrame(animate);
@@ -322,7 +322,7 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 
 			event.preventDefault();
 			if (!initialized) moveToMiddle();
-			targetX -= delta * 0.58;
+			targetX -= delta * 0.78;
 			startAnimation();
 		};
 
@@ -354,7 +354,7 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 			lastX = event.clientX;
 			lastTime = event.timeStamp;
 			if (Math.abs(delta) > 4) hasDragged = true;
-			targetX = startTargetX + delta * 0.84;
+			targetX = startTargetX + delta * 0.92;
 			normalizeLoop();
 			startAnimation();
 		});
@@ -363,7 +363,7 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 			if (!isDragging) return;
 			isDragging = false;
 			stage.classList.remove("is-dragging");
-			targetX += velocity * 420;
+			targetX += velocity * 360;
 			startAnimation();
 		};
 
