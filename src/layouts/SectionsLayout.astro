@@ -427,7 +427,7 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				vector-effect: non-scaling-stroke;
 				transition: fill var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
 					stroke var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
-					d 420ms cubic-bezier(0.16, 1, 0.26, 1);
+					d 180ms cubic-bezier(0.2, 1, 0.34, 1);
 			}
 
 			.photo-contrast-toggle:hover,
@@ -754,9 +754,8 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				const maxShift = supportsFinePointer ? 7.15 : 20.8;
 				let frame = 0;
 				let activePointerId = null;
-				let liquidAngle = 0;
-				let liquidPull = 0;
-				let hasLiquidState = false;
+				let liquidX = 0;
+				let liquidY = 0;
 				let lastPointerSample = null;
 				const basePath =
 					"M 50.00 12.00 C 70.99 12.00 88.00 29.01 88.00 50.00 C 88.00 70.99 70.99 88.00 50.00 88.00 C 29.01 88.00 12.00 70.99 12.00 50.00 C 12.00 29.01 29.01 12.00 50.00 12.00 Z";
@@ -765,8 +764,8 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 					toggle.style.setProperty("--liquid-x", "0px");
 					toggle.style.setProperty("--liquid-y", "0px");
 					blob.setAttribute("d", basePath);
-					hasLiquidState = false;
-					liquidPull = 0;
+					liquidX = 0;
+					liquidY = 0;
 					lastPointerSample = null;
 				};
 
@@ -798,10 +797,10 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				};
 
 				const makeBlobPath = (angle, pull) => {
-					const centerX = 50 + Math.cos(angle) * pull * 6.8;
-					const centerY = 50 + Math.sin(angle) * pull * 6.8;
+					const centerX = 50 + Math.cos(angle) * pull * 2.2;
+					const centerY = 50 + Math.sin(angle) * pull * 2.2;
 					const baseRadius = 38;
-					const pointCount = 18;
+					const pointCount = 24;
 					const points = [];
 
 					for (let index = 0; index < pointCount; index += 1) {
@@ -810,13 +809,11 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 						const side = Math.abs(Math.sin(pointAngle - angle));
 						const forwardPull = Math.max(dot, 0);
 						const backwardPull = Math.max(-dot, 0);
-						const surfaceRipple = Math.sin(index * 1.7 + pull * 2.1) * 0.9 * pull * side;
 						const radiusValue =
 							baseRadius +
-							pull * 23.4 * Math.pow(forwardPull, 2.25) -
-							pull * 6.2 * Math.pow(backwardPull, 1.35) +
-							pull * 4.2 * Math.pow(side, 2) +
-							surfaceRipple;
+							pull * 18.5 * Math.pow(forwardPull, 2.85) -
+							pull * 2.8 * Math.pow(backwardPull, 1.8) +
+							pull * 1.5 * Math.pow(side, 2);
 
 						points.push({
 							x: centerX + Math.cos(pointAngle) * radiusValue,
@@ -857,18 +854,16 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 					const angle = Math.atan2(deltaY, deltaX);
 					const slowFinePass = supportsFinePointer && pointerSpeed < 0.18 && distance < radius * 0.86;
 					if (slowFinePass) pull = Math.max(pull, 0.09);
-					if (!hasLiquidState) {
-						liquidAngle = angle;
-						liquidPull = pull;
-						hasLiquidState = true;
-					} else {
-						const angleDelta = Math.atan2(Math.sin(angle - liquidAngle), Math.cos(angle - liquidAngle));
-						liquidAngle += angleDelta * 0.24;
-						liquidPull += (pull - liquidPull) * 0.28;
-					}
+					const targetX = Math.cos(angle) * pull;
+					const targetY = Math.sin(angle) * pull;
+					const smoothing = supportsFinePointer ? 0.42 : 0.5;
+					liquidX += (targetX - liquidX) * smoothing;
+					liquidY += (targetY - liquidY) * smoothing;
 
-					const shiftX = Math.cos(liquidAngle) * maxShift * liquidPull;
-					const shiftY = Math.sin(liquidAngle) * maxShift * liquidPull;
+					const liquidPull = Math.min(Math.hypot(liquidX, liquidY), 1);
+					const liquidAngle = Math.atan2(liquidY, liquidX);
+					const shiftX = liquidX * maxShift;
+					const shiftY = liquidY * maxShift;
 
 					toggle.style.setProperty("--liquid-x", `${shiftX.toFixed(2)}px`);
 					toggle.style.setProperty("--liquid-y", `${shiftY.toFixed(2)}px`);
