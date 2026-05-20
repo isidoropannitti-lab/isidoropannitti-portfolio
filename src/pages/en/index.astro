@@ -276,7 +276,7 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 		const normalizeLoop = () => {
 			if (!segmentWidth) return;
 
-			const relative = targetX + middleStart;
+			const relative = currentX + middleStart;
 			if (relative < segmentWidth * -0.35) {
 				currentX += segmentWidth;
 				targetX += segmentWidth;
@@ -305,7 +305,7 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 				return;
 			}
 
-			currentX += distance * (isDragging ? 0.56 : 0.105);
+			currentX += distance * (isDragging ? 0.48 : 0.105);
 			normalizeLoop();
 			applyTransform();
 			frame = window.requestAnimationFrame(animate);
@@ -343,7 +343,6 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 			velocity = 0;
 			stage.classList.add("is-dragging");
 			stage.setPointerCapture?.(event.pointerId);
-			startAnimation();
 		});
 
 		stage.addEventListener("pointermove", (event) => {
@@ -355,8 +354,9 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 			lastTime = event.timeStamp;
 			if (Math.abs(delta) > 4) hasDragged = true;
 			targetX = startTargetX + delta * 0.84;
+			currentX = targetX;
 			normalizeLoop();
-			startAnimation();
+			applyTransform();
 		});
 
 		const releaseDrag = () => {
