@@ -385,14 +385,14 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				--liquid-x: 0px;
 				--liquid-y: 0px;
 				position: fixed;
-				right: calc(var(--edge) + 3.05em);
-				bottom: calc(var(--edge) + 0.36em);
+				right: calc(var(--edge) + 3.18em);
+				bottom: calc(var(--edge) + 0.24em);
 				z-index: 20;
 				display: inline-flex;
 				align-items: center;
 				justify-content: center;
-				width: 0.78em;
-				height: 0.78em;
+				width: 1.01em;
+				height: 1.01em;
 				border: 0;
 				background: transparent;
 				color: transparent;
@@ -548,10 +548,10 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				}
 
 				.photo-contrast-toggle {
-					right: calc(var(--edge) + 3.12em);
-					bottom: calc(var(--edge) + 0.22em);
-					width: 1.16em;
-					height: 1.16em;
+					right: calc(var(--edge) + 3.22em);
+					bottom: calc(var(--edge) + 0.06em);
+					width: 1.51em;
+					height: 1.51em;
 				}
 
 			}
@@ -675,9 +675,9 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 					data-soft-label={lang === "it" ? "Riduci contrasto" : "Reduce contrast"}
 					data-dark-label={lang === "it" ? "Ripristina contrasto nero" : "Restore black contrast"}
 				>
-					<svg class="photo-contrast-blob" viewBox="-12 -12 124 124" aria-hidden="true" focusable="false">
+					<svg class="photo-contrast-blob" viewBox="-18 -18 136 136" aria-hidden="true" focusable="false">
 						<defs>
-							<filter id="photo-contrast-goo" x="-30%" y="-30%" width="160%" height="160%">
+							<filter id="photo-contrast-goo" x="-45%" y="-45%" width="190%" height="190%">
 								<feGaussianBlur in="SourceGraphic" stdDeviation="0.8" result="blur" />
 								<feColorMatrix
 									in="blur"
@@ -748,7 +748,8 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 
 				const supportsFinePointer = window.matchMedia("(pointer: fine)").matches;
 				const radius = supportsFinePointer ? 92 : 128;
-				const maxShift = supportsFinePointer ? 5.5 : 16;
+				const centerDeadZone = supportsFinePointer ? 10 : 12;
+				const maxShift = supportsFinePointer ? 7.15 : 20.8;
 				let frame = 0;
 				let activePointerId = null;
 				const basePath =
@@ -788,10 +789,10 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				};
 
 				const makeBlobPath = (angle, pull) => {
-					const centerX = 50 + Math.cos(angle) * pull * 5.2;
-					const centerY = 50 + Math.sin(angle) * pull * 5.2;
+					const centerX = 50 + Math.cos(angle) * pull * 6.8;
+					const centerY = 50 + Math.sin(angle) * pull * 6.8;
 					const baseRadius = 38;
-					const pointCount = 12;
+					const pointCount = 18;
 					const points = [];
 
 					for (let index = 0; index < pointCount; index += 1) {
@@ -800,12 +801,12 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 						const side = Math.abs(Math.sin(pointAngle - angle));
 						const forwardPull = Math.max(dot, 0);
 						const backwardPull = Math.max(-dot, 0);
-						const surfaceRipple = Math.sin(index * 1.7 + pull * 2.1) * 0.7 * pull * side;
+						const surfaceRipple = Math.sin(index * 1.7 + pull * 2.1) * 0.9 * pull * side;
 						const radiusValue =
 							baseRadius +
-							pull * 18 * Math.pow(forwardPull, 2.25) -
-							pull * 4.8 * Math.pow(backwardPull, 1.35) +
-							pull * 3.2 * Math.pow(side, 2) +
+							pull * 23.4 * Math.pow(forwardPull, 2.25) -
+							pull * 6.2 * Math.pow(backwardPull, 1.35) +
+							pull * 4.2 * Math.pow(side, 2) +
 							surfaceRipple;
 
 						points.push({
@@ -825,14 +826,20 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 					const deltaY = clientY - centerY;
 					const distance = Math.hypot(deltaX, deltaY);
 
+					if (distance < centerDeadZone) {
+						reset();
+						return;
+					}
+
 					if (!isTouchDrag && distance > radius) {
 						reset();
 						return;
 					}
 
+					const proximity = Math.max(0, Math.min(1, (radius - distance) / (radius - centerDeadZone)));
 					const pull = isTouchDrag
 						? Math.pow(Math.min(distance / radius, 1), 0.62)
-						: Math.pow(1 - distance / radius, 1.55);
+						: Math.pow(proximity, 1.2);
 					const angle = Math.atan2(deltaY, deltaX);
 					const shiftX = Math.cos(angle) * maxShift * pull;
 					const shiftY = Math.sin(angle) * maxShift * pull;
