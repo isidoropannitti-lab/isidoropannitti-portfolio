@@ -88,7 +88,7 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 		padding-right: var(--edge);
 		padding-bottom: var(--space-8);
 		scroll-padding-left: var(--edge);
-		scroll-snap-type: x proximity;
+		scroll-snap-type: none;
 		touch-action: pan-x;
 		-webkit-overflow-scrolling: touch;
 		scrollbar-width: none;
@@ -252,6 +252,8 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 		let segmentWidth = 0;
 		let middleStart = 0;
 		let normalizeTimer: number | undefined;
+		let wheelFrame = 0;
+		let wheelDelta = 0;
 		let initialized = false;
 
 		const getItemPosition = (scroller: HTMLElement, item: HTMLElement) =>
@@ -297,7 +299,14 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 			if (!delta) return;
 
 			event.preventDefault();
-			stage.scrollLeft += delta;
+			wheelDelta += delta;
+			if (!wheelFrame) {
+				wheelFrame = window.requestAnimationFrame(() => {
+					stage.scrollLeft += wheelDelta;
+					wheelDelta = 0;
+					wheelFrame = 0;
+				});
+			}
 			scheduleNormalize();
 		};
 
