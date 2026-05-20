@@ -159,10 +159,10 @@ const photos = PHOTO_IMAGES.map((src, index) => {
 	@media (max-width: 760px) {
 		.gallery-stage {
 			--mobile-photo-height: min(
-				clamp(20.75rem, 52svh, 26rem),
+				clamp(27rem, 68svh, 34rem),
 				calc(
 					100svh - var(--mobile-main-top) - var(--mobile-main-bottom) -
-						var(--mobile-caption-space) - var(--space-24) - env(safe-area-inset-bottom, 0px)
+						var(--mobile-caption-space) - var(--space-16) - env(safe-area-inset-bottom, 0px)
 				)
 			);
 			flex: 1 1 auto;

@@ -177,10 +177,10 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 			--mobile-card-width: clamp(16rem, 72vw, 20rem);
 			--mobile-caption-space: var(--space-64);
 			--mobile-card-height: min(
-				clamp(22rem, 48svh, 25rem),
+				clamp(27rem, 68svh, 34rem),
 				calc(
 					100svh - var(--mobile-main-top) - var(--mobile-main-bottom) -
-						var(--mobile-caption-space) - var(--space-48) - env(safe-area-inset-bottom, 0px)
+						var(--mobile-caption-space) - var(--space-16) - env(safe-area-inset-bottom, 0px)
 				)
 			);
 			flex: 1 1 auto;
