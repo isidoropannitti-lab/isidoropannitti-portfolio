@@ -11,30 +11,41 @@ const ARCHITECTURE_IMAGES = [
 	{ src: "/images/architecture/25-8-cover.webp", label: "25.8", onGoing: true, variant: "is-base" },
 	{ src: "/images/architecture/26-2-cover.jpeg", label: "26.2", slug: "26-2", variant: "is-wide" },
 ];
+
+const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
+	ARCHITECTURE_IMAGES.map((image, imageIndex) => ({ ...image, setIndex, imageIndex }))
+);
 ---
 
 <SectionsLayout title="isidoro pannitti architetto" section="architecture" lang="it" lockMobileScrollY>
 	<div
 		class="gallery-stage"
 		data-home-gallery-stage
+		data-loop-gallery
 		data-reset-gallery
 		aria-label="Architecture sequence"
 	>
 		<div class="gallery" data-home-gallery aria-label="Architecture sequence">
 			{
-				ARCHITECTURE_IMAGES.map((image) => (
-					<figure class:list={["preview", image.variant]}>
+				LOOPED_ARCHITECTURE_IMAGES.map((image) => (
+					<figure
+						class:list={["preview", image.variant]}
+						data-loop-item
+						data-loop-set={image.setIndex}
+						data-loop-index={image.imageIndex}
+						aria-hidden={image.setIndex !== 1 ? "true" : undefined}
+					>
 						{
 							image.onGoing ? (
 								<>
 									<input
 										class="ongoing-toggle"
 										type="checkbox"
-										id={`ongoing-${image.label.replace(".", "-")}`}
+										id={`ongoing-${image.setIndex}-${image.label.replace(".", "-")}`}
 									/>
 									<label
 										class="project-link ongoing-trigger magnetic-target pressable"
-										for={`ongoing-${image.label.replace(".", "-")}`}
+										for={`ongoing-${image.setIndex}-${image.label.replace(".", "-")}`}
 										data-magnetic
 									>
 										<img src={image.src} alt={image.label} loading="eager" />
@@ -225,3 +236,86 @@ const ARCHITECTURE_IMAGES = [
 		}
 	}
 </style>
+
+<script>
+	const stage = document.querySelector("[data-home-gallery-stage]");
+	const gallery = document.querySelector("[data-home-gallery]");
+
+	if (stage instanceof HTMLElement && gallery instanceof HTMLElement) {
+		const mobileQuery = window.matchMedia("(max-width: 760px)");
+		let segmentWidth = 0;
+		let middleStart = 0;
+		let frame = 0;
+		let initialized = false;
+
+		const getScroller = () => (mobileQuery.matches ? stage : gallery);
+
+		const getItemPosition = (scroller: HTMLElement, item: HTMLElement) =>
+			item.getBoundingClientRect().left - scroller.getBoundingClientRect().left + scroller.scrollLeft;
+
+		const measure = () => {
+			const scroller = getScroller();
+			const firstMiddle = gallery.querySelector('[data-loop-set="1"][data-loop-index="0"]');
+			const firstNext = gallery.querySelector('[data-loop-set="2"][data-loop-index="0"]');
+			if (!(firstMiddle instanceof HTMLElement) || !(firstNext instanceof HTMLElement)) return false;
+
+			middleStart = getItemPosition(scroller, firstMiddle);
+			segmentWidth = getItemPosition(scroller, firstNext) - middleStart;
+			return segmentWidth > 0;
+		};
+
+		const moveToMiddle = () => {
+			const scroller = getScroller();
+			if (!measure()) return;
+			scroller.scrollLeft = middleStart;
+			initialized = true;
+		};
+
+		const normalizeLoop = () => {
+			const scroller = getScroller();
+			if (!initialized && !measure()) return;
+			if (!segmentWidth) return;
+
+			const relative = scroller.scrollLeft - middleStart;
+			if (relative < segmentWidth * -0.5) {
+				scroller.scrollLeft += segmentWidth;
+			} else if (relative > segmentWidth * 0.5) {
+				scroller.scrollLeft -= segmentWidth;
+			}
+		};
+
+		const scheduleNormalize = () => {
+			if (frame) return;
+			frame = window.requestAnimationFrame(() => {
+				frame = 0;
+				normalizeLoop();
+			});
+		};
+
+		const onWheel = (event: WheelEvent) => {
+			const scroller = getScroller();
+			const horizontalIntent = Math.abs(event.deltaX) > Math.abs(event.deltaY);
+			const delta = horizontalIntent ? event.deltaX : event.deltaY;
+			if (!delta) return;
+
+			event.preventDefault();
+			scroller.scrollLeft += delta;
+			scheduleNormalize();
+		};
+
+		const resetLoop = () => {
+			window.requestAnimationFrame(() => {
+				window.requestAnimationFrame(moveToMiddle);
+			});
+		};
+
+		stage.addEventListener("wheel", onWheel, { passive: false });
+		stage.addEventListener("scroll", scheduleNormalize, { passive: true });
+		gallery.addEventListener("scroll", scheduleNormalize, { passive: true });
+		mobileQuery.addEventListener("change", resetLoop);
+		window.addEventListener("resize", resetLoop, { passive: true });
+		window.addEventListener("load", resetLoop, { once: true });
+		window.addEventListener("pageshow", resetLoop);
+		resetLoop();
+	}
+</script>
