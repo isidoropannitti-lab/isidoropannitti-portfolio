@@ -1,0 +1,22 @@
+# Lista lavori modificabile a mano.
+# Formato:
+# Luogo | anno | tipologia di lavoro | link opzionale
+#
+# Se il link manca, la riga appare nella lista ma non e cliccabile.
+# Usa le sezioni [it] e [en] per gestire italiano e inglese.
+
+[it]
+Milano | 2026 | allestimento museale | /projects/26-2
+Roma | 2025 | residenza privata | /projects/25-6
+Milano | 2025 | allestimento museale | /projects/25-4
+Milano | 2025 | residenza privata | /projects/25-2
+Maddaloni | 2025 | padiglione pubblico | /projects/25-1
+Milano | 2023 | allestimento espositivo | /projects/23-4
+
+[en]
+Milan | 2026 | museum installation | /en/projects/26-2
+Rome | 2025 | private residence | /en/projects/25-6
+Milan | 2025 | museum installation | /en/projects/25-4
+Milan | 2025 | private residence | /en/projects/25-2
+Maddaloni | 2025 | public pavilion | /en/projects/25-1
+Milan | 2023 | exhibition installation | /en/projects/23-4

@@ -100,6 +100,7 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				--space-96: 96px;
 				--space-128: 128px;
 				--edge: var(--space-48);
+				--edge-y: var(--edge);
 				--paper-bg: #faf9f7;
 				--photo-bg: #000;
 				--photo-text: #d8d1c5;
@@ -183,7 +184,7 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 			.left-fixed,
 			.right-fixed {
 				position: fixed;
-				top: var(--edge);
+				top: var(--edge-y);
 				z-index: 10;
 			}
 
@@ -344,7 +345,7 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 			.lang-switch-fixed {
 				position: fixed;
 				right: var(--edge);
-				bottom: var(--edge);
+				bottom: var(--edge-y);
 				z-index: 20;
 				color: #fff;
 				mix-blend-mode: difference;
@@ -386,13 +387,13 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				--liquid-y: 0px;
 				position: fixed;
 				right: calc(var(--edge) + 3.18em);
-				bottom: calc(var(--edge) + 0.24em);
+				bottom: calc(var(--edge-y) + 0.24em);
 				z-index: 20;
 				display: inline-flex;
 				align-items: center;
 				justify-content: center;
-				width: 1.01em;
-				height: 1.01em;
+				width: 1.31em;
+				height: 1.31em;
 				border: 0;
 				background: transparent;
 				color: transparent;
@@ -474,6 +475,7 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 			@media (max-width: 980px) {
 				:root {
 					--edge: var(--space-8);
+					--edge-y: var(--space-48);
 				}
 
 				html,
@@ -495,8 +497,8 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				}
 
 				body.lock-mobile-scroll-y main {
-					--mobile-main-top: var(--space-128);
-					--mobile-main-bottom: var(--space-16);
+					--mobile-main-top: calc(var(--space-128) + var(--space-32));
+					--mobile-main-bottom: var(--space-48);
 					--mobile-caption-space: var(--space-48);
 					min-height: 0;
 					padding-top: var(--mobile-main-top);
@@ -549,9 +551,9 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 
 				.photo-contrast-toggle {
 					right: calc(var(--edge) + 3.22em);
-					bottom: calc(var(--edge) + 0.06em);
-					width: 1.51em;
-					height: 1.51em;
+					bottom: calc(var(--edge-y) + 0.06em);
+					width: 1.96em;
+					height: 1.96em;
 				}
 
 			}
@@ -748,7 +750,7 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 
 				const supportsFinePointer = window.matchMedia("(pointer: fine)").matches;
 				const radius = supportsFinePointer ? 92 : 128;
-				const centerDeadZone = supportsFinePointer ? 10 : 12;
+				const centerDeadZone = supportsFinePointer ? 2 : 4;
 				const maxShift = supportsFinePointer ? 7.15 : 20.8;
 				let frame = 0;
 				let activePointerId = null;

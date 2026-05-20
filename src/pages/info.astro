@@ -1,20 +1,13 @@
 ---
 import SectionsLayout from "../layouts/SectionsLayout.astro";
 import { readFile } from "node:fs/promises";
+import { getWorkList } from "../utils/workList";
 
 const DEFAULT_BIO =
 	"Architect working across residential interior and exhibition design.\nDevelops private residential interiors in direct collaboration with clients, from concept to completion.\nInvolved in cultural and museum projects, including art exhibition production and coordination with contractors and institutions.";
 
 let bioText = DEFAULT_BIO;
-
-const archiveItems = [
-	{ place: "Milano", year: "2026", type: "allestimento museale", href: "/projects/26-2" },
-	{ place: "Roma", year: "2025", type: "residenza privata", href: "/projects/25-6" },
-	{ place: "Milano", year: "2025", type: "allestimento museale", href: "/projects/25-4" },
-	{ place: "Milano", year: "2025", type: "residenza privata", href: "/projects/25-2" },
-	{ place: "Maddaloni", year: "2025", type: "padiglione pubblico", href: "/projects/25-1" },
-	{ place: "Milano", year: "2023", type: "allestimento espositivo", href: "/projects/23-4" },
-];
+const archiveItems = await getWorkList("it");
 
 try {
 	const fileText = await readFile(new URL("../../public/content/info-bio-it.txt", import.meta.url), "utf-8");
@@ -45,7 +38,17 @@ try {
 				lista lavori
 			</button>
 			<ul class="archive-list" id="archive-list-it" data-info-archive-list>
-				{archiveItems.map((item) => <li><a href={item.href}>{item.place}, {item.year}, {item.type}</a></li>)}
+				{
+					archiveItems.map((item) => (
+						<li>
+							{item.href ? (
+								<a href={item.href}>{item.place}, {item.year}, {item.type}</a>
+							) : (
+								<span>{item.place}, {item.year}, {item.type}</span>
+							)}
+						</li>
+					))
+				}
 			</ul>
 		</div>
 	</section>
@@ -127,7 +130,8 @@ try {
 			transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
 	}
 
-	.archive-list a {
+	.archive-list a,
+	.archive-list span {
 		display: inline-block;
 		color: rgba(0, 0, 0, 0.22);
 		text-decoration: none;
