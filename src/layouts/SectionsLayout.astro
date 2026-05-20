@@ -1174,7 +1174,6 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				const resetGalleries = () => {
 					document.querySelectorAll("[data-reset-gallery]").forEach((stage) => {
 						if (!(stage instanceof HTMLElement)) return;
-						if (stage.hasAttribute("data-loop-gallery")) return;
 						const scroller = stage.querySelector(".gallery");
 						const target = scroller instanceof HTMLElement ? scroller : stage;
 
