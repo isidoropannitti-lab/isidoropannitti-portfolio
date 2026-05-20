@@ -750,10 +750,14 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 
 				const supportsFinePointer = window.matchMedia("(pointer: fine)").matches;
 				const radius = supportsFinePointer ? 92 : 128;
-				const centerDeadZone = supportsFinePointer ? 2 : 4;
+				const centerDeadZone = supportsFinePointer ? 4 : 5;
 				const maxShift = supportsFinePointer ? 7.15 : 20.8;
 				let frame = 0;
 				let activePointerId = null;
+				let liquidAngle = 0;
+				let liquidPull = 0;
+				let hasLiquidState = false;
+				let lastPointerSample = null;
 				const basePath =
 					"M 50.00 12.00 C 70.99 12.00 88.00 29.01 88.00 50.00 C 88.00 70.99 70.99 88.00 50.00 88.00 C 29.01 88.00 12.00 70.99 12.00 50.00 C 12.00 29.01 29.01 12.00 50.00 12.00 Z";
 
@@ -761,6 +765,9 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 					toggle.style.setProperty("--liquid-x", "0px");
 					toggle.style.setProperty("--liquid-y", "0px");
 					blob.setAttribute("d", basePath);
+					hasLiquidState = false;
+					liquidPull = 0;
+					lastPointerSample = null;
 				};
 
 				const pointsToPath = (points) => {
@@ -820,13 +827,18 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 					return pointsToPath(points);
 				};
 
-				const shapeToward = (clientX, clientY, isTouchDrag = false) => {
+				const shapeToward = (clientX, clientY, isTouchDrag = false, timeStamp = performance.now()) => {
 					const rect = toggle.getBoundingClientRect();
 					const centerX = rect.left + rect.width / 2;
 					const centerY = rect.top + rect.height / 2;
 					const deltaX = clientX - centerX;
 					const deltaY = clientY - centerY;
 					const distance = Math.hypot(deltaX, deltaY);
+					const previousSample = lastPointerSample;
+					const elapsed = previousSample ? Math.max(timeStamp - previousSample.time, 16) : 16;
+					const travelled = previousSample ? Math.hypot(clientX - previousSample.x, clientY - previousSample.y) : 999;
+					const pointerSpeed = travelled / elapsed;
+					lastPointerSample = { x: clientX, y: clientY, time: timeStamp };
 
 					if (distance < centerDeadZone) {
 						reset();
@@ -839,16 +851,28 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 					}
 
 					const proximity = Math.max(0, Math.min(1, (radius - distance) / (radius - centerDeadZone)));
-					const pull = isTouchDrag
+					let pull = isTouchDrag
 						? Math.pow(Math.min(distance / radius, 1), 0.62)
 						: Math.pow(proximity, 1.2);
 					const angle = Math.atan2(deltaY, deltaX);
-					const shiftX = Math.cos(angle) * maxShift * pull;
-					const shiftY = Math.sin(angle) * maxShift * pull;
+					const slowFinePass = supportsFinePointer && pointerSpeed < 0.18 && distance < radius * 0.86;
+					if (slowFinePass) pull = Math.max(pull, 0.09);
+					if (!hasLiquidState) {
+						liquidAngle = angle;
+						liquidPull = pull;
+						hasLiquidState = true;
+					} else {
+						const angleDelta = Math.atan2(Math.sin(angle - liquidAngle), Math.cos(angle - liquidAngle));
+						liquidAngle += angleDelta * 0.24;
+						liquidPull += (pull - liquidPull) * 0.28;
+					}
+
+					const shiftX = Math.cos(liquidAngle) * maxShift * liquidPull;
+					const shiftY = Math.sin(liquidAngle) * maxShift * liquidPull;
 
 					toggle.style.setProperty("--liquid-x", `${shiftX.toFixed(2)}px`);
 					toggle.style.setProperty("--liquid-y", `${shiftY.toFixed(2)}px`);
-					blob.setAttribute("d", makeBlobPath(angle, pull));
+					blob.setAttribute("d", makeBlobPath(liquidAngle, liquidPull));
 				};
 
 				if (supportsFinePointer) {
@@ -858,7 +882,7 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 							if (frame) return;
 							frame = window.requestAnimationFrame(() => {
 								frame = 0;
-								shapeToward(event.clientX, event.clientY);
+								shapeToward(event.clientX, event.clientY, false, event.timeStamp);
 							});
 						},
 						{ passive: true }
