@@ -384,10 +384,6 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 			.photo-contrast-toggle {
 				--liquid-x: 0px;
 				--liquid-y: 0px;
-				--liquid-scale-x: 1;
-				--liquid-scale-y: 1;
-				--liquid-angle: 0deg;
-				--liquid-radius: 50%;
 				position: fixed;
 				right: calc(var(--edge) + 3.05em);
 				bottom: calc(var(--edge) + 0.36em);
@@ -397,28 +393,40 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				justify-content: center;
 				width: 0.78em;
 				height: 0.78em;
-				border: 1px solid rgba(216, 209, 197, 0.48);
-				border-radius: var(--liquid-radius);
-				background: var(--photo-text);
+				border: 0;
+				background: transparent;
 				color: transparent;
 				font: inherit;
 				line-height: 0;
 				padding: 0;
 				cursor: pointer;
-				transform: translate3d(var(--liquid-x), var(--liquid-y), 0)
-					rotate(var(--liquid-angle))
-					scale(
-						calc(var(--press-scale) * var(--liquid-scale-x)),
-						calc(var(--press-scale) * var(--liquid-scale-y))
-					);
+				transform: translate3d(var(--liquid-x), var(--liquid-y), 0) scale(var(--press-scale));
 				transform-origin: center;
 				transition: background-color var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
 					border-color var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
-					border-radius 360ms cubic-bezier(0.2, 1, 0.34, 1),
 					opacity 260ms ease,
 					transform 680ms cubic-bezier(0.16, 1, 0.26, 1);
-				will-change: transform, border-radius;
+				will-change: transform;
 				-webkit-tap-highlight-color: transparent;
+			}
+
+			.photo-contrast-blob {
+				display: block;
+				width: 100%;
+				height: 100%;
+				overflow: visible;
+				pointer-events: none;
+				filter: url(#photo-contrast-goo);
+			}
+
+			.photo-contrast-blob__shape {
+				fill: var(--photo-text);
+				stroke: rgba(216, 209, 197, 0.48);
+				stroke-width: 3;
+				vector-effect: non-scaling-stroke;
+				transition: fill var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
+					stroke var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
+					d 420ms cubic-bezier(0.16, 1, 0.26, 1);
 			}
 
 			.photo-contrast-toggle:hover,
@@ -429,15 +437,20 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 			.photo-contrast-toggle.is-liquid-touch {
 				transition: background-color var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
 					border-color var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
-					border-radius 140ms cubic-bezier(0.2, 1, 0.34, 1),
 					opacity 260ms ease,
 					transform 140ms cubic-bezier(0.2, 1, 0.34, 1);
 			}
 
-			html.theme-photo.is-photo-soft body.theme-photo .photo-contrast-toggle,
-			body.theme-photo.is-photo-soft .photo-contrast-toggle {
-				border-color: rgba(36, 33, 29, 0.48);
-				background: #000;
+			.photo-contrast-toggle.is-liquid-touch .photo-contrast-blob__shape {
+				transition: fill var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
+					stroke var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
+					d 120ms cubic-bezier(0.2, 1, 0.34, 1);
+			}
+
+			html.theme-photo.is-photo-soft body.theme-photo .photo-contrast-blob__shape,
+			body.theme-photo.is-photo-soft .photo-contrast-blob__shape {
+				fill: #000;
+				stroke: rgba(36, 33, 29, 0.48);
 			}
 
 			.page-transition-overlay {
@@ -661,7 +674,27 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 					data-liquid-toggle
 					data-soft-label={lang === "it" ? "Riduci contrasto" : "Reduce contrast"}
 					data-dark-label={lang === "it" ? "Ripristina contrasto nero" : "Restore black contrast"}
-				></button>
+				>
+					<svg class="photo-contrast-blob" viewBox="-12 -12 124 124" aria-hidden="true" focusable="false">
+						<defs>
+							<filter id="photo-contrast-goo" x="-30%" y="-30%" width="160%" height="160%">
+								<feGaussianBlur in="SourceGraphic" stdDeviation="0.8" result="blur" />
+								<feColorMatrix
+									in="blur"
+									mode="matrix"
+									values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7"
+									result="goo"
+								/>
+								<feBlend in="SourceGraphic" in2="goo" />
+							</filter>
+						</defs>
+						<path
+							class="photo-contrast-blob__shape"
+							data-liquid-blob
+							d="M 50.00 12.00 C 70.99 12.00 88.00 29.01 88.00 50.00 C 88.00 70.99 70.99 88.00 50.00 88.00 C 29.01 88.00 12.00 70.99 12.00 50.00 C 12.00 29.01 29.01 12.00 50.00 12.00 Z"
+						/>
+					</svg>
+				</button>
 			)
 		}
 
@@ -709,6 +742,8 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 			(() => {
 				const toggle = document.querySelector("[data-liquid-toggle]");
 				if (!(toggle instanceof HTMLElement)) return;
+				const blob = toggle.querySelector("[data-liquid-blob]");
+				if (!(blob instanceof SVGPathElement)) return;
 				if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
 				const supportsFinePointer = window.matchMedia("(pointer: fine)").matches;
@@ -716,14 +751,70 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				const maxShift = supportsFinePointer ? 5.5 : 16;
 				let frame = 0;
 				let activePointerId = null;
+				const basePath =
+					"M 50.00 12.00 C 70.99 12.00 88.00 29.01 88.00 50.00 C 88.00 70.99 70.99 88.00 50.00 88.00 C 29.01 88.00 12.00 70.99 12.00 50.00 C 12.00 29.01 29.01 12.00 50.00 12.00 Z";
 
 				const reset = () => {
 					toggle.style.setProperty("--liquid-x", "0px");
 					toggle.style.setProperty("--liquid-y", "0px");
-					toggle.style.setProperty("--liquid-scale-x", "1");
-					toggle.style.setProperty("--liquid-scale-y", "1");
-					toggle.style.setProperty("--liquid-angle", "0deg");
-					toggle.style.setProperty("--liquid-radius", "50%");
+					blob.setAttribute("d", basePath);
+				};
+
+				const pointsToPath = (points) => {
+					const size = points.length;
+					const commands = [`M ${points[0].x.toFixed(2)} ${points[0].y.toFixed(2)}`];
+
+					for (let index = 0; index < size; index += 1) {
+						const previous = points[(index - 1 + size) % size];
+						const current = points[index];
+						const next = points[(index + 1) % size];
+						const afterNext = points[(index + 2) % size];
+						const cp1 = {
+							x: current.x + (next.x - previous.x) / 6,
+							y: current.y + (next.y - previous.y) / 6,
+						};
+						const cp2 = {
+							x: next.x - (afterNext.x - current.x) / 6,
+							y: next.y - (afterNext.y - current.y) / 6,
+						};
+
+						commands.push(
+							`C ${cp1.x.toFixed(2)} ${cp1.y.toFixed(2)} ${cp2.x.toFixed(2)} ${cp2.y.toFixed(2)} ${next.x.toFixed(2)} ${next.y.toFixed(2)}`
+						);
+					}
+
+					commands.push("Z");
+					return commands.join(" ");
+				};
+
+				const makeBlobPath = (angle, pull) => {
+					const centerX = 50 + Math.cos(angle) * pull * 5.2;
+					const centerY = 50 + Math.sin(angle) * pull * 5.2;
+					const baseRadius = 38;
+					const pointCount = 12;
+					const points = [];
+
+					for (let index = 0; index < pointCount; index += 1) {
+						const pointAngle = -Math.PI / 2 + (index / pointCount) * Math.PI * 2;
+						const dot = Math.cos(pointAngle - angle);
+						const side = Math.abs(Math.sin(pointAngle - angle));
+						const forwardPull = Math.max(dot, 0);
+						const backwardPull = Math.max(-dot, 0);
+						const surfaceRipple = Math.sin(index * 1.7 + pull * 2.1) * 0.7 * pull * side;
+						const radiusValue =
+							baseRadius +
+							pull * 18 * Math.pow(forwardPull, 2.25) -
+							pull * 4.8 * Math.pow(backwardPull, 1.35) +
+							pull * 3.2 * Math.pow(side, 2) +
+							surfaceRipple;
+
+						points.push({
+							x: centerX + Math.cos(pointAngle) * radiusValue,
+							y: centerY + Math.sin(pointAngle) * radiusValue,
+						});
+					}
+
+					return pointsToPath(points);
 				};
 
 				const shapeToward = (clientX, clientY, isTouchDrag = false) => {
@@ -745,16 +836,10 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 					const angle = Math.atan2(deltaY, deltaX);
 					const shiftX = Math.cos(angle) * maxShift * pull;
 					const shiftY = Math.sin(angle) * maxShift * pull;
-					const stretch = 1 + pull * (supportsFinePointer ? 0.42 : 0.9);
-					const squeeze = 1 - pull * (supportsFinePointer ? 0.1 : 0.22);
-					const angleDegrees = (angle * 180) / Math.PI;
 
 					toggle.style.setProperty("--liquid-x", `${shiftX.toFixed(2)}px`);
 					toggle.style.setProperty("--liquid-y", `${shiftY.toFixed(2)}px`);
-					toggle.style.setProperty("--liquid-angle", `${angleDegrees.toFixed(2)}deg`);
-					toggle.style.setProperty("--liquid-scale-x", stretch.toFixed(3));
-					toggle.style.setProperty("--liquid-scale-y", squeeze.toFixed(3));
-					toggle.style.setProperty("--liquid-radius", `${(50 - pull * 4).toFixed(1)}%`);
+					blob.setAttribute("d", makeBlobPath(angle, pull));
 				};
 
 				if (supportsFinePointer) {
