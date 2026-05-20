@@ -277,7 +277,6 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 		};
 
 		const normalizeLoop = () => {
-			if (mobileQuery.matches) return;
 			if (!initialized && !measure()) return;
 			if (!segmentWidth) return;
 
@@ -292,9 +291,8 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 		};
 
 		const scheduleNormalize = () => {
-			if (mobileQuery.matches) return;
 			window.clearTimeout(normalizeTimer);
-			normalizeTimer = window.setTimeout(normalizeLoop, 120);
+			normalizeTimer = window.setTimeout(normalizeLoop, mobileQuery.matches ? 260 : 120);
 		};
 
 		const animateWheel = () => {
@@ -307,7 +305,7 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 				return;
 			}
 
-			stage.scrollLeft += distance * 0.22;
+			stage.scrollLeft += distance * 0.16;
 			if (segmentWidth) {
 				const relative = stage.scrollLeft - middleStart;
 				if (relative < segmentWidth * -0.35) {
@@ -331,7 +329,7 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 			event.preventDefault();
 			if (!initialized) moveToMiddle();
 			if (!wheelFrame) targetScroll = stage.scrollLeft;
-			targetScroll += delta * 0.72;
+			targetScroll += delta * 0.86;
 			if (!wheelFrame) wheelFrame = window.requestAnimationFrame(animateWheel);
 		};
 
@@ -342,6 +340,11 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 		};
 
 		stage.addEventListener("wheel", onWheel, { passive: false });
+		stage.addEventListener("touchend", scheduleNormalize, { passive: true });
+		stage.addEventListener("touchcancel", scheduleNormalize, { passive: true });
+		stage.addEventListener("pointerup", () => {
+			if (mobileQuery.matches) scheduleNormalize();
+		}, { passive: true });
 		mobileQuery.addEventListener("change", resetLoop);
 		window.addEventListener("resize", resetLoop, { passive: true });
 		window.addEventListener("load", resetLoop, { once: true });
