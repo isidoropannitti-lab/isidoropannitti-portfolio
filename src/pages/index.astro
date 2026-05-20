@@ -245,7 +245,7 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 		const mobileQuery = window.matchMedia("(max-width: 760px)");
 		let segmentWidth = 0;
 		let middleStart = 0;
-		let normalizeTimer: number | undefined;
+		let frame = 0;
 		let initialized = false;
 
 		const getScroller = () => (mobileQuery.matches ? stage : gallery);
@@ -285,12 +285,14 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 		};
 
 		const scheduleNormalize = () => {
-			window.clearTimeout(normalizeTimer);
-			normalizeTimer = window.setTimeout(normalizeLoop, 120);
+			if (frame) return;
+			frame = window.requestAnimationFrame(() => {
+				frame = 0;
+				normalizeLoop();
+			});
 		};
 
 		const onWheel = (event: WheelEvent) => {
-			if (mobileQuery.matches) return;
 			const scroller = getScroller();
 			const horizontalIntent = Math.abs(event.deltaX) > Math.abs(event.deltaY);
 			const delta = horizontalIntent ? event.deltaX : event.deltaY;
