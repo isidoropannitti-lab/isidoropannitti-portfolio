@@ -292,7 +292,7 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 
 		const scheduleNormalize = () => {
 			window.clearTimeout(normalizeTimer);
-			normalizeTimer = window.setTimeout(normalizeLoop, 120);
+			normalizeTimer = window.setTimeout(normalizeLoop, mobileQuery.matches ? 260 : 120);
 		};
 
 		const animateWheel = () => {
@@ -340,7 +340,11 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 		};
 
 		stage.addEventListener("wheel", onWheel, { passive: false });
-		stage.addEventListener("scroll", scheduleNormalize, { passive: true });
+		stage.addEventListener("touchend", scheduleNormalize, { passive: true });
+		stage.addEventListener("touchcancel", scheduleNormalize, { passive: true });
+		stage.addEventListener("pointerup", () => {
+			if (mobileQuery.matches) scheduleNormalize();
+		}, { passive: true });
 		mobileQuery.addEventListener("change", resetLoop);
 		window.addEventListener("resize", resetLoop, { passive: true });
 		window.addEventListener("load", resetLoop, { once: true });
