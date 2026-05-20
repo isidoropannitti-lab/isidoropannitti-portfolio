@@ -76,7 +76,29 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 
 <style>
 	.gallery-stage {
-		width: 100%;
+		box-sizing: border-box;
+		width: calc(100% + (var(--edge) * 2));
+		margin-top: calc(var(--space-8) * -1);
+		margin-inline: calc(var(--edge) * -1);
+		overflow-x: auto;
+		overflow-y: hidden;
+		overscroll-behavior-x: contain;
+		padding-top: var(--space-8);
+		padding-left: var(--edge);
+		padding-right: var(--edge);
+		padding-bottom: var(--space-8);
+		scroll-padding-left: var(--edge);
+		scroll-snap-type: x proximity;
+		touch-action: pan-x;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+
+	.gallery-stage::-webkit-scrollbar {
+		width: 0;
+		height: 0;
+		display: none;
 	}
 
 	.gallery {
@@ -84,28 +106,10 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 		align-items: flex-start;
 		flex-wrap: nowrap;
 		box-sizing: border-box;
-		width: calc(100% + (var(--edge) * 2));
+		width: max-content;
+		min-width: max-content;
 		gap: var(--space-16);
-		margin-top: calc(var(--space-8) * -1);
-		margin-inline: calc(var(--edge) * -1);
-		overflow-x: auto;
-		overscroll-behavior-x: contain;
-		padding-top: var(--space-8);
-		padding-left: var(--edge);
-		padding-right: var(--edge);
-		scroll-padding-left: var(--edge);
-		scroll-snap-type: x proximity;
-		touch-action: pan-x;
-		-webkit-overflow-scrolling: touch;
-		padding-bottom: var(--space-8);
-		scrollbar-width: none;
-		-ms-overflow-style: none;
-	}
-
-	.gallery::-webkit-scrollbar {
-		width: 0;
-		height: 0;
-		display: none;
+		overflow: visible;
 	}
 
 	.preview {
@@ -175,6 +179,8 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 			min-height: 0;
 			display: flex;
 			align-items: flex-start;
+			width: 100%;
+			margin-inline: 0;
 			overflow-x: auto;
 			overflow-y: hidden;
 			overscroll-behavior-x: contain;
@@ -248,39 +254,34 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 		let normalizeTimer: number | undefined;
 		let initialized = false;
 
-		const getScroller = () => (mobileQuery.matches ? stage : gallery);
-
 		const getItemPosition = (scroller: HTMLElement, item: HTMLElement) =>
 			item.getBoundingClientRect().left - scroller.getBoundingClientRect().left + scroller.scrollLeft;
 
 		const measure = () => {
-			const scroller = getScroller();
 			const firstMiddle = gallery.querySelector('[data-loop-set="1"][data-loop-index="0"]');
 			const firstNext = gallery.querySelector('[data-loop-set="2"][data-loop-index="0"]');
 			if (!(firstMiddle instanceof HTMLElement) || !(firstNext instanceof HTMLElement)) return false;
 
-			middleStart = getItemPosition(scroller, firstMiddle);
-			segmentWidth = getItemPosition(scroller, firstNext) - middleStart;
+			middleStart = getItemPosition(stage, firstMiddle);
+			segmentWidth = getItemPosition(stage, firstNext) - middleStart;
 			return segmentWidth > 0;
 		};
 
 		const moveToMiddle = () => {
-			const scroller = getScroller();
 			if (!measure()) return;
-			scroller.scrollLeft = middleStart;
+			stage.scrollLeft = middleStart;
 			initialized = true;
 		};
 
 		const normalizeLoop = () => {
-			const scroller = getScroller();
 			if (!initialized && !measure()) return;
 			if (!segmentWidth) return;
 
-			const relative = scroller.scrollLeft - middleStart;
+			const relative = stage.scrollLeft - middleStart;
 			if (relative < segmentWidth * -0.5) {
-				scroller.scrollLeft += segmentWidth;
+				stage.scrollLeft += segmentWidth;
 			} else if (relative > segmentWidth * 0.5) {
-				scroller.scrollLeft -= segmentWidth;
+				stage.scrollLeft -= segmentWidth;
 			}
 		};
 
@@ -291,13 +292,12 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 
 		const onWheel = (event: WheelEvent) => {
 			if (mobileQuery.matches) return;
-			const scroller = getScroller();
 			const horizontalIntent = Math.abs(event.deltaX) > Math.abs(event.deltaY);
 			const delta = horizontalIntent ? event.deltaX : event.deltaY;
 			if (!delta) return;
 
 			event.preventDefault();
-			scroller.scrollLeft += delta;
+			stage.scrollLeft += delta;
 			scheduleNormalize();
 		};
 
@@ -309,7 +309,6 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 
 		stage.addEventListener("wheel", onWheel, { passive: false });
 		stage.addEventListener("scroll", scheduleNormalize, { passive: true });
-		gallery.addEventListener("scroll", scheduleNormalize, { passive: true });
 		mobileQuery.addEventListener("change", resetLoop);
 		window.addEventListener("resize", resetLoop, { passive: true });
 		window.addEventListener("load", resetLoop, { once: true });
