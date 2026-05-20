@@ -253,7 +253,7 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 		let middleStart = 0;
 		let normalizeTimer: number | undefined;
 		let wheelFrame = 0;
-		let targetScroll = 0;
+		let wheelDelta = 0;
 		let initialized = false;
 
 		const getItemPosition = (scroller: HTMLElement, item: HTMLElement) =>
@@ -272,7 +272,6 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 		const moveToMiddle = () => {
 			if (!measure()) return;
 			stage.scrollLeft = middleStart;
-			targetScroll = middleStart;
 			initialized = true;
 		};
 
@@ -281,43 +280,16 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 			if (!segmentWidth) return;
 
 			const relative = stage.scrollLeft - middleStart;
-			if (relative < segmentWidth * -0.35) {
+			if (relative < segmentWidth * -0.5) {
 				stage.scrollLeft += segmentWidth;
-				targetScroll += segmentWidth;
-			} else if (relative > segmentWidth * 0.35) {
+			} else if (relative > segmentWidth * 0.5) {
 				stage.scrollLeft -= segmentWidth;
-				targetScroll -= segmentWidth;
 			}
 		};
 
 		const scheduleNormalize = () => {
 			window.clearTimeout(normalizeTimer);
 			normalizeTimer = window.setTimeout(normalizeLoop, 120);
-		};
-
-		const animateWheel = () => {
-			const distance = targetScroll - stage.scrollLeft;
-
-			if (Math.abs(distance) < 0.35) {
-				stage.scrollLeft = targetScroll;
-				wheelFrame = 0;
-				scheduleNormalize();
-				return;
-			}
-
-			stage.scrollLeft += distance * 0.16;
-			if (segmentWidth) {
-				const relative = stage.scrollLeft - middleStart;
-				if (relative < segmentWidth * -0.35) {
-					stage.scrollLeft += segmentWidth;
-					targetScroll += segmentWidth;
-				} else if (relative > segmentWidth * 0.35) {
-					stage.scrollLeft -= segmentWidth;
-					targetScroll -= segmentWidth;
-				}
-			}
-
-			wheelFrame = window.requestAnimationFrame(animateWheel);
 		};
 
 		const onWheel = (event: WheelEvent) => {
@@ -327,10 +299,15 @@ const LOOPED_ARCHITECTURE_IMAGES = [0, 1, 2].flatMap((setIndex) =>
 			if (!delta) return;
 
 			event.preventDefault();
-			if (!initialized) moveToMiddle();
-			if (!wheelFrame) targetScroll = stage.scrollLeft;
-			targetScroll += delta * 0.86;
-			if (!wheelFrame) wheelFrame = window.requestAnimationFrame(animateWheel);
+			wheelDelta += delta;
+			if (!wheelFrame) {
+				wheelFrame = window.requestAnimationFrame(() => {
+					stage.scrollLeft += wheelDelta;
+					wheelDelta = 0;
+					wheelFrame = 0;
+				});
+			}
+			scheduleNormalize();
 		};
 
 		const resetLoop = () => {
