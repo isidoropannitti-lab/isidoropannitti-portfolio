@@ -35,13 +35,21 @@ const ARCHITECTURE_IMAGES = [
 									<label
 										class="project-link ongoing-trigger magnetic-target pressable"
 										for={`ongoing-${image.label.replace(".", "-")}`}
+										style={`--cover-image: url("${image.src}")`}
 										data-magnetic
+										data-water-cover
 									>
 										<img src={image.src} alt={image.label} loading="eager" />
 									</label>
 								</>
 							) : image.slug ? (
-								<a href={`/en/projects/${image.slug}`} class="project-link magnetic-target pressable" data-magnetic>
+								<a
+									href={`/en/projects/${image.slug}`}
+									class="project-link magnetic-target pressable"
+									style={`--cover-image: url("${image.src}")`}
+									data-magnetic
+									data-water-cover
+								>
 									<img src={image.src} alt={image.label} loading="eager" />
 								</a>
 							) : (
@@ -114,7 +122,71 @@ const ARCHITECTURE_IMAGES = [
 	}
 
 	.project-link {
+		--water-x: 50%;
+		--water-y: 50%;
 		display: block;
+		position: relative;
+		overflow: hidden;
+		isolation: isolate;
+		line-height: 0;
+	}
+
+	.project-link::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		pointer-events: none;
+		opacity: 0;
+		background-image: var(--cover-image);
+		background-position: center;
+		background-size: cover;
+		background-repeat: no-repeat;
+		clip-path: circle(0 at var(--water-x) var(--water-y));
+		filter: saturate(1.04) contrast(1.025) brightness(1.012);
+		transform: scale(1.055);
+		transform-origin: var(--water-x) var(--water-y);
+		transition:
+			clip-path 640ms cubic-bezier(0.16, 1, 0.3, 1),
+			opacity 420ms ease,
+			transform 760ms cubic-bezier(0.16, 1, 0.3, 1);
+		will-change: clip-path, transform, opacity;
+	}
+
+	.project-link::after {
+		content: "";
+		position: absolute;
+		z-index: 2;
+		left: var(--water-x);
+		top: var(--water-y);
+		width: clamp(4rem, 8vw, 6.5rem);
+		aspect-ratio: 1;
+		pointer-events: none;
+		opacity: 0;
+		border-radius: 999px;
+		background:
+			radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.06) 34%, rgba(255, 255, 255, 0) 68%),
+			radial-gradient(circle at 68% 72%, rgba(0, 0, 0, 0.07), rgba(0, 0, 0, 0) 58%);
+		mix-blend-mode: soft-light;
+		transform: translate3d(-50%, -50%, 0) scale(0.72);
+		transition:
+			left 180ms linear,
+			top 180ms linear,
+			opacity 360ms ease,
+			transform 640ms cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.project-link:hover::before {
+			opacity: 1;
+			clip-path: circle(clamp(2.8rem, 5.2vw, 4.8rem) at var(--water-x) var(--water-y));
+			transform: scale(1.075);
+		}
+
+		.project-link:hover::after {
+			opacity: 1;
+			transform: translate3d(-50%, -50%, 0) scale(1);
+		}
 	}
 
 	.ongoing-toggle {
@@ -146,6 +218,13 @@ const ARCHITECTURE_IMAGES = [
 
 	.ongoing-trigger img {
 		pointer-events: none;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.project-link::before,
+		.project-link::after {
+			display: none;
+		}
 	}
 
 	@media (max-width: 760px) {
@@ -225,3 +304,23 @@ const ARCHITECTURE_IMAGES = [
 		}
 	}
 </style>
+
+<script>
+	document.querySelectorAll<HTMLElement>("[data-water-cover]").forEach((cover) => {
+		cover.addEventListener("pointermove", (event) => {
+			if (!event.isPrimary || event.pointerType === "touch") return;
+
+			const rect = cover.getBoundingClientRect();
+			const x = ((event.clientX - rect.left) / rect.width) * 100;
+			const y = ((event.clientY - rect.top) / rect.height) * 100;
+
+			cover.style.setProperty("--water-x", `${x.toFixed(2)}%`);
+			cover.style.setProperty("--water-y", `${y.toFixed(2)}%`);
+		});
+
+		cover.addEventListener("pointerleave", () => {
+			cover.style.setProperty("--water-x", "50%");
+			cover.style.setProperty("--water-y", "50%");
+		});
+	});
+</script>
