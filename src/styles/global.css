@@ -104,21 +104,6 @@ a:focus-visible {
 	font-weight: 300;
 }
 
-.lang-switch {
-	display: flex;
-	align-items: center;
-	gap: var(--space-4);
-	margin: 0;
-}
-
-.lang-switch a {
-	font-weight: 300;
-}
-
-.lang-switch a.is-active {
-	font-weight: 300;
-}
-
 .page-shell {
 	padding: calc(var(--header-height) + var(--space-32)) var(--gutter) var(--space-48);
 }

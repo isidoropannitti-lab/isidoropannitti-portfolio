@@ -26,6 +26,9 @@ try {
 	<section class="info-content" aria-label="Bio">
 		<p class="bio">{bioText}</p>
 	</section>
+	<a class="bio-lang-switch pressable pressable-control" href="/en/info" aria-label="Mostra bio in inglese">
+		<span class="active">it</span>/<span>en</span>
+	</a>
 </SectionsLayout>
 
 <style>
@@ -36,5 +39,31 @@ try {
 	.bio {
 		margin: 0;
 		white-space: pre-line;
+	}
+
+	.bio-lang-switch {
+		position: fixed;
+		left: var(--edge);
+		bottom: var(--edge-y);
+		z-index: 20;
+		color: rgba(0, 0, 0, 0.16);
+		text-decoration: none;
+		text-transform: lowercase;
+		transition: color 220ms ease, opacity 220ms ease, transform 170ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.bio-lang-switch:hover,
+	.bio-lang-switch:focus-visible {
+		color: rgba(0, 0, 0, 0.32);
+	}
+
+	.bio-lang-switch .active {
+		color: rgba(0, 0, 0, 0.26);
+	}
+
+	@media (max-width: 720px) {
+		.bio-lang-switch {
+			bottom: var(--space-32);
+		}
 	}
 </style>

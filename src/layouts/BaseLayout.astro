@@ -66,21 +66,6 @@ const canonicalUrl = Astro.site
 						))
 					}
 				</nav>
-				<p class="lang-switch" aria-label="language switch">
-					<a
-						href={`/${lang === "en" ? "it" : "en"}/${section}`}
-						class:list={{ "is-active": lang === "it" }}
-					>
-						IT
-					</a>
-					<span>/</span>
-					<a
-						href={`/${lang === "it" ? "en" : "it"}/${section}`}
-						class:list={{ "is-active": lang === "en" }}
-					>
-						EN
-					</a>
-				</p>
 			</div>
 		</header>
 		<main class="page-shell">

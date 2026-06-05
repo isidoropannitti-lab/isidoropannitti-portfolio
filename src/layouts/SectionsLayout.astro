@@ -42,9 +42,6 @@ const getSectionHref = (target: Section) => {
 const pathname = Astro.url.pathname;
 const normalizedPathname = pathname.replace(/\/+$/, "") || "/";
 const isHomePage = normalizedPathname === "/" || normalizedPathname === "/en";
-const englishPath = pathname.startsWith("/en") ? pathname : `/en${pathname === "/" ? "" : pathname}`;
-const italianPath = pathname.startsWith("/en") ? pathname.slice(3) || "/" : pathname;
-const switchHref = lang === "it" ? englishPath : italianPath;
 const PAPER_THEME_COLOR = "#faf9f7";
 const PHOTO_THEME_COLOR = "#000000";
 const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
@@ -134,8 +131,7 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 			html.theme-photo,
 			body.theme-photo,
 			body.theme-photo .left-fixed,
-			body.theme-photo .right-fixed,
-			body.theme-photo .lang-switch-fixed {
+			body.theme-photo .right-fixed {
 				transition: background-color var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
 					color var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
 					border-color var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
@@ -146,8 +142,7 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 			body.theme-photo main,
 			body.theme-photo figcaption,
 			body.theme-photo .sections-nav a,
-			body.theme-photo .sections-nav span,
-			body.theme-photo .lang-switch-fixed a {
+			body.theme-photo .sections-nav span {
 				transition: color var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
 					opacity 260ms ease,
 					transform 170ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -342,46 +337,6 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				touch-action: pan-y;
 			}
 
-			.lang-switch-fixed {
-				position: fixed;
-				right: var(--edge);
-				bottom: var(--edge-y);
-				z-index: 20;
-				color: #fff;
-				mix-blend-mode: difference;
-				transition: opacity 260ms ease;
-			}
-
-			body.theme-photo .lang-switch-fixed {
-				color: #fff;
-				mix-blend-mode: difference;
-			}
-
-			html.theme-photo.is-photo-soft body.theme-photo .lang-switch-fixed,
-			body.theme-photo.is-photo-soft .lang-switch-fixed {
-				color: var(--photo-soft-text);
-				mix-blend-mode: normal;
-			}
-
-			.lang-switch-fixed.is-hidden {
-				opacity: 0;
-				pointer-events: none;
-			}
-
-			.lang-switch-fixed a {
-				display: inline-block;
-				color: inherit;
-				text-transform: lowercase;
-			}
-
-			.lang-switch-fixed .active {
-				color: inherit;
-			}
-
-			body.theme-photo .lang-switch-fixed .active {
-				color: inherit;
-			}
-
 			.photo-contrast-toggle {
 				--liquid-x: 0px;
 				--liquid-y: 0px;
@@ -554,10 +509,6 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 					top: var(--space-32);
 				}
 
-				.lang-switch-fixed {
-					bottom: var(--space-32);
-				}
-
 				.photo-contrast-toggle {
 					left: var(--edge);
 					bottom: calc(var(--space-32) - 0.08em);
@@ -664,14 +615,6 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 			<label class="menu-trigger pressable pressable-control" for="sections-toggle" aria-label="Toggle navigation"
 				>+</label
 			>
-		</div>
-
-		<div class="lang-switch-fixed" data-lang-switch>
-			<a class="pressable pressable-control" href={switchHref}>
-				<span class:list={{ active: lang === "it" }}>it</span>/<span class:list={{ active: lang === "en" }}
-					>en</span
-				>
-			</a>
 		</div>
 
 		{
@@ -1140,29 +1083,6 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				window.addEventListener("mousemove", resetIdleTimer, { passive: true });
 
 				resetIdleTimer();
-			})();
-
-			(() => {
-				const langSwitch = document.querySelector("[data-lang-switch]");
-				if (!langSwitch) return;
-
-				let revealTimer;
-				const hide = () => langSwitch.classList.add("is-hidden");
-				const showLater = () => {
-					clearTimeout(revealTimer);
-					revealTimer = window.setTimeout(() => {
-						langSwitch.classList.remove("is-hidden");
-					}, 700);
-				};
-
-				const onScrollIntent = () => {
-					hide();
-					showLater();
-				};
-
-				window.addEventListener("wheel", onScrollIntent, { passive: true });
-				window.addEventListener("touchmove", onScrollIntent, { passive: true });
-				document.addEventListener("scroll", onScrollIntent, { passive: true, capture: true });
 			})();
 
 			(() => {
