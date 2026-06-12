@@ -2,14 +2,14 @@
 import SectionsLayout from "../../layouts/SectionsLayout.astro";
 
 const ARCHITECTURE_IMAGES = [
-	{ src: "/images/architecture/23.4-cover.webp", label: "23.4", slug: "23-4", variant: "is-base" },
-	{ src: "/images/architecture/25-1-cover.webp", label: "25.1", slug: "25-1", variant: "is-base" },
-	{ src: "/images/architecture/25-2-cover.webp", label: "25.2", slug: "25-2", variant: "is-base" },
-	{ src: "/images/architecture/25-3-cover.webp", label: "25.3", onGoing: true, variant: "is-wide" },
-	{ src: "/images/architecture/25-4-cover.webp", label: "25.4", slug: "25-4", variant: "is-compact" },
-	{ src: "/images/architecture/25-6-cover.webp", label: "25.6", slug: "25-6", variant: "is-base" },
-	{ src: "/images/architecture/25-8-cover.webp", label: "25.8", onGoing: true, variant: "is-base" },
-	{ src: "/images/architecture/26-2-cover.jpeg", label: "26.2", slug: "26-2", variant: "is-wide" },
+	{ src: "/images/architecture/23.4-cover.webp", label: "23.4", slug: "23-4", variant: "is-base", hoverTitle: "Helene Binet, nature time and architecture" },
+	{ src: "/images/architecture/25-1-cover.webp", label: "25.1", slug: "25-1", variant: "is-base", hoverTitle: "Project proposal for AMA" },
+	{ src: "/images/architecture/25-2-cover.webp", label: "25.2", slug: "25-2", variant: "is-base", hoverTitle: "Milan, Private residence" },
+	{ src: "/images/architecture/25-3-cover.webp", label: "25.3", onGoing: true, variant: "is-wide", hoverTitle: "On going" },
+	{ src: "/images/architecture/25-4-cover.webp", label: "25.4", slug: "25-4", variant: "is-compact", hoverTitle: "Infinite/Unfinished" },
+	{ src: "/images/architecture/25-6-cover.webp", label: "25.6", slug: "25-6", variant: "is-base", hoverTitle: "Rome, Private residence" },
+	{ src: "/images/architecture/25-8-cover.webp", label: "25.8", onGoing: true, variant: "is-base", hoverTitle: "On going" },
+	{ src: "/images/architecture/26-2-cover.jpeg", label: "26.2", slug: "26-2", variant: "is-wide", hoverTitle: "Metafisica / Metafisiche" },
 ];
 ---
 
@@ -35,17 +35,18 @@ const ARCHITECTURE_IMAGES = [
 									<label
 										class="project-link ongoing-trigger magnetic-target pressable"
 										for={`ongoing-${image.label.replace(".", "-")}`}
+										data-cursor-title={image.hoverTitle}
 										data-magnetic
 									>
 										<img src={image.src} alt={image.label} loading="eager" />
 									</label>
 								</>
 							) : image.slug ? (
-								<a href={`/en/projects/${image.slug}`} class="project-link magnetic-target pressable" data-magnetic>
+								<a href={`/en/projects/${image.slug}`} class="project-link magnetic-target pressable" data-cursor-title={image.hoverTitle} data-magnetic>
 									<img src={image.src} alt={image.label} loading="eager" />
 								</a>
 							) : (
-								<img class="magnetic-target pressable" src={image.src} alt={image.label} loading="eager" data-magnetic />
+								<img class="magnetic-target pressable" src={image.src} alt={image.label} loading="eager" data-cursor-title={image.hoverTitle} data-magnetic />
 							)
 						}
 						<figcaption>
@@ -115,6 +116,30 @@ const ARCHITECTURE_IMAGES = [
 
 	.project-link {
 		display: block;
+	}
+
+	[data-cursor-title] {
+		cursor: none;
+	}
+
+	:global(.project-title-cursor) {
+		position: fixed;
+		z-index: 1000;
+		top: 0;
+		left: 0;
+		max-width: min(18rem, calc(100vw - var(--space-32)));
+		color: var(--color-text);
+		font: inherit;
+		line-height: 1.05;
+		opacity: 0;
+		pointer-events: none;
+		transform: translate3d(var(--cursor-x, 0), var(--cursor-y, 0), 0);
+		transition: opacity 120ms ease;
+		white-space: normal;
+	}
+
+	:global(.project-title-cursor.is-visible) {
+		opacity: 1;
 	}
 
 	.ongoing-toggle {
@@ -223,5 +248,44 @@ const ARCHITECTURE_IMAGES = [
 			min-height: var(--mobile-caption-space);
 			padding-bottom: var(--space-8);
 		}
+
+		[data-cursor-title] {
+			cursor: pointer;
+		}
 	}
 </style>
+
+<script>
+	const hoverTargets = Array.from(document.querySelectorAll("[data-cursor-title]"));
+
+	if (hoverTargets.length > 0 && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+		const cursor = document.createElement("div");
+		cursor.className = "project-title-cursor";
+		cursor.setAttribute("aria-hidden", "true");
+		document.body.append(cursor);
+
+		const moveCursor = (event: PointerEvent) => {
+			cursor.style.setProperty("--cursor-x", `${event.clientX}px`);
+			cursor.style.setProperty("--cursor-y", `${event.clientY}px`);
+		};
+
+		for (const target of hoverTargets) {
+			target.addEventListener("pointerenter", (event) => {
+				const title = target.getAttribute("data-cursor-title");
+				if (!title) return;
+
+				cursor.textContent = title;
+				moveCursor(event as PointerEvent);
+				cursor.classList.add("is-visible");
+			});
+
+			target.addEventListener("pointermove", (event) => {
+				moveCursor(event as PointerEvent);
+			});
+
+			target.addEventListener("pointerleave", () => {
+				cursor.classList.remove("is-visible");
+			});
+		}
+	}
+</script>
