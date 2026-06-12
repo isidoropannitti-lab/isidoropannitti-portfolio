@@ -5,10 +5,10 @@ const ARCHITECTURE_IMAGES = [
 	{ src: "/images/architecture/23.4-cover.webp", label: "23.4", slug: "23-4", variant: "is-base", hoverTitle: "Helene Binet, natura tempo e architettura" },
 	{ src: "/images/architecture/25-1-cover.webp", label: "25.1", slug: "25-1", variant: "is-base", hoverTitle: "Proposta di progetto per AMA" },
 	{ src: "/images/architecture/25-2-cover.webp", label: "25.2", slug: "25-2", variant: "is-base", hoverTitle: "Milano, Private residence" },
-	{ src: "/images/architecture/25-3-cover.webp", label: "25.3", onGoing: true, variant: "is-wide", hoverTitle: "private residence" },
+	{ src: "/images/architecture/25-3-cover.webp", label: "25.3", onGoing: true, variant: "is-wide", hoverTitle: "Residenza privata" },
 	{ src: "/images/architecture/25-4-cover.webp", label: "25.4", slug: "25-4", variant: "is-compact", hoverTitle: "Infinite/Unfinished" },
 	{ src: "/images/architecture/25-6-cover.webp", label: "25.6", slug: "25-6", variant: "is-base", hoverTitle: "Roma, Private residence" },
-	{ src: "/images/architecture/25-8-cover.webp", label: "25.8", onGoing: true, variant: "is-base", hoverTitle: "private residence" },
+	{ src: "/images/architecture/25-8-cover.webp", label: "25.8", onGoing: true, variant: "is-base", hoverTitle: "Residenza privata" },
 	{ src: "/images/architecture/26-2-cover.jpeg", label: "26.2", slug: "26-2", variant: "is-wide", hoverTitle: "Metafisica / Metafisiche" },
 ];
 ---
@@ -53,7 +53,7 @@ const ARCHITECTURE_IMAGES = [
 							<span>{image.label}</span>
 							{
 								image.onGoing && (
-									<span class="ongoing-label" aria-live="polite">private residence</span>
+									<span class="ongoing-label" aria-live="polite">in corso</span>
 								)
 							}
 						</figcaption>
