@@ -414,13 +414,24 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 				transition: background-color var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
 					border-color var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
 					opacity 260ms ease,
-					transform 140ms cubic-bezier(0.2, 1, 0.34, 1);
+					transform 90ms cubic-bezier(0.2, 1, 0.34, 1);
 			}
 
 			.photo-contrast-toggle.is-liquid-touch .photo-contrast-blob__shape {
 				transition: fill var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
 					stroke var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
-					d 120ms cubic-bezier(0.2, 1, 0.34, 1);
+					d 90ms cubic-bezier(0.2, 1, 0.34, 1);
+			}
+
+			.photo-contrast-toggle.is-liquid-ready {
+				transition: background-color var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
+					border-color var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
+					opacity 260ms ease;
+			}
+
+			.photo-contrast-toggle.is-liquid-ready .photo-contrast-blob__shape {
+				transition: fill var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1),
+					stroke var(--photo-theme-duration) cubic-bezier(0.22, 1, 0.36, 1);
 			}
 
 			html.theme-photo.is-photo-soft body.theme-photo .photo-contrast-blob__shape,
@@ -727,24 +738,30 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 
 				const supportsFinePointer = window.matchMedia("(pointer: fine)").matches;
 				const radius = supportsFinePointer ? 92 : 128;
-				const centerDeadZone = supportsFinePointer ? 4 : 5;
-				const maxShift = supportsFinePointer ? 7.15 : 20.8;
-				let frame = 0;
+				const centerDeadZone = supportsFinePointer ? 8.5 : 6;
+				const centerFeather = supportsFinePointer ? 18 : 12;
+				const maxShift = supportsFinePointer ? 7.2 : 20.2;
+				const activeSpring = supportsFinePointer
+					? { stiffness: 0.082, damping: 0.78 }
+					: { stiffness: 0.13, damping: 0.72 };
+				const returnSpring = supportsFinePointer
+					? { stiffness: 0.115, damping: 0.64 }
+					: { stiffness: 0.17, damping: 0.6 };
+				let animationFrame = 0;
+				let pointerFrame = 0;
 				let activePointerId = null;
 				let liquidX = 0;
 				let liquidY = 0;
+				let liquidVelocityX = 0;
+				let liquidVelocityY = 0;
+				let targetLiquidX = 0;
+				let targetLiquidY = 0;
+				let isAnimating = false;
 				let lastPointerSample = null;
 				const basePath =
 					"M 50.00 12.00 C 70.99 12.00 88.00 29.01 88.00 50.00 C 88.00 70.99 70.99 88.00 50.00 88.00 C 29.01 88.00 12.00 70.99 12.00 50.00 C 12.00 29.01 29.01 12.00 50.00 12.00 Z";
 
-				const reset = () => {
-					toggle.style.setProperty("--liquid-x", "0px");
-					toggle.style.setProperty("--liquid-y", "0px");
-					blob.setAttribute("d", basePath);
-					liquidX = 0;
-					liquidY = 0;
-					lastPointerSample = null;
-				};
+				toggle.classList.add("is-liquid-ready");
 
 				const pointsToPath = (points) => {
 					const size = points.length;
@@ -801,6 +818,76 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 					return pointsToPath(points);
 				};
 
+				const renderLiquid = () => {
+					const liquidPull = Math.min(Math.hypot(liquidX, liquidY), 1);
+					const liquidAngle = liquidPull > 0.001 ? Math.atan2(liquidY, liquidX) : 0;
+					const shiftX = liquidX * maxShift;
+					const shiftY = liquidY * maxShift;
+
+					toggle.style.setProperty("--liquid-x", `${shiftX.toFixed(2)}px`);
+					toggle.style.setProperty("--liquid-y", `${shiftY.toFixed(2)}px`);
+					blob.setAttribute("d", liquidPull > 0.001 ? makeBlobPath(liquidAngle, liquidPull) : basePath);
+				};
+
+				const startAnimation = () => {
+					if (!isAnimating) {
+						isAnimating = true;
+						animationFrame = window.requestAnimationFrame(updateLiquid);
+					}
+				};
+
+				const updateLiquid = () => {
+					animationFrame = 0;
+					const isReturning = Math.hypot(targetLiquidX, targetLiquidY) < 0.001;
+					const spring = isReturning ? returnSpring : activeSpring;
+					liquidVelocityX = (liquidVelocityX + (targetLiquidX - liquidX) * spring.stiffness) * spring.damping;
+					liquidVelocityY = (liquidVelocityY + (targetLiquidY - liquidY) * spring.stiffness) * spring.damping;
+					liquidX += liquidVelocityX;
+					liquidY += liquidVelocityY;
+
+					const distanceX = Math.abs(targetLiquidX - liquidX);
+					const distanceY = Math.abs(targetLiquidY - liquidY);
+					const isSettled =
+						distanceX < 0.0015 &&
+						distanceY < 0.0015 &&
+						Math.abs(liquidVelocityX) < 0.0015 &&
+						Math.abs(liquidVelocityY) < 0.0015;
+
+					if (isSettled) {
+						liquidX = targetLiquidX;
+						liquidY = targetLiquidY;
+						liquidVelocityX = 0;
+						liquidVelocityY = 0;
+						isAnimating = false;
+					}
+
+					renderLiquid();
+					if (!isSettled) animationFrame = window.requestAnimationFrame(updateLiquid);
+				};
+
+				const resetTarget = () => {
+					targetLiquidX = 0;
+					targetLiquidY = 0;
+					lastPointerSample = null;
+					startAnimation();
+				};
+
+				const resetImmediately = () => {
+					if (animationFrame) window.cancelAnimationFrame(animationFrame);
+					if (pointerFrame) window.cancelAnimationFrame(pointerFrame);
+					animationFrame = 0;
+					pointerFrame = 0;
+					isAnimating = false;
+					liquidX = 0;
+					liquidY = 0;
+					liquidVelocityX = 0;
+					liquidVelocityY = 0;
+					targetLiquidX = 0;
+					targetLiquidY = 0;
+					lastPointerSample = null;
+					renderLiquid();
+				};
+
 				const shapeToward = (clientX, clientY, isTouchDrag = false, timeStamp = performance.now()) => {
 					const rect = toggle.getBoundingClientRect();
 					const centerX = rect.left + rect.width / 2;
@@ -815,46 +902,41 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 					lastPointerSample = { x: clientX, y: clientY, time: timeStamp };
 
 					if (distance < centerDeadZone) {
-						reset();
+						resetTarget();
 						return;
 					}
 
 					if (!isTouchDrag && distance > radius) {
-						reset();
+						resetTarget();
 						return;
 					}
 
 					const proximity = Math.max(0, Math.min(1, (radius - distance) / (radius - centerDeadZone)));
+					const innerDistance = Math.max(0, distance - centerDeadZone);
+					const innerEase = Math.min(1, innerDistance / centerFeather);
+					const softenedInnerEase = innerEase * innerEase * (3 - innerEase * 2);
+					const closeProximity = Math.max(0, Math.min(1, (radius * 0.42 - distance) / (radius * 0.42 - centerDeadZone)));
+					const closeEase = closeProximity * closeProximity * (3 - closeProximity * 2);
 					let pull = isTouchDrag
 						? Math.pow(Math.min(distance / radius, 1), 0.62)
-						: Math.pow(proximity, 1.2);
+						: Math.min(1, Math.pow(proximity, 1.06) + closeEase * 0.075) * softenedInnerEase;
 					const angle = Math.atan2(deltaY, deltaX);
-					const slowFinePass = supportsFinePointer && pointerSpeed < 0.18 && distance < radius * 0.86;
-					if (slowFinePass) pull = Math.max(pull, 0.09);
-					const targetX = Math.cos(angle) * pull;
-					const targetY = Math.sin(angle) * pull;
-					const smoothing = supportsFinePointer ? 0.42 : 0.5;
-					liquidX += (targetX - liquidX) * smoothing;
-					liquidY += (targetY - liquidY) * smoothing;
-
-					const liquidPull = Math.min(Math.hypot(liquidX, liquidY), 1);
-					const liquidAngle = Math.atan2(liquidY, liquidX);
-					const shiftX = liquidX * maxShift;
-					const shiftY = liquidY * maxShift;
-
-					toggle.style.setProperty("--liquid-x", `${shiftX.toFixed(2)}px`);
-					toggle.style.setProperty("--liquid-y", `${shiftY.toFixed(2)}px`);
-					blob.setAttribute("d", makeBlobPath(liquidAngle, liquidPull));
+					const slowFinePass = supportsFinePointer && pointerSpeed < 0.2 && distance < radius * 0.86;
+					if (slowFinePass) pull = Math.max(pull, (0.12 + closeEase * 0.08) * softenedInnerEase);
+					targetLiquidX = Math.cos(angle) * pull;
+					targetLiquidY = Math.sin(angle) * pull;
+					startAnimation();
 				};
 
 				if (supportsFinePointer) {
 					window.addEventListener(
 						"pointermove",
 						(event) => {
-							if (frame) return;
-							frame = window.requestAnimationFrame(() => {
-								frame = 0;
-								shapeToward(event.clientX, event.clientY, false, event.timeStamp);
+							if (pointerFrame) return;
+							const { clientX, clientY, timeStamp } = event;
+							pointerFrame = window.requestAnimationFrame(() => {
+								pointerFrame = 0;
+								shapeToward(clientX, clientY, false, timeStamp);
 							});
 						},
 						{ passive: true }
@@ -875,14 +957,14 @@ const themeColor = section === "photo" ? PHOTO_THEME_COLOR : PAPER_THEME_COLOR;
 					const release = () => {
 						activePointerId = null;
 						toggle.classList.remove("is-liquid-touch");
-						reset();
+						resetTarget();
 					};
 
 					toggle.addEventListener("pointerup", release);
 					toggle.addEventListener("pointercancel", release);
 				}
 
-				window.addEventListener("blur", reset);
+				window.addEventListener("blur", resetImmediately);
 			})();
 		</script>
 
