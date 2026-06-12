@@ -120,17 +120,24 @@ const ARCHITECTURE_IMAGES = [
 
 	[data-cursor-title] {
 		cursor: none;
+		overflow: hidden;
+		position: relative;
+	}
+
+	[data-cursor-title].ongoing-trigger {
+		cursor: none;
 	}
 
 	:global(.project-title-cursor) {
-		position: fixed;
+		position: absolute;
 		z-index: 1000;
 		top: 0;
 		left: 0;
-		max-width: min(18rem, calc(100vw - var(--space-32)));
-		color: var(--color-text);
+		max-width: min(18rem, calc(100% - var(--space-16)));
+		color: #fff;
 		font: inherit;
 		line-height: 1.05;
+		mix-blend-mode: difference;
 		opacity: 0;
 		pointer-events: none;
 		transform: translate3d(var(--cursor-x, 0), var(--cursor-y, 0), 0);
@@ -252,6 +259,10 @@ const ARCHITECTURE_IMAGES = [
 		[data-cursor-title] {
 			cursor: pointer;
 		}
+
+		[data-cursor-title].ongoing-trigger {
+			cursor: pointer;
+		}
 	}
 </style>
 
@@ -262,11 +273,11 @@ const ARCHITECTURE_IMAGES = [
 		const cursor = document.createElement("div");
 		cursor.className = "project-title-cursor";
 		cursor.setAttribute("aria-hidden", "true");
-		document.body.append(cursor);
 
-		const moveCursor = (event: PointerEvent) => {
-			cursor.style.setProperty("--cursor-x", `${event.clientX}px`);
-			cursor.style.setProperty("--cursor-y", `${event.clientY}px`);
+		const moveCursor = (event: PointerEvent, target: Element) => {
+			const rect = target.getBoundingClientRect();
+			cursor.style.setProperty("--cursor-x", `${event.clientX - rect.left}px`);
+			cursor.style.setProperty("--cursor-y", `${event.clientY - rect.top}px`);
 		};
 
 		for (const target of hoverTargets) {
@@ -275,12 +286,13 @@ const ARCHITECTURE_IMAGES = [
 				if (!title) return;
 
 				cursor.textContent = title;
-				moveCursor(event as PointerEvent);
+				target.append(cursor);
+				moveCursor(event as PointerEvent, target);
 				cursor.classList.add("is-visible");
 			});
 
 			target.addEventListener("pointermove", (event) => {
-				moveCursor(event as PointerEvent);
+				moveCursor(event as PointerEvent, target);
 			});
 
 			target.addEventListener("pointerleave", () => {
